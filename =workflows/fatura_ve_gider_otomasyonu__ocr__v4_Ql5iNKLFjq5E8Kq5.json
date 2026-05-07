@@ -1,0 +1,859 @@
+={
+  "updatedAt": "2026-04-03T14:10:39.945Z",
+  "createdAt": "2026-03-31T18:28:53.598Z",
+  "id": "Ql5iNKLFjq5E8Kq5",
+  "name": "Fatura ve Gider Otomasyonu (OCR) v4",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "13lU0CzGiQYV5TbbFQKNPqrM84FKW5N02pdzl_uM0zRg",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2133556953,
+          "mode": "list",
+          "cachedResultName": "Faturalar",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/13lU0CzGiQYV5TbbFQKNPqrM84FKW5N02pdzl_uM0zRg/edit#gid=2133556953"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "output"
+          ],
+          "schema": [
+            {
+              "id": "belge_tipi",
+              "displayName": "belge_tipi",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "fatura_senaryosu",
+              "displayName": "fatura_senaryosu",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "fatura_no",
+              "displayName": "fatura_no",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "fatura_tarihi",
+              "displayName": "fatura_tarihi",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "tedarikci_unvan",
+              "displayName": "tedarikci_unvan",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "tedarikci_vkn_tckn",
+              "displayName": "tedarikci_vkn_tckn",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "alici_unvan",
+              "displayName": "alici_unvan",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "alici_vkn_tckn",
+              "displayName": "alici_vkn_tckn",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "mal_hizmet_ozeti",
+              "displayName": "mal_hizmet_ozeti",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "matrah_toplam",
+              "displayName": "matrah_toplam",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "kdv_toplam",
+              "displayName": "kdv_toplam",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "vergiler_dahil_toplam",
+              "displayName": "vergiler_dahil_toplam",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "para_birimi",
+              "displayName": "para_birimi",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -384,
+        1168
+      ],
+      "id": "c916d708-22fd-4dbf-8dc5-5ca35a3a526e",
+      "name": "Google Sheets'e Kaydet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "5IPaDNEuQxdxQUAS",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "simple": false,
+        "filters": {},
+        "options": {
+          "downloadAttachments": true
+        }
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -1488,
+        912
+      ],
+      "id": "7bd2d67b-373c-4ff1-9aac-fcdbdbcd9d6b",
+      "name": "Gmail Trigger",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "vO9a8kj5yWdCc9zo",
+          "name": "Serttas"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "findSearch",
+        "operation": "Convert PDF To Editable PDF Using OCR",
+        "pdfBinaryPropertyName": "attachment_0"
+      },
+      "type": "n8n-nodes-pdf4me.PDF4me",
+      "typeVersion": 1,
+      "position": [
+        -1248,
+        912
+      ],
+      "id": "98d2feaa-d245-447c-8ca2-70a1365d985b",
+      "name": "PDF'i OCR ile İşle",
+      "credentials": {
+        "pdf4meApi": {
+          "id": "UEuyXA4aXFWasgrT",
+          "name": "PDF4ME account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "=data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        -1088,
+        912
+      ],
+      "id": "e9c4bc9a-ae5c-41c8-90fc-267a1388faa9",
+      "name": "Metni Çıkar"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Sen titiz bir Ön Muhasebe Uzmanısın. Aşağıda OCR yöntemiyle taranmış bir belgenin ham metni verilmiştir. Görevin, bu karmaşık metin içinden sadece resmi muhasebe kayıtları (Ba/Bs formları ve Yevmiye kaydı) için geçerli olan verileri ayıklamaktır.\n\nOCR METNİ:\n{{ $json.text }}\n\nKURALLAR VE DİKKAT EDİLECEK HUSUSLAR:\n1. **VKN/TCKN Tespiti:** Muhasebe için en önemli veri Vergi Kimlik Numarası (VKN) veya TCKN'dir. Tedarikçinin VKN'sini (genelde 10 haneli) veya TCKN'sini (11 haneli) mutlaka bul. \"Mersis\" numarası ile karıştırma.\n2. **Tarih Formatı:** Tarihleri mutlaka GG.AA.YYYY formatına çevir (Örn: 02.01.2023).\n3. **Rakamsal Tutarlar:**\n   - \"Genel Toplam\" veya \"Ödenecek Tutar\" faturanın dip toplamıdır.\n   - \"KDV\" tutarını ayrıca bul.\n   - \"Matrah\" (KDV Hariç Toplam) yoksa, Genel Toplam - KDV yaparak hesapla.\n   - Tutarları Türkiye formatında yaz (Örn: 1.250,50).\n4. **Özetleme:** Ürün açıklamalarını tek tek yazma. Muhasebe fiş açıklaması için genel bir özet çıkar (Örn: \"Muhtelif elektronik malzemeler ve kargo bedeli\").\n5. **Gürültü Temizliği:** Kargo takip numaraları, web sitesi adresleri, \"Bizi tercih ettiğiniz için teşekkürler\" gibi yazıları dikkate alma.\n6. **Eksik Veri:** Eğer VKN veya Fatura No okunamıyorsa \"BELİRSİZ\" yaz, null bırakma.\n\nŞimdi bu kurallara göre JSON çıktısını hazırla.",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -592,
+        896
+      ],
+      "id": "d83d300f-02f5-4fdf-9d73-19761204dee6",
+      "name": "Fatura Analiz AI"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"belge_tipi\": \"Gelen Fatura\",\n  \"fatura_senaryosu\": \"EARSIVFATURA\",\n  \"fatura_no\": \"ABC20230000001\",\n  \"fatura_tarihi\": \"01.01.2024\",\n  \"tedarikci_unvan\": \"D-MARKET ELEKTRONİK (HEPSİBURADA)\",\n  \"tedarikci_vkn_tckn\": \"1234567890\",\n  \"alici_unvan\": \"SELAHADDİN SERTTAŞ\",\n  \"alici_vkn_tckn\": \"11111111111\",\n  \"mal_hizmet_ozeti\": \"Bilgisayar parçaları ve ofis malzemeleri\",\n  \"matrah_toplam\": \"1.000,00\",\n  \"kdv_toplam\": \"200,00\",\n  \"vergiler_dahil_toplam\": \"1.200,00\",\n  \"para_birimi\": \"TRY\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -592,
+        1120
+      ],
+      "id": "c9f8e339-5de0-4418-88a7-1f3040ec0e73",
+      "name": "Yapılandırılmış Çıktı"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -768,
+        1232
+      ],
+      "id": "1056590a-616e-48c5-9bc1-1308e11b4e7e",
+      "name": "Google Gemini",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "7ltGq0vUF6iG1jR5",
+          "name": "serttas1"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Gelen tüm verileri döngüye al\nconst results = $input.all().map(item => {\n  \n  // AI çıktısındaki 'output' nesnesini al\n  const rawData = item.json.output;\n  const cleanData = {};\n\n  // Her bir alanı kontrol et (Temizlik işlemi)\n  for (const key in rawData) {\n    // Eğer değer metin olarak \"null\" ise, bunu boş bırak\n    if (rawData[key] === \"null\" || rawData[key] === null || rawData[key] === undefined) {\n      cleanData[key] = \"\";\n    } \n    // \"BELİRSİZ\" değerini koru (muhasebecinin dikkatini çekmesi için)\n    else if (rawData[key] === \"BELİRSİZ\") {\n      cleanData[key] = \"⚠️ BELİRSİZ\";\n    }\n    else {\n      cleanData[key] = rawData[key];\n    }\n  }\n\n  // İşlenme zamanını ekle\n  cleanData['isleme_zamani'] = new Date().toLocaleString('tr-TR', { timeZone: 'Europe/Istanbul' });\n\n  // Temizlenmiş ve düzleştirilmiş veriyi döndür\n  return {\n    json: cleanData\n  };\n});\n\nreturn results;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -384,
+        912
+      ],
+      "id": "88b229e6-b579-4391-a222-7120ea17ea74",
+      "name": "Veri Temizle"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.text }}",
+        "options": {
+          "systemMessage": "Sen sana verilen metni özetleyen yapay zekasın "
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -1104,
+        1072
+      ],
+      "id": "1f7f00ac-263c-4b9c-9797-39e683da5f6d",
+      "name": "AI Agent"
+    }
+  ],
+  "connections": {
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "PDF'i OCR ile İşle",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PDF'i OCR ile İşle": {
+      "main": [
+        [
+          {
+            "node": "Metni Çıkar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Metni Çıkar": {
+      "main": [
+        [
+          {
+            "node": "Fatura Analiz AI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fatura Analiz AI": {
+      "main": [
+        [
+          {
+            "node": "Veri Temizle",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Yapılandırılmış Çıktı": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Fatura Analiz AI",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Fatura Analiz AI",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Veri Temizle": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets'e Kaydet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets'e Kaydet": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": {
+    "node:Gmail Trigger": {
+      "Gmail Trigger": {
+        "lastTimeChecked": 1778143682,
+        "possibleDuplicates": [
+          "19e019f5fe73b946",
+          "19e019d1eae33fd6"
+        ]
+      }
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "2457b29d-bbcb-4152-8b0d-73aa2dde3dcf",
+  "activeVersionId": "6abde473-dd77-4e1b-92ba-3646ada94d01",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-03-31T18:28:53.612Z",
+      "createdAt": "2026-03-31T18:28:53.612Z",
+      "role": "workflow:owner",
+      "workflowId": "Ql5iNKLFjq5E8Kq5",
+      "projectId": "NthPGJZmZB4b9f9E"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-03-31T18:36:06.000Z",
+    "createdAt": "2026-03-31T18:36:03.376Z",
+    "versionId": "6abde473-dd77-4e1b-92ba-3646ada94d01",
+    "workflowId": "Ql5iNKLFjq5E8Kq5",
+    "nodes": [
+      {
+        "parameters": {
+          "operation": "append",
+          "documentId": {
+            "__rl": true,
+            "value": "13lU0CzGiQYV5TbbFQKNPqrM84FKW5N02pdzl_uM0zRg",
+            "mode": "id"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 2133556953,
+            "mode": "list",
+            "cachedResultName": "Faturalar",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/13lU0CzGiQYV5TbbFQKNPqrM84FKW5N02pdzl_uM0zRg/edit#gid=2133556953"
+          },
+          "columns": {
+            "mappingMode": "autoMapInputData",
+            "value": {},
+            "matchingColumns": [
+              "output"
+            ],
+            "schema": [
+              {
+                "id": "belge_tipi",
+                "displayName": "belge_tipi",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "fatura_senaryosu",
+                "displayName": "fatura_senaryosu",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "fatura_no",
+                "displayName": "fatura_no",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "fatura_tarihi",
+                "displayName": "fatura_tarihi",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "tedarikci_unvan",
+                "displayName": "tedarikci_unvan",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "tedarikci_vkn_tckn",
+                "displayName": "tedarikci_vkn_tckn",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "alici_unvan",
+                "displayName": "alici_unvan",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "alici_vkn_tckn",
+                "displayName": "alici_vkn_tckn",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "mal_hizmet_ozeti",
+                "displayName": "mal_hizmet_ozeti",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "matrah_toplam",
+                "displayName": "matrah_toplam",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "kdv_toplam",
+                "displayName": "kdv_toplam",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "vergiler_dahil_toplam",
+                "displayName": "vergiler_dahil_toplam",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "para_birimi",
+                "displayName": "para_birimi",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.5,
+        "position": [
+          -64,
+          912
+        ],
+        "id": "c916d708-22fd-4dbf-8dc5-5ca35a3a526e",
+        "name": "Google Sheets'e Kaydet",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "5IPaDNEuQxdxQUAS",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "pollTimes": {
+            "item": [
+              {
+                "mode": "everyMinute"
+              }
+            ]
+          },
+          "simple": false,
+          "filters": {},
+          "options": {
+            "downloadAttachments": true
+          }
+        },
+        "type": "n8n-nodes-base.gmailTrigger",
+        "typeVersion": 1.3,
+        "position": [
+          -1488,
+          912
+        ],
+        "id": "7bd2d67b-373c-4ff1-9aac-fcdbdbcd9d6b",
+        "name": "Gmail Trigger",
+        "credentials": {
+          "gmailOAuth2": {
+            "id": "vO9a8kj5yWdCc9zo",
+            "name": "Serttas"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "resource": "findSearch",
+          "operation": "Convert PDF To Editable PDF Using OCR",
+          "pdfBinaryPropertyName": "attachment_0"
+        },
+        "type": "n8n-nodes-pdf4me.PDF4me",
+        "typeVersion": 1,
+        "position": [
+          -1248,
+          912
+        ],
+        "id": "98d2feaa-d245-447c-8ca2-70a1365d985b",
+        "name": "PDF'i OCR ile İşle",
+        "credentials": {
+          "pdf4meApi": {
+            "id": "UEuyXA4aXFWasgrT",
+            "name": "PDF4ME account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "pdf",
+          "binaryPropertyName": "=data",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.extractFromFile",
+        "typeVersion": 1.1,
+        "position": [
+          -976,
+          912
+        ],
+        "id": "e9c4bc9a-ae5c-41c8-90fc-267a1388faa9",
+        "name": "Metni Çıkar"
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "=Sen titiz bir Ön Muhasebe Uzmanısın. Aşağıda OCR yöntemiyle taranmış bir belgenin ham metni verilmiştir. Görevin, bu karmaşık metin içinden sadece resmi muhasebe kayıtları (Ba/Bs formları ve Yevmiye kaydı) için geçerli olan verileri ayıklamaktır.\n\nOCR METNİ:\n{{ $json.text }}\n\nKURALLAR VE DİKKAT EDİLECEK HUSUSLAR:\n1. **VKN/TCKN Tespiti:** Muhasebe için en önemli veri Vergi Kimlik Numarası (VKN) veya TCKN'dir. Tedarikçinin VKN'sini (genelde 10 haneli) veya TCKN'sini (11 haneli) mutlaka bul. \"Mersis\" numarası ile karıştırma.\n2. **Tarih Formatı:** Tarihleri mutlaka GG.AA.YYYY formatına çevir (Örn: 02.01.2023).\n3. **Rakamsal Tutarlar:**\n   - \"Genel Toplam\" veya \"Ödenecek Tutar\" faturanın dip toplamıdır.\n   - \"KDV\" tutarını ayrıca bul.\n   - \"Matrah\" (KDV Hariç Toplam) yoksa, Genel Toplam - KDV yaparak hesapla.\n   - Tutarları Türkiye formatında yaz (Örn: 1.250,50).\n4. **Özetleme:** Ürün açıklamalarını tek tek yazma. Muhasebe fiş açıklaması için genel bir özet çıkar (Örn: \"Muhtelif elektronik malzemeler ve kargo bedeli\").\n5. **Gürültü Temizliği:** Kargo takip numaraları, web sitesi adresleri, \"Bizi tercih ettiğiniz için teşekkürler\" gibi yazıları dikkate alma.\n6. **Eksik Veri:** Eğer VKN veya Fatura No okunamıyorsa \"BELİRSİZ\" yaz, null bırakma.\n\nŞimdi bu kurallara göre JSON çıktısını hazırla.",
+          "hasOutputParser": true,
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 3.1,
+        "position": [
+          -736,
+          912
+        ],
+        "id": "d83d300f-02f5-4fdf-9d73-19761204dee6",
+        "name": "Fatura Analiz AI"
+      },
+      {
+        "parameters": {
+          "jsonSchemaExample": "{\n  \"belge_tipi\": \"Gelen Fatura\",\n  \"fatura_senaryosu\": \"EARSIVFATURA\",\n  \"fatura_no\": \"ABC20230000001\",\n  \"fatura_tarihi\": \"01.01.2024\",\n  \"tedarikci_unvan\": \"D-MARKET ELEKTRONİK (HEPSİBURADA)\",\n  \"tedarikci_vkn_tckn\": \"1234567890\",\n  \"alici_unvan\": \"SELAHADDİN SERTTAŞ\",\n  \"alici_vkn_tckn\": \"11111111111\",\n  \"mal_hizmet_ozeti\": \"Bilgisayar parçaları ve ofis malzemeleri\",\n  \"matrah_toplam\": \"1.000,00\",\n  \"kdv_toplam\": \"200,00\",\n  \"vergiler_dahil_toplam\": \"1.200,00\",\n  \"para_birimi\": \"TRY\"\n}"
+        },
+        "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+        "typeVersion": 1.3,
+        "position": [
+          -592,
+          1120
+        ],
+        "id": "c9f8e339-5de0-4418-88a7-1f3040ec0e73",
+        "name": "Yapılandırılmış Çıktı"
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+        "typeVersion": 1,
+        "position": [
+          -736,
+          1120
+        ],
+        "id": "1056590a-616e-48c5-9bc1-1308e11b4e7e",
+        "name": "Google Gemini",
+        "credentials": {
+          "googlePalmApi": {
+            "id": "7ltGq0vUF6iG1jR5",
+            "name": "serttas1"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "// Gelen tüm verileri döngüye al\nconst results = $input.all().map(item => {\n  \n  // AI çıktısındaki 'output' nesnesini al\n  const rawData = item.json.output;\n  const cleanData = {};\n\n  // Her bir alanı kontrol et (Temizlik işlemi)\n  for (const key in rawData) {\n    // Eğer değer metin olarak \"null\" ise, bunu boş bırak\n    if (rawData[key] === \"null\" || rawData[key] === null || rawData[key] === undefined) {\n      cleanData[key] = \"\";\n    } \n    // \"BELİRSİZ\" değerini koru (muhasebecinin dikkatini çekmesi için)\n    else if (rawData[key] === \"BELİRSİZ\") {\n      cleanData[key] = \"⚠️ BELİRSİZ\";\n    }\n    else {\n      cleanData[key] = rawData[key];\n    }\n  }\n\n  // İşlenme zamanını ekle\n  cleanData['isleme_zamani'] = new Date().toLocaleString('tr-TR', { timeZone: 'Europe/Istanbul' });\n\n  // Temizlenmiş ve düzleştirilmiş veriyi döndür\n  return {\n    json: cleanData\n  };\n});\n\nreturn results;"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -384,
+          912
+        ],
+        "id": "88b229e6-b579-4391-a222-7120ea17ea74",
+        "name": "Veri Temizle"
+      }
+    ],
+    "connections": {
+      "Gmail Trigger": {
+        "main": [
+          [
+            {
+              "node": "PDF'i OCR ile İşle",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "PDF'i OCR ile İşle": {
+        "main": [
+          [
+            {
+              "node": "Metni Çıkar",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Metni Çıkar": {
+        "main": [
+          [
+            {
+              "node": "Fatura Analiz AI",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Fatura Analiz AI": {
+        "main": [
+          [
+            {
+              "node": "Veri Temizle",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Yapılandırılmış Çıktı": {
+        "ai_outputParser": [
+          [
+            {
+              "node": "Fatura Analiz AI",
+              "type": "ai_outputParser",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Google Gemini": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Fatura Analiz AI",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Veri Temizle": {
+        "main": [
+          [
+            {
+              "node": "Google Sheets'e Kaydet",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "SELAHADDİN serttas2001@gmail.com",
+    "name": "Version 6abde473",
+    "description": "",
+    "autosaved": true
+  },
+  "tags": [
+    {
+      "updatedAt": "2026-03-27T06:18:41.170Z",
+      "createdAt": "2026-03-27T06:18:41.170Z",
+      "id": "7pJS1897VM7Sgzea",
+      "name": "otomasyon"
+    },
+    {
+      "updatedAt": "2026-03-27T06:19:38.210Z",
+      "createdAt": "2026-03-27T06:19:38.210Z",
+      "id": "H6298eRFVflRrlu6",
+      "name": "ocr"
+    },
+    {
+      "updatedAt": "2026-03-27T06:18:41.163Z",
+      "createdAt": "2026-03-27T06:18:41.163Z",
+      "id": "KthUXwg5nynVpP9n",
+      "name": "fatura"
+    },
+    {
+      "updatedAt": "2026-03-27T06:18:41.196Z",
+      "createdAt": "2026-03-27T06:18:41.196Z",
+      "id": "jfeiweh9EoaS6Inx",
+      "name": "muhasebe"
+    }
+  ]
+}
