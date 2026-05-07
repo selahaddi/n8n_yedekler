@@ -1,0 +1,174 @@
+={
+  "updatedAt": "2026-04-20T04:58:40.073Z",
+  "createdAt": "2026-04-19T07:22:22.874Z",
+  "id": "wdfgdRfjBwp4IitA",
+  "name": "Kişiselleştirilmiş Satış Hunisi Optimizasyon Ajanı",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "2e6cefcc-9c52-446d-baf8-55fb0a28fae7",
+      "name": "When clicking ‘Execute workflow’",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -480,
+        -160
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return [\n  {\n    json: {\n      \"user_name\": \"Ahmet Yılmaz\",\n      \"last_viewed_category\": \"Spor Ayakkabılar\",\n      \"abandoned_cart\": [\n        \"Nike Air Max\",\n        \"Puma Performans Çorap\"\n      ],\n      \"budget_segment\": \"Orta-Üst\"\n    }\n  }\n];"
+      },
+      "id": "c0941869-0edb-4c46-80d2-4b833e155733",
+      "name": "Gelen Müşteri Verisi (Mock)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -256,
+        -160
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Sen, bir e-ticaret platformu için çalışan \"Kişiselleştirilmiş Satış Hunisi Optimizasyon Ajanı\"sın.\nGörevin, gelen kullanıcı verilerini analiz ederek onları satışa yönlendirecek hiper-kişiselleştirilmiş e-posta içerikleri üretmektir.\n\nTeknik Parametreler ve Kurallar:\n1. Veri Analizi: Gelen verideki \"sepette bırakılan ürünler\" (abandoned_cart) ve \"ilgi alanları\" (last_viewed_category) değişkenlerini önceliklendir.\n2. Strateji (Utility-Based): Sadece popüler olanı değil, işletmenin karlılığını artıracak (örneğin stok durumu yüksek veya marjı geniş) benzer segmentteki ürünleri de tavsiyeye dahil et.\n3. Persona: Profesyonel, çözüm odaklı ve proaktif bir \"Dijital Asistan\" tonu kullan.\n4. Satış Hunisi (Sales Funnel): E-postanın amacı sadece bilgi vermek değil, kullanıcıyı bir sonraki adıma (satın alma, randevu alma veya kupon kullanma) ikna etmektir.\n\nGELEN KULLANICI VERİSİ:\nİsim: {{ $json.user_name }}\nSon Görüntülenen Kategori: {{ $json.last_viewed_category }}\nSepette Bırakılanlar: {{ JSON.stringify($json.abandoned_cart) }}\nBütçe Segmenti: {{ $json.budget_segment }}\n\n",
+        "hasOutputParser": true
+      },
+      "id": "be39b7bf-237b-457b-976f-1314ebb51a65",
+      "name": "Satış E-postası Üretici",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.4,
+      "position": [
+        -16,
+        -160
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "27de8527-3f94-44c2-a3f2-c3c9d60a704b",
+      "name": "DeepSeek Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatDeepSeek",
+      "typeVersion": 1,
+      "position": [
+        -16,
+        48
+      ],
+      "credentials": {
+        "deepSeekApi": {
+          "id": "04burqSTSa8yxNaW",
+          "name": "DeepSeek account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const response = $input.first().json.text;\n\n// Eğer Structured Output Parser veriyi pürüzsüz bir obje olarak döndürdüyse doğrudan kabul et:\nif (typeof response === 'object' && response !== null) {\n  return [{ json: response }];\n}\n\n// Eğer n8n veya DeepSeek inat edip hala string gönderdiyse yedek plana (Manuel Regex Parse) geç:\ntry {\n  let responseText = response || \"\";\n  responseText = responseText.replace(/```json/gi, \"\").replace(/```/g, \"\").trim();\n  const parsed = JSON.parse(responseText);\n  return [{ json: parsed }];\n} catch (e) {\n  return [{ json: { error: \"JSON parse edilemedi\", rawText: response } }];\n}\n"
+      },
+      "id": "a3e7d925-b26f-4c6d-b019-b5aec64bccef",
+      "name": "Çıktıyı JSON'a Çevir",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        384,
+        -160
+      ]
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n\t\n  \"Müşteri Analizi\": \"Kullanıcının hangi aşamada olduğunun kısa özeti.\",\n  \"Önerilen Ürün Grubu\": \"Neden bu ürünlerin seçildiğinin (fayda odaklı) açıklaması.\",\n  \"E-posta Taslağı\": \"Konu satırı ve gövde metni dahil, tamamen kişiselleştirilmiş içerik.\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        128,
+        48
+      ],
+      "id": "ef63dcca-a291-4507-a320-373fc91435b9",
+      "name": "Structured Output Parser"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Gelen Müşteri Verisi (Mock)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gelen Müşteri Verisi (Mock)": {
+      "main": [
+        [
+          {
+            "node": "Satış E-postası Üretici",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Satış E-postası Üretici": {
+      "main": [
+        [
+          {
+            "node": "Çıktıyı JSON'a Çevir",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeepSeek Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Satış E-postası Üretici",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Satış E-postası Üretici",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "222643a1-848c-4e8c-ac8d-09f9b2d965a6",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-04-19T07:22:22.881Z",
+      "createdAt": "2026-04-19T07:22:22.881Z",
+      "role": "workflow:owner",
+      "workflowId": "wdfgdRfjBwp4IitA",
+      "projectId": "NthPGJZmZB4b9f9E"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
