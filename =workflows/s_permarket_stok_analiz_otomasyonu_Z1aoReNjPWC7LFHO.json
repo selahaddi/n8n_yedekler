@@ -1,0 +1,390 @@
+={
+  "updatedAt": "2026-03-27T06:21:09.242Z",
+  "createdAt": "2026-03-27T06:20:27.416Z",
+  "id": "Z1aoReNjPWC7LFHO",
+  "name": "Süpermarket Stok Analiz Otomasyonu",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "model": "deepseek-reasoner",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatDeepSeek",
+      "typeVersion": 1,
+      "position": [
+        1136,
+        752
+      ],
+      "id": "e2948b5e-0bea-4ba9-9acf-5c98a316e797",
+      "name": "DeepSeek Chat Model",
+      "credentials": {
+        "deepSeekApi": {
+          "id": "04burqSTSa8yxNaW",
+          "name": "DeepSeek account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Sen hem bir süpermarket stok yönetim uzmanı hem de profesyonel bir DEPO YÖNETİCİSİSİN.\n\nSana verilen ürün verilerini analiz ederek iki temel görevi yerine getir:\n1. **Sipariş Kararı**: Stok durumuna göre sipariş verilmeli mi?\n2. **Depo Yerleşimi (AKILLI DEPO)**: Bu ürün depoda fiziksel olarak nerede durmalı?\n\n**GÖREV 1: SİPARİŞ ANALİZİ Kuralları:**\n- Mevcut stok < Minimum stok → ACİL sipariş ver\n- Mevcut stok < Minimum stok × 1.5 → NORMAL sipariş ver\n- Mevcut stok >= Minimum stok × 1.5 → STOK YETERLİ\n- Sipariş miktarı = (Son 30 Gün Satış × 1.2) - Mevcut Stok (minimum 0)\n\n**GÖREV 2: DEPO YERLEŞİMİ Kuralları (ABC Analizi):**\nBu ürün depoda hangi **Bölge**, **Koridor** ve **Raf**'ta durmalı?\n1. **Depo Bölgesi**:\n   - Süt, Yoğurt, Peynir, Et, Tavuk → \"Soğuk Hava\"\n   - Deterjan, Çamaşır Suyu, Sabun → \"Kimyasal\"\n   - Diğer Kuru Gıdalar → \"Kuru Gıda\"\n2. **Koridor (ABC Analizi)**:\n   - **Koridor A (Giriş/Hızlı)**: Son 30 gün satışı 100'den FAZLA olan ürünler (Çok satanlar girişe yakın olmalı).\n   - **Koridor B (Orta)**: Son 30 gün satışı 50 ile 100 arası olanlar.\n   - **Koridor C (Arka/Yavaş)**: Son 30 gün satışı 50'den AZ olanlar.\n3. **Raf Numarası (1: Zemin, 5: Tepe)**:\n   - **Raf 1 (Zemin)**: Ağır ürünler (5kg/L üzeri, Deterjan bidonları, Un çuvalları, Yağ tenekeleri).\n   - **Raf 3 (Göz Hizası)**: En popüler ve hafif ürünler.\n   - **Raf 4-5 (Üst)**: Çok hafif veya çok az satılan ürünler.\n\nÜrün Verileri:\n{{ JSON.stringify($json) }}",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1152,
+        512
+      ],
+      "id": "09af6f49-fc24-4808-aa43-ee713952cde6",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        976,
+        768
+      ],
+      "id": "42bf295c-825e-43bc-8758-42dc87fca658",
+      "name": "Google Gemini Chat Model"
+    },
+    {
+      "parameters": {
+        "amount": 1,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1600,
+        816
+      ],
+      "id": "e99c8980-6ec4-491f-91fd-7a85876b54cc",
+      "name": "Wait1",
+      "webhookId": "8b92986e-db56-425a-9a4a-fe49a7f66325"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"urunler\": [\n    {\n      \"urun_kodu\": \"UR-001\",\n      \"urun_adi\": \"Tam Yağlı Süt 1L\",\n      \"mevcut_stok\": 10,\n      \"siparis_durumu\": \"SİPARİŞ VER\",\n      \"siparis_adedi\": 134,\n      \"oncelik\": \"ACİL\",\n      \"sebep\": \"Stok kritik seviyede.\",\n      \"depo_bolgesi\": \"Soğuk Hava\",\n      \"koridor\": \"A\",\n      \"raf_no\": 3,\n      \"yerlesim_gerekcesi\": \"Çok satan (A grubu) ve soğuk zincir ürünü.\"\n    }\n  ]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1312,
+        736
+      ],
+      "id": "a5cea919-2d1e-41ba-8cdb-63c94368c7d1",
+      "name": "Structured Output Parser1"
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1pI_zxOPBKL9o5N1A7APCh9YGCGem_Kdv",
+          "mode": "id"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "id": "42a874d1-af5d-4031-a6d6-1093407ba22c",
+      "name": "Google Drive Trigger1",
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        80,
+        544
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "O3iuTXTvoeTm5Mg9",
+          "name": "Serttas"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "id": "12db91c0-9bae-47a2-8ea5-81758ee5d7f8",
+      "name": "Dosyayı İndir1",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        352,
+        544
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "O3iuTXTvoeTm5Mg9",
+          "name": "Serttas"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fileFormat": "xlsx",
+        "options": {
+          "headerRow": true,
+          "sheetName": "Stok Verileri"
+        }
+      },
+      "id": "e78446b8-dc96-4893-ab81-2a5c434e5e8f",
+      "name": "Excel Oku1",
+      "type": "n8n-nodes-base.spreadsheetFile",
+      "typeVersion": 2,
+      "position": [
+        560,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "batchSize": 5,
+        "options": {}
+      },
+      "id": "3d250250-8e4a-49fd-86ff-71520d66b6d1",
+      "name": "Verileri Grupla (10'arlı)1",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        816,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// AI Agent'dan gelen yapılandırılmış cevabı işle\nconst items = [];\n\nfor (const item of $input.all()) {\n  try {\n    // Structured Output Parser sayesinde veri zaten JSON objesi olarak gelir\n    const data = item.json.output || item.json;\n    \n    // Eğer 'urunler' array'i varsa (Structured Parser çıktısı)\n    if (data.urunler && Array.isArray(data.urunler)) {\n      for (const product of data.urunler) {\n        items.push({ json: product });\n      }\n    }\n    // Eğer doğrudan array ise\n    else if (Array.isArray(data)) {\n      for (const product of data) {\n        items.push({ json: product });\n      }\n    }\n    // Eğer tekil bir ürün objesi ise\n    else if (data.urun_kodu) {\n      items.push({ json: data });\n    }\n    // Fallback: string ise parse et\n    else {\n      let content = typeof data === 'string' ? data : JSON.stringify(data);\n      content = content.replace(/```json\\n?/g, '').replace(/```\\n?/g, '').trim();\n      const jsonMatch = content.match(/\\[\\s*\\{[\\s\\S]*\\}\\s*\\]/);\n      if (jsonMatch) content = jsonMatch[0];\n      const parsed = JSON.parse(content);\n      if (Array.isArray(parsed)) {\n        for (const p of parsed) items.push({ json: p });\n      } else {\n        items.push({ json: parsed });\n      }\n    }\n  } catch (error) {\n    items.push({\n      json: {\n        hata: 'JSON parse hatasi',\n        ham_cevap: JSON.stringify(item.json).substring(0, 500),\n        hata_detay: error.message\n      }\n    });\n  }\n}\n\nreturn items;"
+      },
+      "id": "27733270-6155-4cea-81cb-702bca4d36a2",
+      "name": "AI Cevabını İşle1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1600,
+        576
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "toFile",
+        "fileFormat": "xlsx",
+        "options": {
+          "fileName": "Akilli_Depo_Raporu_{{ $now.format('yyyy-MM-dd_HH-mm') }}.xlsx",
+          "sheetName": "Sipariş ve Depo Planı"
+        }
+      },
+      "id": "ed689103-762c-400a-b86d-a50a47afd9a0",
+      "name": "Excel Oluştur1",
+      "type": "n8n-nodes-base.spreadsheetFile",
+      "typeVersion": 2,
+      "position": [
+        1040,
+        256
+      ]
+    },
+    {
+      "parameters": {
+        "name": "=Akilli_Depo_Raporu_{{ $now.format('yyyy-MM-dd_HH-mm') }}.xlsx",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1NKxP7cvNlbxovI3Vn8Y_gITf84oxxVN2",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "id": "87c8e1ba-42ab-4cb2-8684-e6b15f4f9722",
+      "name": "Drive'a Yükle1",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1296,
+        256
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "O3iuTXTvoeTm5Mg9",
+          "name": "Serttas"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "DeepSeek Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "AI Cevabını İşle1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "Verileri Grupla (10'arlı)1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive Trigger1": {
+      "main": [
+        [
+          {
+            "node": "Dosyayı İndir1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dosyayı İndir1": {
+      "main": [
+        [
+          {
+            "node": "Excel Oku1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Excel Oku1": {
+      "main": [
+        [
+          {
+            "node": "Verileri Grupla (10'arlı)1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verileri Grupla (10'arlı)1": {
+      "main": [
+        [
+          {
+            "node": "Excel Oluştur1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Cevabını İşle1": {
+      "main": [
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Excel Oluştur1": {
+      "main": [
+        [
+          {
+            "node": "Drive'a Yükle1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "150465e3-cd01-4209-8f2d-9dfd0746bcc0",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-03-27T06:20:27.419Z",
+      "createdAt": "2026-03-27T06:20:27.419Z",
+      "role": "workflow:owner",
+      "workflowId": "Z1aoReNjPWC7LFHO",
+      "projectId": "NthPGJZmZB4b9f9E"
+    }
+  ],
+  "activeVersion": null,
+  "tags": [
+    {
+      "updatedAt": "2026-03-27T06:20:25.817Z",
+      "createdAt": "2026-03-27T06:20:25.817Z",
+      "id": "amvp9IbGeZ18RHNl",
+      "name": "Stok Yönetimi"
+    },
+    {
+      "updatedAt": "2026-03-27T06:20:25.784Z",
+      "createdAt": "2026-03-27T06:20:25.784Z",
+      "id": "rtY94Jm4VdD8LNc1",
+      "name": "AI Otomasyon"
+    }
+  ]
+}
