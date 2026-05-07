@@ -1,0 +1,315 @@
+={
+  "updatedAt": "2026-04-29T15:37:15.961Z",
+  "createdAt": "2026-04-28T01:22:36.123Z",
+  "id": "Dj9T4ePIU1QlwlWK",
+  "name": "1_Teklif_Kabul_ve_Gonderim",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "yeni-teklif",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "name": "Web Form Tetikleyici",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -288,
+        -16
+      ],
+      "id": "5f90711e-f749-4a5d-825f-e2d6a9b2e003",
+      "webhookId": "d02cdd51-90c4-456d-a4e8-7278ab1d0a2a"
+    },
+    {
+      "parameters": {
+        "tableId": "bekleyen_teklifler",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "firma_adi",
+              "fieldValue": "={{ $json.body.firma_adi }}"
+            },
+            {
+              "fieldId": "talep_edilen_urun",
+              "fieldValue": "={{ $json.body.talep_edilen_urun }}"
+            },
+            {
+              "fieldId": "adet",
+              "fieldValue": "={{ $json.body.adet }}"
+            },
+            {
+              "fieldId": "iletisim_email",
+              "fieldValue": "={{ $json.body.iletisim_email }}"
+            },
+            {
+              "fieldId": "telefon",
+              "fieldValue": "={{ $json.body.telefon }}"
+            },
+            {
+              "fieldId": "teklif_gonderim_tarihi",
+              "fieldValue": "={{ $now.toFormat('yyyy-MM-dd') }}"
+            }
+          ]
+        }
+      },
+      "name": "Supabase Kayıt",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -48,
+        -16
+      ],
+      "id": "dd794d32-4c18-45b0-8a27-a2b9136ec73c",
+      "credentials": {
+        "supabaseApi": {
+          "id": "QxsxlFoPxNHnqEfa",
+          "name": "WebSitem"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:8000/webhook/new-proposal",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "record_id",
+              "value": "={{ $json.id }}"
+            },
+            {
+              "name": "firma_adi",
+              "value": "={{ $('Web Form Tetikleyici').item.json.body.firma_adi }}"
+            },
+            {
+              "name": "talep_edilen_urun",
+              "value": "={{ $('Web Form Tetikleyici').item.json.body.talep_edilen_urun }}"
+            },
+            {
+              "name": "adet",
+              "value": "={{ $('Web Form Tetikleyici').item.json.body.adet }}"
+            },
+            {
+              "name": "iletisim_email",
+              "value": "={{ $('Web Form Tetikleyici').item.json.body.iletisim_email }}"
+            },
+            {
+              "name": "telefon",
+              "value": "={{ $('Web Form Tetikleyici').item.json.body.telefon }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Python API Tetikle",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        176,
+        -16
+      ],
+      "id": "83318fc2-b5e3-490a-a90f-3f478127cbb4"
+    }
+  ],
+  "connections": {
+    "Web Form Tetikleyici": {
+      "main": [
+        [
+          {
+            "node": "Supabase Kayıt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Kayıt": {
+      "main": [
+        [
+          {
+            "node": "Python API Tetikle",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "c57d19c1-d505-484a-bc24-46185838c49e",
+  "activeVersionId": "aa8952a4-7eba-4dde-af70-15869d9fcf04",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-04-28T01:22:36.129Z",
+      "createdAt": "2026-04-28T01:22:36.129Z",
+      "role": "workflow:owner",
+      "workflowId": "Dj9T4ePIU1QlwlWK",
+      "projectId": "NthPGJZmZB4b9f9E"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-04-28T14:51:57.000Z",
+    "createdAt": "2026-04-28T14:51:26.994Z",
+    "versionId": "aa8952a4-7eba-4dde-af70-15869d9fcf04",
+    "workflowId": "Dj9T4ePIU1QlwlWK",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "yeni-teklif",
+          "responseMode": "lastNode",
+          "options": {}
+        },
+        "name": "Web Form Tetikleyici",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 1,
+        "position": [
+          -240,
+          -16
+        ],
+        "id": "5f90711e-f749-4a5d-825f-e2d6a9b2e003",
+        "webhookId": "d02cdd51-90c4-456d-a4e8-7278ab1d0a2a"
+      },
+      {
+        "parameters": {
+          "tableId": "bekleyen_teklifler",
+          "fieldsUi": {
+            "fieldValues": [
+              {
+                "fieldId": "firma_adi",
+                "fieldValue": "={{ $json.body.firma_adi }}"
+              },
+              {
+                "fieldId": "talep_edilen_urun",
+                "fieldValue": "={{ $json.body.talep_edilen_urun }}"
+              },
+              {
+                "fieldId": "adet",
+                "fieldValue": "={{ $json.body.adet }}"
+              },
+              {
+                "fieldId": "iletisim_email",
+                "fieldValue": "={{ $json.body.iletisim_email }}"
+              },
+              {
+                "fieldId": "telefon",
+                "fieldValue": "={{ $json.body.telefon }}"
+              },
+              {
+                "fieldId": "teklif_gonderim_tarihi",
+                "fieldValue": "={{ $now.toFormat('yyyy-MM-dd') }}"
+              }
+            ]
+          }
+        },
+        "name": "Supabase Kayıt",
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          -32,
+          -16
+        ],
+        "id": "dd794d32-4c18-45b0-8a27-a2b9136ec73c",
+        "credentials": {
+          "supabaseApi": {
+            "id": "QxsxlFoPxNHnqEfa",
+            "name": "WebSitem"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "http://host.docker.internal:8000/webhook/new-proposal",
+          "sendBody": true,
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "record_id",
+                "value": "={{ $json.id }}"
+              },
+              {
+                "name": "firma_adi",
+                "value": "={{ $('Web Form Tetikleyici').item.json.body.firma_adi }}"
+              },
+              {
+                "name": "talep_edilen_urun",
+                "value": "={{ $('Web Form Tetikleyici').item.json.body.talep_edilen_urun }}"
+              },
+              {
+                "name": "adet",
+                "value": "={{ $('Web Form Tetikleyici').item.json.body.adet }}"
+              },
+              {
+                "name": "iletisim_email",
+                "value": "={{ $('Web Form Tetikleyici').item.json.body.iletisim_email }}"
+              },
+              {
+                "name": "telefon",
+                "value": "={{ $('Web Form Tetikleyici').item.json.body.telefon }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "name": "Python API Tetikle",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 3,
+        "position": [
+          160,
+          -16
+        ],
+        "id": "83318fc2-b5e3-490a-a90f-3f478127cbb4"
+      }
+    ],
+    "connections": {
+      "Web Form Tetikleyici": {
+        "main": [
+          [
+            {
+              "node": "Supabase Kayıt",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Supabase Kayıt": {
+        "main": [
+          [
+            {
+              "node": "Python API Tetikle",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "SELAHADDİN serttas2001@gmail.com",
+    "name": "Version aa8952a6",
+    "description": "",
+    "autosaved": true
+  },
+  "tags": [
+    {
+      "updatedAt": "2026-04-28T15:00:37.819Z",
+      "createdAt": "2026-04-28T15:00:37.819Z",
+      "id": "b9TzFrVGrUpdqamg",
+      "name": "Akıllı_teklif"
+    }
+  ]
+}
