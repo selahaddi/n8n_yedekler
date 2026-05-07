@@ -1,0 +1,153 @@
+={
+  "updatedAt": "2026-04-29T15:29:33.727Z",
+  "createdAt": "2026-04-28T14:25:07.110Z",
+  "id": "pxEDFj2fmWqyLzco",
+  "name": "2. Takip ve Hatırlatıcı (Günlük)",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:8000/webhook/trigger-reminder",
+        "options": {}
+      },
+      "name": "Hatırlatıcı API'yi Tetikle",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        496,
+        192
+      ],
+      "id": "d585dff6-0c26-4ea7-b53c-d8d102a3fc46"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 18,
+              "triggerAtMinute": 30
+            }
+          ]
+        }
+      },
+      "name": "Her Sabah 09:",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [
+        256,
+        192
+      ],
+      "id": "8e427d16-8fa0-4729-a8b0-52f68fe5b977"
+    }
+  ],
+  "connections": {
+    "Her Sabah 09:": {
+      "main": [
+        [
+          {
+            "node": "Hatırlatıcı API'yi Tetikle",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "timezone": "Europe/Istanbul",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "staticData": {
+    "node:Her Sabah 09:": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": null,
+  "pinData": {},
+  "versionId": "de3d50f9-96c6-430f-834e-716fe4d2f431",
+  "activeVersionId": "de3d50f9-96c6-430f-834e-716fe4d2f431",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-04-28T14:25:07.116Z",
+      "createdAt": "2026-04-28T14:25:07.116Z",
+      "role": "workflow:owner",
+      "workflowId": "pxEDFj2fmWqyLzco",
+      "projectId": "NthPGJZmZB4b9f9E"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-04-29T15:29:39.000Z",
+    "createdAt": "2026-04-29T15:29:33.728Z",
+    "versionId": "de3d50f9-96c6-430f-834e-716fe4d2f431",
+    "workflowId": "pxEDFj2fmWqyLzco",
+    "nodes": [
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "http://host.docker.internal:8000/webhook/trigger-reminder",
+          "options": {}
+        },
+        "name": "Hatırlatıcı API'yi Tetikle",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 3,
+        "position": [
+          496,
+          192
+        ],
+        "id": "d585dff6-0c26-4ea7-b53c-d8d102a3fc46"
+      },
+      {
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "triggerAtHour": 18,
+                "triggerAtMinute": 30
+              }
+            ]
+          }
+        },
+        "name": "Her Sabah 09:",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1,
+        "position": [
+          256,
+          192
+        ],
+        "id": "8e427d16-8fa0-4729-a8b0-52f68fe5b977"
+      }
+    ],
+    "connections": {
+      "Her Sabah 09:": {
+        "main": [
+          [
+            {
+              "node": "Hatırlatıcı API'yi Tetikle",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "SELAHADDİN serttas2001@gmail.com",
+    "name": "Version de3d50f9",
+    "description": "",
+    "autosaved": true
+  },
+  "tags": [
+    {
+      "updatedAt": "2026-04-28T15:00:37.819Z",
+      "createdAt": "2026-04-28T15:00:37.819Z",
+      "id": "b9TzFrVGrUpdqamg",
+      "name": "Akıllı_teklif"
+    }
+  ]
+}
