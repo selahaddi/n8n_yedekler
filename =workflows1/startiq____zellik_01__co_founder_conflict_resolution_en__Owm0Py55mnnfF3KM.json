@@ -1,0 +1,342 @@
+={
+  "updatedAt": "2026-03-30T12:12:56.573Z",
+  "createdAt": "2026-03-30T11:19:45.734Z",
+  "id": "Owm0Py55mnnfF3KM",
+  "name": "StartIQ - Özellik 01: Co-founder Conflict Resolution(EN)",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "let content = $input.item.json.output || $input.item.json.text || '{}';\n\ntry {\n  // Eger yapay zeka yanitsal olarak basinda sonunda kod blogu gonderirse onlari temizliyoruz.\n  content = content.replace(/```json/g, '').replace(/```/g, '').trim();\n  const parsed = JSON.parse(content);\n  Object.assign($input.item.json, parsed);\n} catch (e) {\n  $input.item.json.error = \"JSON parse edilemedi: \" + e.message;\n}\n\nreturn $input.item;"
+      },
+      "id": "e0250289-481f-493e-b443-3f49f519478c",
+      "name": "JSON Ayrıştırma (Code)1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -528,
+        976
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "conflict-detector",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "c7992dd9-6fe7-44ea-9a25-1dbb9feae6ba",
+      "name": "Kurucu Girdisi (Webhook veya Form)",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -1088,
+        976
+      ],
+      "webhookId": "dacec0e0-bcbe-4eee-a5c3-5156b48143ea"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.bildirim || 'Otomatik test mesajı' }}",
+        "options": {
+          "systemMessage": "You are StartIQ's 'F1_B: Conflict Detector' AI. Your task is to analyze the following notification from the founders and return it in pure JSON format.\n\nThe JSON should contain the following fields:\n- \"is_there_a_conflict\": (boolean)\n- \"category\": (Stock/Role Assignment/Lack_of_Effort/Vision_Mismatch)\n- \"violence_score\": (1-10)\n- \"is_immediate_responsibility_required\": (true if violence_score is 6 or higher)\n\nPlease send only valid JSON without any explanation.\\n\\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -832,
+        976
+      ],
+      "id": "3827afdf-cf9d-436f-9d15-76da753ec72a",
+      "name": "F1_B: Conflict Detector AI"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.is_immediate_responsibility_required }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "9487e878-ff0c-4c19-afca-18e69064388f",
+      "name": "Müdahale Gerekli Mi?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        -288,
+        976
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Problem Category:{{ $('JSON Ayrıştırma (Code)1').item.json.kategori }}\nViolence Score: {{ $('JSON Ayrıştırma (Code)1').item.json.siddet_skoru }}\nOriginal Notification: {{ $('Kurucu Girdisi (Webhook veya Form)').item.json.body.bildirim || 'Test' }}",
+        "options": {
+          "systemMessage": "Sen StartIQ 'F1_C: Mediation AI' (Arabulucu Yapay Zeka) ajanısın. Aşağıdaki sorunu yaşayan kuruculara tarafsız, tetiklemeyen ve çözüm odaklı (actionable) 3 adımdan oluşan bir orta yol / uzlaşma metni (\"Mediation Proposal\") hazırla.\\n\\nÖNEMLİ: Kurucunun girdiği metin hangi dildeyse, yanıtını kesinlikle o dilde üret. (Eğer JSON formatı isteniyorsa anahtarları bozma, sadece değerleri o dilde yaz)."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        16,
+        816
+      ],
+      "id": "5415dcf8-4ac6-4a86-ac5e-e9fb2e674a79",
+      "name": "F1_C: Mediation AI"
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "log_mesaji",
+              "value": "Ciddi bir çatışma saptanmadı. Durum rutindir, sadece kaydedildi."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "e083a234-32f2-4912-914a-054bbdaf2508",
+      "name": "Basit Sorun (Log)",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        16,
+        1168
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatDeepSeek",
+      "typeVersion": 1,
+      "position": [
+        -816,
+        1216
+      ],
+      "id": "128dd44f-e59f-4ffd-902e-ce4fa25fbdf0",
+      "name": "DeepSeek Chat Model",
+      "credentials": {
+        "deepSeekApi": {
+          "id": "04burqSTSa8yxNaW",
+          "name": "DeepSeek account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatDeepSeek",
+      "typeVersion": 1,
+      "position": [
+        16,
+        1024
+      ],
+      "id": "cbf02c1d-1468-4ec8-aa4f-012a4ec74168",
+      "name": "DeepSeek Chat Model3",
+      "credentials": {
+        "deepSeekApi": {
+          "id": "04burqSTSa8yxNaW",
+          "name": "DeepSeek account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        720,
+        1088
+      ],
+      "id": "94f11e95-2e5b-4c25-b114-bf557e23f389",
+      "name": "Respond to Webhook1"
+    },
+    {
+      "parameters": {
+        "useCustomSchema": true,
+        "tableId": "feature_01_conflict_logs",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "statement",
+              "fieldValue": "={{ $('Kurucu Girdisi (Webhook veya Form)').item.json.body.bildirim }}"
+            },
+            {
+              "fieldId": "category",
+              "fieldValue": "={{ $('JSON Ayrıştırma (Code)1').item.json.kategori }}"
+            },
+            {
+              "fieldId": "severity_score",
+              "fieldValue": "={{ $('JSON Ayrıştırma (Code)1').item.json.siddet_skoru }}"
+            },
+            {
+              "fieldId": "mediation_proposal",
+              "fieldValue": "={{ $json.output }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        464,
+        816
+      ],
+      "id": "89d40392-39b0-45fa-90c3-497dd57a6cd1",
+      "name": "Create a row1",
+      "credentials": {
+        "supabaseApi": {
+          "id": "xeLcRlXxlGKLN5CK",
+          "name": "StarIQ"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "JSON Ayrıştırma (Code)1": {
+      "main": [
+        [
+          {
+            "node": "Müdahale Gerekli Mi?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Kurucu Girdisi (Webhook veya Form)": {
+      "main": [
+        [
+          {
+            "node": "F1_B: Conflict Detector AI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "F1_B: Conflict Detector AI": {
+      "main": [
+        [
+          {
+            "node": "JSON Ayrıştırma (Code)1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Müdahale Gerekli Mi?": {
+      "main": [
+        [
+          {
+            "node": "F1_C: Mediation AI",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Basit Sorun (Log)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "F1_C: Mediation AI": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Create a row1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basit Sorun (Log)": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeepSeek Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "F1_B: Conflict Detector AI",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeepSeek Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "F1_C: Mediation AI",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a row1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "1c6e8119-f2dd-439e-b3e9-0ece56a6adcc",
+  "activeVersionId": null,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-03-30T11:19:45.741Z",
+      "createdAt": "2026-03-30T11:19:45.741Z",
+      "role": "workflow:owner",
+      "workflowId": "Owm0Py55mnnfF3KM",
+      "projectId": "NthPGJZmZB4b9f9E"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
