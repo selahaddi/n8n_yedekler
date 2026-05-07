@@ -1,0 +1,235 @@
+={
+  "updatedAt": "2026-04-21T23:43:28.964Z",
+  "createdAt": "2026-04-21T10:07:41.131Z",
+  "id": "uNKSMgryAiHZ5YJ0",
+  "name": "Arkaplan Kesici Test İş Akışı",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "a9ee6dd9-2a39-4a6f-a3e1-ab1a8a07ab89",
+      "name": "When clicking ‘Test workflow’",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -352,
+        -48
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "787878",
+              "name": "resim_linki",
+              "value": "https://drive.google.com/file/d/1KwYD_snreZUBxporeXNxgh557I80T7V_/view?usp=drive_link",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "930939da-ee4f-4d0a-a20f-653619fb37aa",
+      "name": "Örnek Resim Linki",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -16,
+        -48
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:8000/remove-bg-url",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"image_url\": \"{{ $json.resim_linki }}\"\n}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "id": "8a567154-cbbe-4cce-8c98-6c3925a389cd",
+      "name": "Python API İstek",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        176,
+        -48
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "folder",
+        "driveId": {
+          "__rl": true,
+          "value": "My Drihttps://drive.google.com/drive/u/0/folders/1fvsB2V4hO3JN4StoH_1RQmYxMHnrcyLKve",
+          "mode": "url"
+        },
+        "folderId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "root",
+          "cachedResultName": "/ (Root folder)"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -192,
+        -48
+      ],
+      "id": "a1212695-821d-43f7-9155-ac5a517f0fde",
+      "name": "Create folder",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "O3iuTXTvoeTm5Mg9",
+          "name": "Serttas"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-3.1-flash-lite-preview",
+          "mode": "list",
+          "cachedResultName": "models/gemini-3.1-flash-lite-preview"
+        },
+        "inputType": "binary",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        384,
+        -48
+      ],
+      "id": "51c70c12-5500-4d45-9817-97a51cca9a23",
+      "name": "Analyze an image",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "7ltGq0vUF6iG1jR5",
+          "name": "serttas1"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "modelId": {
+          "__rl": true,
+          "value": "models/imagen-4.0-generate-001",
+          "mode": "list",
+          "cachedResultName": "models/imagen-4.0-generate-001"
+        },
+        "prompt": "=Subject: {{ $json.content.parts[0].text }}\nScene: A digitally rendered image showcases a modern architectural space with an expansive view of a natural landscape and body of water. The foreground is an open, covered area that appears to be a patio or sheltered walkway, floored with a dark, uniform surface, possibly asphalt or dark concrete. The ceiling is clad in warm, horizontal wooden planks, suggesting a high-quality finish.\n\nThe structure is defined by contrasting materials and forms. To the left, a large, sculptural wall made of light-colored material (possibly white stucco or concrete) features a deep, undulating wave or spiral pattern, creating dynamic shadows where the light hits. This wall curves inward and upward toward the ceiling.\n\nThe right side of the space is anchored by a wall constructed of rough, light brown or beige natural stone. A distinctive feature on this side is a vertical sheet of water flowing down, acting as a waterfall or water curtain, adding a dynamic, glossy element to the scene. Lush green ferns and other low-lying foliage line the base of the stone wall on the right and also appear in the center opening.\n\nThe covered area opens dramatically to the outdoors. The view beyond shows a grassy area immediately outside, leading to a dense forest of tall evergreen trees. Between the trees, a large body of water, likely an ocean or a large lake, is visible, extending toward the horizon under a soft, light blue sky. The sunlight appears to be soft, possibly morning or late afternoon, illuminating the interior surfaces and highlighting the texture of the stone and wood. The overall aesthetic combines modernist simplicity and natural materials, offering a serene, luxurious transition between the built environment and the wilderness.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        592,
+        -48
+      ],
+      "id": "f9f86bdb-8c94-45e7-b857-bcb029ac8d60",
+      "name": "Generate an image",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "7ltGq0vUF6iG1jR5",
+          "name": "serttas1"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Create folder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Örnek Resim Linki": {
+      "main": [
+        [
+          {
+            "node": "Python API İstek",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create folder": {
+      "main": [
+        [
+          {
+            "node": "Örnek Resim Linki",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Python API İstek": {
+      "main": [
+        [
+          {
+            "node": "Analyze an image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze an image": {
+      "main": [
+        [
+          {
+            "node": "Generate an image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "f67736f1-3b31-40ab-aa08-fc9b111cdf1a",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-04-21T10:07:41.172Z",
+      "createdAt": "2026-04-21T10:07:41.172Z",
+      "role": "workflow:owner",
+      "workflowId": "uNKSMgryAiHZ5YJ0",
+      "projectId": "NthPGJZmZB4b9f9E"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
