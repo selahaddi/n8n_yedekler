@@ -1,0 +1,1111 @@
+={
+  "updatedAt": "2026-04-16T07:25:24.708Z",
+  "createdAt": "2026-03-28T17:24:59.201Z",
+  "id": "7LmxRm12vayy3MCu",
+  "name": "Uzay RSS Feed Workflow",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 6
+            }
+          ]
+        }
+      },
+      "id": "c8e1c2a1-d5c6-4f2d-a5b8-2d904686a976",
+      "name": "Her 6 Saatte Tetikle",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -192,
+        800
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://www.nasa.gov/rss/dyn/breaking_news.rss",
+        "options": {}
+      },
+      "id": "20f6f330-881d-472f-93c7-5c9e5fd4ff5a",
+      "name": "NASA Breaking News",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [
+        512,
+        288
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "url": "https://www.nasa.gov/rss/dyn/artemis.rss",
+        "options": {}
+      },
+      "id": "dbd56ce2-aa3a-434e-a7f0-6fc32c11ca9f",
+      "name": "NASA Artemis",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [
+        -224,
+        -1296
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://www.esa.int/rssfeed/TopNews",
+        "options": {}
+      },
+      "id": "7e8df640-c053-452d-9239-d9cca623a282",
+      "name": "ESA Top News",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [
+        512,
+        464
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://sci.esa.int/rss.xml",
+        "options": {}
+      },
+      "id": "9d014a12-c5b6-4098-90ec-0a311f240eb4",
+      "name": "ESA Science",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [
+        64,
+        -1328
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://www.jpl.nasa.gov/rss/",
+        "options": {}
+      },
+      "id": "f0c78149-9a3f-414e-9797-f684f8159d25",
+      "name": "NASA JPL",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [
+        -512,
+        -1344
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://cneos.jpl.nasa.gov/feed/",
+        "options": {}
+      },
+      "id": "dbf27d2a-ff3b-4d01-8a64-638e151d5c84",
+      "name": "CNEOS Asteroidler",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [
+        -288,
+        -1488
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://earthsky.org/feed/",
+        "options": {}
+      },
+      "id": "d70169e2-fc67-424d-81ee-941ec5fbd14a",
+      "name": "EarthSky",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [
+        512,
+        624
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://www.space.com/home/feed/site.xml",
+        "options": {}
+      },
+      "id": "9a598507-47f0-4a0a-b207-bf999d2fa73b",
+      "name": "Space.com",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [
+        -240,
+        -784
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "url": "https://www.universetoday.com/feed",
+        "options": {}
+      },
+      "id": "735046cf-9f29-40c7-8c6d-1ba9c8e440b6",
+      "name": "Universe Today",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [
+        512,
+        800
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://www.skyandtelescope.com/astronomy-news/feed/",
+        "options": {}
+      },
+      "id": "4e679a16-d8ad-47ae-b735-8182197f6a32",
+      "name": "Sky and Telescope",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [
+        512,
+        1008
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://phys.org/rss-feed/space-news/astronomy/",
+        "options": {}
+      },
+      "id": "958e41cc-9f78-486c-9648-0ff565448ec9",
+      "name": "Phys.org Space",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [
+        336,
+        1216
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://www.spacedaily.com/spacedaily.xml",
+        "options": {}
+      },
+      "id": "b05e2098-3a01-417b-97f5-386da740e5fb",
+      "name": "SpaceDaily",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [
+        400,
+        1408
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://www.nasaspaceflight.com/feed",
+        "options": {}
+      },
+      "id": "90385770-e3aa-4442-831e-6a4ae68b9300",
+      "name": "NASA Spaceflight",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [
+        -240,
+        -608
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "numberInputs": 10
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1040,
+        656
+      ],
+      "id": "401f70ad-2181-4c34-8f0f-4479394b39da",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "jsCode": "return $input.all().map(item => {\n    const data = item.json;\n    return {\n        json: {\n            source: \"NASA\",\n            title: data.title,\n            date: data.isoDate || data.pubDate,\n            summary: data.contentSnippet || data.content,\n            url: data.link,\n            categories: data.categories || []\n        }\n    };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        288
+      ],
+      "id": "31b3fc13-2de1-4035-99f9-1dcb51ed3bcb",
+      "name": "Code in JavaScript",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "return $input.all().map(item => {\n    const data = item.json;\n    return {\n        json: {\n            source: \"ESA\",\n            title: data.title,\n            date: data.isoDate || data.pubDate,\n            summary: data.contentSnippet || \"Özet bulunamadı.\",\n            url: data.link\n        }\n    };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        464
+      ],
+      "id": "480f35ee-1b91-439f-a5a1-32f994eed289",
+      "name": "Code in JavaScript1",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "return $input.all().map(item => {\n    const data = item.json;\n    return {\n        json: {\n            source: \"EarthSky\",\n            title: data.title,\n            date: data.isoDate || data.pubDate,\n            summary: data.contentSnippet || data['content:encodedSnippet'] || \"Özet bulunamadı.\",\n            author: data.creator || data['dc:creator'] || \"Bilinmiyor\",\n            url: data.link\n        }\n    };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        624
+      ],
+      "id": "90131d1e-e4e5-45f6-99f4-f8c5b7f7a7be",
+      "name": "Code in JavaScript2",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "return $input.all().map(item => {\n    const data = item.json;\n    return {\n        json: {\n            source: \"Universe Today\",\n            title: data.title,\n            date: data.isoDate || data.pubDate,\n            summary: data.contentSnippet || data.content,\n            author: data.creator || \"Bilinmiyor\",\n            url: data.link\n        }\n    };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        800
+      ],
+      "id": "c6c4ff4e-90e7-41e3-bcf6-a8b429bec432",
+      "name": "Code in JavaScript3"
+    },
+    {
+      "parameters": {
+        "jsCode": "return $input.all().map(item => {\n    const data = item.json;\n    return {\n        json: {\n            source: \"Sky & Telescope\",\n            title: data.title,\n            date: data.isoDate || data.pubDate,\n            summary: data.contentSnippet || data.content,\n            url: data.link,\n            categories: data.categories || []\n        }\n    };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        1008
+      ],
+      "id": "9ee0219f-deb8-4216-b5dc-497190b96c8d",
+      "name": "Code in JavaScript4"
+    },
+    {
+      "parameters": {
+        "jsCode": "return $input.all().map(item => {\n    const data = item.json;\n    return {\n        json: {\n            source: \"Phys.org Space\",\n            title: data.title,\n            date: data.isoDate || data.pubDate,\n            summary: data.contentSnippet || data.content,\n            url: data.link\n        }\n    };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        736,
+        1216
+      ],
+      "id": "c2a253f6-eccb-4a86-a54f-aae38d7de3dc",
+      "name": "Code in JavaScript5"
+    },
+    {
+      "parameters": {
+        "resource": "spreadsheet",
+        "title": "=Bilim{{ $now.format('yyyy-MM-dd') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        288,
+        80
+      ],
+      "id": "2d61df44-0208-4aa6-9232-cdcd65e42f9f",
+      "name": "Create spreadsheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "5IPaDNEuQxdxQUAS",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Son 1 haftanın tarihini hesapla\nconst oneWeekAgo = new Date();\noneWeekAgo.setDate(oneWeekAgo.getDate() - 7);\n\n// 2. Gelen tüm öğeleri al ve sırayla işlemlerden geçir\nconst processedItems = $input.all()\n  .filter(item => {\n      const data = item.json;\n      // Haberin tarihini JavaScript'in anlayacağı formata çevir\n      const itemDate = new Date(data.isoDate || data.pubDate);\n      \n      // Eğer haberin tarihi son 1 hafta içindeyse listeye dahil et (true döndür)\n      return itemDate >= oneWeekAgo; \n  })\n  .slice(0, 10) // 3. Filtreden geçen haberlerden SADECE İLK 10 tanesini al\n  .map(item => {\n      const data = item.json;\n      \n      // 4. Son kalan haberleri standart formata çevir\n      return {\n          json: {\n              source: \"NASA\", // Diğer node'larda burayı \"ESA\", \"Space.com\" vb. olarak değiştir\n              title: data.title,\n              date: data.isoDate || data.pubDate,\n              summary: data.contentSnippet || data.content || \"Özet bulunamadı.\",\n              url: data.link\n          }\n      };\n  });\n\n// Sonucu n8n'e döndür\nreturn processedItems;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        544,
+        1216
+      ],
+      "id": "a1d05341-eb03-4524-8a5b-21685567054d",
+      "name": "Code in JavaScript15"
+    },
+    {
+      "parameters": {
+        "url": "https://www.nasa.gov/rss/dyn/image_of_the_day.rss",
+        "options": {}
+      },
+      "id": "c0a9e474-f69b-4c92-9fb9-b06077c349f0",
+      "name": "NASA Image of the Day",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [
+        1408,
+        1792
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return $input.all().map(item => {\n    const data = item.json;\n    return {\n        json: {\n            source: \"Space_Daily\",\n            title: data.title,\n            date: data.isoDate || data.pubDate,\n            summary: data.contentSnippet || data.content,\n            url: data.link\n        }\n    };\n});;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1328,
+        1936
+      ],
+      "id": "b8d2ded6-ac1e-4523-a1ab-66af20dd0086",
+      "name": "Code in JavaScript6",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "url": "https://www.universetoday.com/feed",
+        "options": {}
+      },
+      "id": "90e7f5f9-3ec4-4efd-8c3a-a562def4f5b5",
+      "name": "Universe Today1",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [
+        1936,
+        2272
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://phys.org/rss-feed/space-news/astronomy/",
+        "options": {}
+      },
+      "id": "27dbcfc6-754b-4f0d-ac0e-46dd72269b60",
+      "name": "Phys.org Space1",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [
+        1952,
+        2464
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 6
+            }
+          ]
+        }
+      },
+      "id": "d2095cd5-def7-4589-beca-9f79bbdc403c",
+      "name": "Her 6 Saatte Tetikle1",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        1552,
+        2352
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Sen Haftalık astronomi ve bilim haber asistanısın. Sana verdiğim haberleri özetle. önem sırası için  1 ile 10 arasında integer değer ver.\nhaber başlığı:({{ $json.title }})\nHaber içeriği:{{ $json.summary }}\nHaber Kaynağı:{{ $json.source }}\nHaber linki:({{ $json.url }})\n\n",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        3120,
+        2352
+      ],
+      "id": "c2a5681f-c714-43de-aa68-8f873a9ecb7b",
+      "name": "AI Agent1",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3-pro-preview",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        2848,
+        2560
+      ],
+      "id": "98c84c28-5451-4aee-9700-18774a748422",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "7ltGq0vUF6iG1jR5",
+          "name": "serttas1"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"haberler\": [\n    {\n      \"baslik\": \"Haberin kısa ve öz Türkçe başlığı\",\n      \"ozet\": \"Haberin ana fikrini anlatan 1-2 cümlelik özet\",\n      \"onem_skoru\": \"1-10 arasında bir sayı örnek:[3] (Haberin teknoloji dünyasındaki etkisi)\",\n      \"kategori\": \"Astronomi / Sağlık / Fizik / Kimya\",\n      \"kaynak\":\"Nasa\",\n      \"url\": \"Haberin orijinal linki\"\n    }\n  ]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        3312,
+        2560
+      ],
+      "id": "9063d816-14be-4c0f-a807-8f8ce5333a49",
+      "name": "Structured Output Parser1"
+    },
+    {
+      "parameters": {
+        "batchSize": 2,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        2640,
+        2336
+      ],
+      "id": "a1b29b10-c6e4-496a-8c04-a23ae6f24c5c",
+      "name": "Split In Batches"
+    },
+    {
+      "parameters": {
+        "amount": 30
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        3536,
+        2352
+      ],
+      "id": "aee740b3-3c28-4c2f-81bd-83c12b7bda6a",
+      "name": "Wait 5 Mins",
+      "webhookId": "3e7274a4-382b-4199-9b6d-ce65a58c9d3b"
+    },
+    {
+      "parameters": {
+        "model": "deepseek-reasoner",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatDeepSeek",
+      "typeVersion": 1,
+      "position": [
+        3056,
+        2560
+      ],
+      "id": "7f48b035-7085-4ced-aa58-182fe78ad4e4",
+      "name": "DeepSeek Chat Model1",
+      "credentials": {
+        "deepSeekApi": {
+          "id": "04burqSTSa8yxNaW",
+          "name": "DeepSeek account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "serttas2001@gmail.com",
+        "subject": "Günlük AI Haberleri ",
+        "message": "={{ $json.html }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        3536,
+        2112
+      ],
+      "id": "3bd90f38-157d-4453-b313-f4a26755c091",
+      "name": "Send a message1",
+      "webhookId": "789b1b8e-a312-4db8-92c7-07af68f67007",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "vO9a8kj5yWdCc9zo",
+          "name": "Serttas"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1AL7eAHM8YDwWiF4snUMe8umh8_Rgo73C4JzCCCgycpY",
+          "mode": "list",
+          "cachedResultName": "Astro-Bilim_Haber",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1AL7eAHM8YDwWiF4snUMe8umh8_Rgo73C4JzCCCgycpY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "=B{{ $now.format('yyyy-MM-dd') }}",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        3120,
+        2112
+      ],
+      "id": "09c6356c-3793-4ac1-a7b2-8dd9b7870c58",
+      "name": "Append or update row in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "5IPaDNEuQxdxQUAS",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// AI Agent'tan gelen karmaşık yapıyı (output.haberler) düz listeye çevirir\nconst results = [];\nfor (const item of $input.all()) {\n  if (item.json.output && item.json.output.haberler) {\n    for (const haber of item.json.output.haberler) {\n      results.push({ json: haber });\n    }\n  }\n}\nreturn results;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3536,
+        2560
+      ],
+      "id": "afa783b6-3bac-4669-9c5a-cb1d8dc401e7",
+      "name": "Code in JavaScript12"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Gelen tüm haberleri tek bir HTML gövdesinde birleştiriyoruz\nlet htmlBody = `\n<div style=\"font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #eee; padding: 20px;\">\n  <h2 style=\"color: #2c3e50; text-align: center; border-bottom: 2px solid #3498db; padding-bottom: 10px;\">\n    🚀 Haftalık ASTO-Bilim Raporu - ${new Date().toLocaleDateString('tr-TR')}\n  </h2>\n`;\n\nfor (const item of $input.all()) {\n  htmlBody += `\n    <div style=\"margin-bottom: 25px; padding: 15px; background-color: #f9f9f9; border-left: 5px solid #3498db;\">\n      <h3 style=\"margin-top: 0; color: #333;\">${item.json.baslik}</h3>\n      <p style=\"color: #666; font-size: 14px; line-height: 1.6;\">${item.json.ozet}</p>\n      <div style=\"margin-top: 10px;\">\n        <span style=\"background: #e1f5fe; color: #01579b; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold;\">\n          ${item.json.kategori}\n        </span>\n        <span style=\"margin-left: 10px; color: #e67e22; font-weight: bold; font-size: 12px;\">\n          Önem: ${item.json.onem_skoru}\n        </span>\n      </div>\n      <a href=\"${item.json.url}\" style=\"display: inline-block; margin-top: 12px; color: #3498db; text-decoration: none; font-weight: bold;\">\n        Haberin Tamamı →\n      </a>\n    </div>\n  `;\n}\n\nhtmlBody += `\n  <p style=\"text-align: center; color: #bdc3c7; font-size: 12px;\">\n    Bu e-posta n8n otomasyonu ile otomatik olarak oluşturulmuştur.\n  </p>\n</div>\n`;\n\nreturn { html: htmlBody };"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3328,
+        2112
+      ],
+      "id": "b11c0684-25d2-42e9-8c87-1fa244e93722",
+      "name": "Code in JavaScript13"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Gelen tüm verileri alıyoruz\nconst items = $input.all().map(item => item.json);\n\n// Puanları standardize eden (normalleştiren) fonksiyon\nfunction normalizeScore(scoreRaw) {\n  if (scoreRaw === undefined || scoreRaw === null) return 0;\n  \n  const str = String(scoreRaw).toLowerCase().trim();\n  \n  // Eğer zaten bir sayıysa direkt sayıya çevir\n  if (!isNaN(str) && str !== \"\") return parseFloat(str);\n  \n  // Metin bazlı puanları sayıya dönüştür\n  if (str.includes(\"yüksek\") || str.includes(\"high\") || str.includes(\"kritik\")) return 9;\n  if (str.includes(\"orta\") || str.includes(\"medium\")) return 5;\n  if (str.includes(\"düşük\") || str.includes(\"low\")) return 2;\n  \n  return 0; // Tanımlanamayanlar en sona\n}\n\n// Büyükten küçüğe sıralama (En yüksek puanlı haber en üstte)\nitems.sort((a, b) => {\n  // Not: 'onem_skoru' veya 'importance_score' alanına göre sıralar\n  const scoreA = normalizeScore(a.onem_skoru || a.importance_score);\n  const scoreB = normalizeScore(b.onem_skoru || b.importance_score);\n  \n  return scoreB - scoreA;\n});\n\n// Veriyi n8n formatında geri döndür\nreturn items.map(item => ({ json: item }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2912,
+        2128
+      ],
+      "id": "f6caac62-fe7a-424f-a721-74603b411667",
+      "name": "Code in JavaScript14"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        2400,
+        2336
+      ],
+      "id": "2adc203a-8ba0-43bd-8fee-a818e44debad",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Son 1 haftanın tarihini hesapla\nconst oneWeekAgo = new Date();\noneWeekAgo.setDate(oneWeekAgo.getDate() - 7);\n\n// 2. Gelen tüm öğeleri al ve sırayla işlemlerden geçir\nconst processedItems = $input.all()\n  .filter(item => {\n      const data = item.json;\n      // Haberin tarihini JavaScript'in anlayacağı formata çevir\n      const itemDate = new Date(data.isoDate || data.pubDate);\n      \n      // Eğer haberin tarihi son 1 hafta içindeyse listeye dahil et (true döndür)\n      return itemDate >= oneWeekAgo; \n  })\n  .slice(0, 10) // 3. Filtreden geçen haberlerden SADECE İLK 10 tanesini al\n  .map(item => {\n      const data = item.json;\n      \n      // 4. Son kalan haberleri standart formata çevir\n      return {\n          json: {\n              source: \"NASA\", // Diğer node'larda burayı \"ESA\", \"Space.com\" vb. olarak değiştir\n              title: data.title,\n              date: data.isoDate || data.pubDate,\n              summary: data.contentSnippet || data.content || \"Özet bulunamadı.\",\n              url: data.link\n          }\n      };\n  });\n\n// Sonucu n8n'e döndür\nreturn processedItems;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2144,
+        2272
+      ],
+      "id": "fce4e67f-1a6f-48fd-960e-5f59ffc0873d",
+      "name": "Code in JavaScript16"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Son 1 haftanın tarihini hesapla\nconst oneWeekAgo = new Date();\noneWeekAgo.setDate(oneWeekAgo.getDate() - 7);\n\n// 2. Gelen tüm öğeleri al ve sırayla işlemlerden geçir\nconst processedItems = $input.all()\n  .filter(item => {\n      const data = item.json;\n      // Haberin tarihini JavaScript'in anlayacağı formata çevir\n      const itemDate = new Date(data.isoDate || data.pubDate);\n      \n      // Eğer haberin tarihi son 1 hafta içindeyse listeye dahil et (true döndür)\n      return itemDate >= oneWeekAgo; \n  })\n  .slice(0, 10) // 3. Filtreden geçen haberlerden SADECE İLK 10 tanesini al\n  .map(item => {\n      const data = item.json;\n      \n      // 4. Son kalan haberleri standart formata çevir\n      return {\n          json: {\n              source: \"NASA\", // Diğer node'larda burayı \"ESA\", \"Space.com\" vb. olarak değiştir\n              title: data.title,\n              date: data.isoDate || data.pubDate,\n              summary: data.contentSnippet || data.content || \"Özet bulunamadı.\",\n              url: data.link\n          }\n      };\n  });\n\n// Sonucu n8n'e döndür\nreturn processedItems;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2144,
+        2464
+      ],
+      "id": "14fda8e2-4e35-4409-ae88-cb4df78073ec",
+      "name": "Code in JavaScript17"
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "documentId": {
+          "__rl": true,
+          "value": "1AL7eAHM8YDwWiF4snUMe8umh8_Rgo73C4JzCCCgycpY",
+          "mode": "list",
+          "cachedResultName": "Başlıksız e-tablo",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1AL7eAHM8YDwWiF4snUMe8umh8_Rgo73C4JzCCCgycpY/edit?usp=drivesdk"
+        },
+        "title": "=B{{ $now.format('yyyy-MM-dd') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1936,
+        2048
+      ],
+      "id": "1be08b40-e43c-46e5-8437-86b659ab1416",
+      "name": "Create sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "5IPaDNEuQxdxQUAS",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Her 6 Saatte Tetikle": {
+      "main": [
+        [
+          {
+            "node": "ESA Top News",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "EarthSky",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Universe Today",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Sky and Telescope",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Phys.org Space",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "SpaceDaily",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "NASA Breaking News",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Create spreadsheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "NASA Breaking News": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ESA Top News": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EarthSky": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Space.com": {
+      "main": [
+        []
+      ]
+    },
+    "Universe Today": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sky and Telescope": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Phys.org Space": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript15",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SpaceDaily": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 8
+          }
+        ]
+      ]
+    },
+    "NASA Spaceflight": {
+      "main": [
+        []
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript3": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 5
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript4": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 6
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript5": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 7
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        []
+      ]
+    },
+    "Create spreadsheet": {
+      "main": [
+        []
+      ]
+    },
+    "Code in JavaScript15": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Universe Today1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript16",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Phys.org Space1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript17",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Her 6 Saatte Tetikle1": {
+      "main": [
+        [
+          {
+            "node": "Universe Today1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Phys.org Space1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Create sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Wait 5 Mins",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split In Batches": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript14",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 5 Mins": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript12",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeepSeek Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript13",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript12": {
+      "main": [
+        [
+          {
+            "node": "Split In Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript13": {
+      "main": [
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript14": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Split In Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript16": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript17": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "b73c2fba-69a5-4018-bdd9-f0c04a142239",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-03-28T17:24:59.330Z",
+      "createdAt": "2026-03-28T17:24:59.330Z",
+      "role": "workflow:owner",
+      "workflowId": "7LmxRm12vayy3MCu",
+      "projectId": "NthPGJZmZB4b9f9E"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
