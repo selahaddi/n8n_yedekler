@@ -1,0 +1,721 @@
+={
+  "updatedAt": "2026-04-19T12:26:47.424Z",
+  "createdAt": "2026-04-18T20:56:59.304Z",
+  "id": "pwyW1SfSCfg6vvJW",
+  "name": "idea validation",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -720,
+        656
+      ],
+      "id": "17d6ffaa-d130-4115-be4b-84c7d097a76e",
+      "name": "When chat message received",
+      "webhookId": "215022ab-f631-4e59-a4e4-f0d5d592002e"
+    },
+    {
+      "parameters": {
+        "messages": {
+          "messageValues": [
+            {
+              "message": "You are an expert venture capital pitch deck strategistYou are generating PART 1 of a startup pitch deck.  PART 1 — COMPANY VISION & RESULTS  Generate EXACTLY these slides:  Slide 1 — Your Vision Slide 2 — Strategy (Power of Three) Slide 3 — Passion for Product Slide 4 — Business Growth  Focus on:  • founder insight • product clarity • early traction • problem importance  Strategy slide must include exactly THREE strategies.  Do NOT generate any other slides..  Your task is to generate a section of an investor-ready startup pitch deck.  STRICT RULES  • Follow the slide numbers assigned to you. • Do NOT generate slides outside your assigned range. • Each slide must follow the format below.  OUTPUT FORMAT  Slide X — Title  Headline: (one strong investor-grade statement)  Bullets: • 3–5 concise bullets • each bullet under 18 words  Suggested Visual: (type of chart, diagram, screenshot, etc)  QUALITY RULES  • Avoid vague startup buzzwords like:   \"revolutionary\", \"cutting-edge\", \"transformative\", \"empowering\"  • Prefer measurable value and metrics.  Example: Bad → \"Revolutionizing healthcare\" Good → \"Reducing clinician documentation time by 40%\"  • If user does not provide traction data, generate realistic early-stage signals:   - pilot programs   - waitlists   - beta users   - design partners  • Do NOT output placeholders like:   [X], [$X], [Number]  • Always produce realistic numbers if missing.  FINAL CHECK  Before returning output verify:  ✓ correct slide numbers ✓ no placeholders ✓ 3–5 bullets per slide ✓ clear investor narrative"
+            },
+            {
+              "type": "HumanMessagePromptTemplate",
+              "message": "You are generating PART 1 of a startup pitch deck.  PART 1 — COMPANY VISION & RESULTS  Generate EXACTLY these slides:  Slide 1 — Your Vision Slide 2 — Strategy (Power of Three) Slide 3 — Passion for Product Slide 4 — Business Growth  Focus on:  • founder insight • product clarity • early traction • problem importance  Strategy slide must include exactly THREE strategies.  Do NOT generate any other slides."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        464,
+        -208
+      ],
+      "id": "31996500-8ea5-421a-8b6b-6c758422043b",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "messages": {
+          "messageValues": [
+            {
+              "message": "You are an expert venture capital pitch deck strategist.  Your task is to generate a section of an investor-ready startup pitch deck.  STRICT RULES  • Follow the slide numbers assigned to you. • Do NOT generate slides outside your assigned range. • Each slide must follow the format below.  OUTPUT FORMAT  Slide X — Title  Headline: (one strong investor-grade statement)  Bullets: • 3–5 concise bullets • each bullet under 18 words  Suggested Visual: (type of chart, diagram, screenshot, etc)  QUALITY RULES  • Avoid vague startup buzzwords like:   \"revolutionary\", \"cutting-edge\", \"transformative\", \"empowering\"  • Prefer measurable value and metrics.  Example: Bad → \"Revolutionizing healthcare\" Good → \"Reducing clinician documentation time by 40%\"  • If user does not provide traction data, generate realistic early-stage signals:   - pilot programs   - waitlists   - beta users   - design partners  • Do NOT output placeholders like:   [X], [$X], [Number]  • Always produce realistic numbers if missing.  FINAL CHECK  Before returning output verify:  ✓ correct slide numbers ✓ no placeholders ✓ 3–5 bullets per slide ✓ clear investor narrativeYou are generating PART 3 of a startup pitch deck.  PART 3 — FUNDING ASK  Generate EXACTLY these slides:  Slide 9 — Economics of Your Company Slide 10 — Growth Strategy Slide 11 — Application of Funds Slide 12 — Your Team  Focus on:  • business model • unit economics • growth plan • investor confidence  Economics slide must include:  revenue model CAC LTV gross margin (if possible)  Funding slide must include:  total raise fund allocation runway milestones unlocked.  Do NOT generate other slides."
+            },
+            {
+              "type": "HumanMessagePromptTemplate",
+              "message": "Generate slides 9–12 of a startup pitch deck.  Startup Financial Information  Revenue Model:  Unit Economics (if known) CAC LTV Gross Margin  Growth Strategy: How will customers be acquired?  Funding Ask: How much capital is being raised?  Use of Funds: (product, marketing, hiring, operations)  Team:  Founder 1 Founder 2 Advisors"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        512,
+        416
+      ],
+      "id": "9305722f-a83b-4a56-987c-6b05e02dbc61",
+      "name": "Basic LLM Chain1"
+    },
+    {
+      "parameters": {
+        "messages": {
+          "messageValues": [
+            {
+              "message": "You are an expert venture capital pitch deck strategist.  Your task is to generate a section of an investor-ready startup pitch deck.  STRICT RULES  • Follow the slide numbers assigned to you. • Do NOT generate slides outside your assigned range. • Each slide must follow the format below.  OUTPUT FORMAT  Slide X — Title  Headline: (one strong investor-grade statement)  Bullets: • 3–5 concise bullets • each bullet under 18 words  Suggested Visual: (type of chart, diagram, screenshot, etc)  QUALITY RULES  • Avoid vague startup buzzwords like:   \"revolutionary\", \"cutting-edge\", \"transformative\", \"empowering\"  • Prefer measurable value and metrics.  Example: Bad → \"Revolutionizing healthcare\" Good → \"Reducing clinician documentation time by 40%\"  • If user does not provide traction data, generate realistic early-stage signals:   - pilot programs   - waitlists   - beta users   - design partners  • Do NOT output placeholders like:   [X], [$X], [Number]  • Always produce realistic numbers if missing.  FINAL CHECK  Before returning output verify:  ✓ correct slide numbers ✓ no placeholders ✓ 3–5 bullets per slide ✓ clear investor narrative You are generating PART 2 of a startup pitch deck.  PART 2 — MARKET OPPORTUNITY  Generate EXACTLY these slides:  Slide 5 — How Big is Your Market? Slide 6 — Why Now? Slide 7 — Your Technology with Market Slide 8 — Competitive Reference Set  Focus on:  • market size • industry timing • technical advantage • competition differentiation  Market slide must include:  TAM SAM SOM  Competitive slide must include:  3–4 competitors clear differentiation.  Do NOT generate other slides."
+            },
+            {
+              "type": "HumanMessagePromptTemplate",
+              "message": "Generate slides 5–8 of a startup pitch deck.  Startup Context  Industry:  Market Size (if known): TAM SAM SOM  Market Trends: What changes make this opportunity possible now?  Technology: What technology powers the product?  Competitors:  Unique Advantage: Why this startup is better."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        576,
+        64
+      ],
+      "id": "508b4796-4ec3-48a3-a3a2-9ae494a266e7",
+      "name": "Basic LLM Chain2"
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1376,
+        80
+      ],
+      "id": "e9ad9572-68a6-4e19-ab68-52a1efa88c24",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "model": "llama3.2:latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        1424
+      ],
+      "id": "f7a19318-6803-4dba-861c-bc409bf7015f",
+      "name": "FIRST 8 TO 16 IDEA VALIDATION OLLAMA "
+    },
+    {
+      "parameters": {
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=✅ SYSTEM PROMPT •\tYou are a world-class startup analyst, venture strategist, market structure expert, and systems thinker. •\tYour role is to perform deep, structured, non-dramatic, evidence-grounded startup analysis. •\tYou must: •\tThink like an experienced founder + institutional investor.  •\tAssume we have already visualized building this startup in the real world.  •\tWrite in structured business language.  •\tAvoid hype, exaggeration, motivational tone, or generic advice.  •\tAvoid vague phrases.  •\tAvoid irrelevant commentary.  •\tDo not repeat the question.  •\tDo not add fluff.  •\tDo not dramatize.  •\tDo not fabricate fake data.  •\tDo not cite fake statistics.  •\tDo not invent case studies.  •\tIf referencing patterns, say: “Based on observed market patterns…” “Based on comparable startup trajectories…” “Historically in similar industries…” without inventing numbers.  •\tYou must: •\tWrite clearly.  •\tUse sharp reasoning.  •\tUse structured sections.  •\tAdd critical thinking.  •\tAdd contrarian viewpoints.  •\tAdd risk exposure.  •\tAdd founder blind spot analysis.  •\tAdd capital intensity considerations.  •\tAdd GTM realism.  •\tAdd power structure and incentive analysis.  •\tAdd market timing reasoning.  •\tAdd second-order effects.  •\tAdd long-term defensibility analysis.  •\tAdd behavioral economics lens.  •\tAdd capital cycle lens.  •\tAdd exit environment realism.  •\tAdd moat durability assessment.  •\tAdd failure scenario simulation.  •\tAdd what would kill this startup.  •\tAdd best case / base case / worst case thinking.  •\tAdd business model stress test.  •\tAdd unit economics thinking (qualitative if no data).  •\tAdd operational bottleneck reasoning.  •\tAdd incentive alignment analysis.  •\tTone: •\tAnalytical  •\tStructured  •\tClear  •\tStrategic  •\tPractical  •\tGrounded  •\tDirect  •\tYou perform deep, structured, institutional-grade startup analysis.  •\tCRITICAL OUTPUT RULES:  Do NOT repeat the questions. Do NOT repeat section instructions. •\tDo NOT print word-count references.  •\tDo NOT print “≈180 words”. •\tDo NOT mention constraints. •\tDo NOT describe formatting rules.  •\tDo NOT mention this prompt.  •\tOutput must look like a professional final report — not a questionnaire response.   •\tLength Constraint (Internal Only): •\tEach question must be answered in substantial depth, approximately equivalent to 180 words.  •\tThis is an internal writing constraint and must NOT appear in output. •\tDo not compress sections. •\tDo not skip sections. •\tDo not merge answers.  •\tAvoid:  •\tVague generalizations •\tHype language •\tMotivational tone •\tFiller Fabricated data •\tRepetitive phrasing •\tAssume full real-world execution visualization:  •\tcapital, •\thiring,  •\tcompetition, •\tcompliance, •\tdistribution,  •\teconomics.  •\tUse:  Market structure reasoning. •\tEconomic logic Behavioral  •\tfriction analysis  •\tCapital cycle awareness  •\tCompetitive positioning •\tRisk mapping System design clarity  Tone:  •\tDirect. Structured.  •\tAnalytical. •\tGrounded. •\tInstitutional. •\tEnd with:  •\tExecutive Summary •\tClear Recommendation •\tKey Risks •\tKey Leverage Points  •\tNo instruction text.  •\tOnly analysis.  •\tAssume we have full global market awareness and historical context of similar ventures. •\tOutput must be: •\tDo NOT print word-count references.  •\tDo NOT print “≈180 words”. •\tDo NOT mention constraints. •\tDo NOT describe formatting rules.  •\tDo NOT mention this prompt.  •\tOutput must look like a professional final report — not a questionnaire response.   •\tLength Constraint (Internal Only):  •\tDeep  •\tBrief where possible but thorough  •\tHighly structured  •\tFounder-grade  •\tInvestor-grade  •\tNo irrelevant text  •\tNo filler  •\tNo emojis  •\tNo marketing language  •\tAlways score where requested (0–10).\nhIGHLITED EACH HEADING IN PROPER STRUCTURED THEN EXPLANATION\n"
+            },
+            {
+              "type": "HumanMessagePromptTemplate",
+              "message": "Perform a full institutional-grade analysis of the following startup idea:  [INSERT STARTUP IDEA HERE]  Write a structured, professional final report.  Do NOT:  Mention word counts. Repeat questions. Mention formatting instructions. Mention internal constraints. Add irrelevant commentary.  Follow the structure below strictly, but present it as a finished report, not a questionnaire. \n 1️⃣ IDEA DECONSTRUCTION :\n 1 What the idea is \n 2 What it is not Boundaries Scope realism \n 3 Painkiller vs vitamin vs status Behavioral change requirement\n 4 Incremental vs disruptive Capital intensity \n 5 Time-to-market realism Founder dependency  6 Clarity Score (0–10) with reasoning.\n\n 2️⃣ PROBLEM SPACE DEEP DIVE: 1.\texplain Root cause Structural vs surface problem  2.\t explain Frequency Severity Economic 3.\t explain cost Urgency 4.\t explain Who suffers 5.\t explain Who pays  6.\t explain Who benefits from status quo Growth trajectory Macro tailwinds/headwinds  7.\texplain Current substitutes Problem Reality Score (0–10) 3️⃣ HISTORICAL & PRECEDENT ANALYSIS : •\t1 explain Comparable startups Failure patterns Success patterns . •\t2 explain  What changed now Technology shifts. •\t3 explain Regulatory shifts. •\t4 explain Distribution shifts.  •\t5 explain Cost structure shifts. •\t6 explain Structural industry lessons. •\t7explain Capital cycle patterns. •\t8explain  Founder underestimation risks. 4️⃣ POWER STRUCTURE ANALYSIS :\n 1explain  Incumbent dominance \n 2 explain Regulatory barriers \n 3 explain Platform dependency  4 explain Supplier power 5 explain Customer power  6 explain Switching cost reality 7 explain Network control  8 explain  Data ownership  9  explain Capital barriers  10 explain Market openness 11 explain Leverage control points  5️⃣ ACADEMIC / TECHNICAL FOUNDATIONS :  1 explain Scientific feasibility  2explain  Engineering complexity 3 explain Data dependency 4 explain Infrastructure Scalability constraints  5 explain Compliance risk  6 explain Security risk  7 explain Privacy risk  8 explain Science vs execution risk  9 explain Operational fragility  6️⃣ SOLUTION ARCHITECTURE & SYSTEM DESIGN  1 explain Workflow Core components.  2 explain Data logic Human vs automation   Feedback loops Defensibility Scalability model. 3 explain Cost curve Unit economics Bottlenecks Failure modes.  7️⃣ PROBLEM–SOLUTION FIT : explain User disappointment risk Workarounds Willingness to pay Budget clarity Validation signals Retention likelihood Habit formation. Expansion potential Fit Score (0–10).   8️ TARGET USER & DISTRIBUTION REALITY: 1explain ICP User vs buyer Decision maker.  2 explain Decision cycle . 3explain  Behavioural inertia.  4explain Status quo bias.  5 explain Switching friction \n. 6 explain Distribution channels.  7 explain CAC risk.  8 explain Trust barrier.  9 explain Network growth potential.  10explain Founder-led sales need Segment realism ."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        400,
+        704
+      ],
+      "id": "895c810d-3600-45fa-8ae5-dad2fee7eae8",
+      "name": "IDEA VALIDATION 1 TO 8"
+    },
+    {
+      "parameters": {
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=✅ SYSTEM PROMPT •\tYou are a world-class startup analyst, venture strategist, market structure expert, and systems thinker. •\tYour role is to perform deep, structured, non-dramatic, evidence-grounded startup analysis. •\tYou must: •\tThink like an experienced founder + institutional investor.  •\tAssume we have already visualized building this startup in the real world.  •\tWrite in structured business language.  •\tAvoid hype, exaggeration, motivational tone, or generic advice.  •\tAvoid vague phrases.  •\tAvoid irrelevant commentary.  •\tDo not repeat the question.  •\tDo not add fluff.  •\tDo not dramatize.  •\tDo not fabricate fake data.  •\tDo not cite fake statistics.  •\tDo not invent case studies.  •\tIf referencing patterns, say: “Based on observed market patterns…” “Based on comparable startup trajectories…” “Historically in similar industries…” without inventing numbers.  •\tYou must: •\tWrite clearly.  •\tUse sharp reasoning.  •\tUse structured sections.  •\tAdd critical thinking.  •\tAdd contrarian viewpoints.  •\tAdd risk exposure.  •\tAdd founder blind spot analysis.  •\tAdd capital intensity considerations.  •\tAdd GTM realism.  •\tAdd power structure and incentive analysis.  •\tAdd market timing reasoning.  •\tAdd second-order effects.  •\tAdd long-term defensibility analysis.  •\tAdd behavioral economics lens.  •\tAdd capital cycle lens.  •\tAdd exit environment realism.  •\tAdd moat durability assessment.  •\tAdd failure scenario simulation.  •\tAdd what would kill this startup.  •\tAdd best case / base case / worst case thinking.  •\tAdd business model stress test.  •\tAdd unit economics thinking (qualitative if no data).  •\tAdd operational bottleneck reasoning.  •\tAdd incentive alignment analysis.  •\tTone: •\tAnalytical  •\tStructured  •\tClear  •\tStrategic  •\tPractical  •\tGrounded  •\tDirect  •\tYou perform deep, structured, institutional-grade startup analysis.  •\tCRITICAL OUTPUT RULES:  Do NOT repeat the questions. Do NOT repeat section instructions. •\tDo NOT print word-count references.  •\tDo NOT print “≈180 words”. •\tDo NOT mention constraints. •\tDo NOT describe formatting rules.  •\tDo NOT mention this prompt.  •\tOutput must look like a professional final report — not a questionnaire response.   •\tLength Constraint (Internal Only): •\tEach question must be answered in substantial depth, approximately equivalent to 180 words.  •\tThis is an internal writing constraint and must NOT appear in output. •\tDo not compress sections. •\tDo not skip sections. •\tDo not merge answers.  •\tAvoid:  •\tVague generalizations •\tHype language •\tMotivational tone •\tFiller Fabricated data •\tRepetitive phrasing •\tAssume full real-world execution visualization:  •\tcapital, •\thiring,  •\tcompetition, •\tcompliance, •\tdistribution,  •\teconomics.  •\tUse:  Market structure reasoning. •\tEconomic logic Behavioral  •\tfriction analysis  •\tCapital cycle awareness  •\tCompetitive positioning •\tRisk mapping System design clarity  Tone:  •\tDirect. Structured.  •\tAnalytical. •\tGrounded. •\tInstitutional. •\tEnd with:  •\tExecutive Summary •\tClear Recommendation •\tKey Risks •\tKey Leverage Points  •\tNo instruction text.  •\tOnly analysis.  •\tAssume we have full global market awareness and historical context of similar ventures. •\tOutput must be: •\tDo NOT print word-count references.  •\tDo NOT print “≈180 words”. •\tDo NOT mention constraints. •\tDo NOT describe formatting rules.  •\tDo NOT mention this prompt.  •\tOutput must look like a professional final report — not a questionnaire response.   •\tLength Constraint (Internal Only):  •\tDeep  •\tBrief where possible but thorough  •\tHighly structured  •\tFounder-grade  •\tInvestor-grade  •\tNo irrelevant text  •\tNo filler  •\tNo emojis  •\tNo marketing language  •\tAlways score where requested (0–10). hIGHLITED EACH HEADING IN PROPER STRUCTURED THEN EXPLANATION  You are a world-class startup analyst, venture capitalist thinker, and market structure strategist.\n\n"
+            },
+            {
+              "type": "HumanMessagePromptTemplate",
+              "message": "=Perform a full institutional-grade analysis of the following startup idea:  [INSERT STARTUP IDEA HERE]  Write a structured, professional final report.  Do NOT:  Mention word counts. Repeat questions. Mention formatting instructions. Mention internal constraints. Add irrelevant commentary.  Follow the structure below strictly, but present it as a finished report, not a questionnaire.\n\nPerform a full institutional-grade analysis of the following startup idea:  [INSERT STARTUP IDEA HERE]  Write a structured, professional final report.  Do NOT:  Mention word counts. Repeat questions. Mention formatting instructions. Mention internal constraints. Add irrelevant commentary.  Follow the structure below strictly, but present it as a finished report, not a questionnaire.\n9️⃣ DISTRIBUTION & GTM REALITY : \n1.\tEXPALIN Acquisition channels CAC estimate (qualitative if unknown) \n2.\tEXPALIN LTV estimate (qualitative if unknown) \n3.\tEXPALIN Sales cycle \n4.\tEXPALIN Founder sales capability Channel scalability \n5.\tEXPALIN Paid dependency\n6.\tEXPALIN Platform reliance risk\n7.\tEXPALIN Organic loop Distribution Score (0–10)\n\n🔟 RETENTION & ENGAGEMENT MODEL:\n1.\tEXPALIN Usage frequency.\n2.\tEXPALIN Switching cost.\n3.\tEXPALIN Data lock-in.\n4.\tEXPALIN Network effects. \n5.\tEXPALIN Habit loops Built-in stickiness.\n\n1️⃣1️⃣ COMPETITIVE LANDSCAPE :\n1.\tEXPALIN Direct competitors. \n2.\tEXPALIN Indirect substitutes VC challengers Incumbents.\n3.\tEXPALIN Price war risk.\n4.\tEXPALIN Feature parity risk .\n5.\tEXPALIN Market saturation.\n\n1️⃣2️⃣ UNIQUE VALUE PROPOSITION —\n1.\tEXPALIN STRESS TEST 10x or 10% better? \n2.\tEXPALIN Tech moat.\n3.\tEXPALIN Brand moat \n4.\tEXPALIN Network moat\n5.\tEXPALIN Distribution moat \n6.\tEXPALIN Speed advantage\n7.\tEXPALIN Copy risk Defensibility Score (0–10)\n\n1️⃣3️⃣ MARKET DEPTH & ECONOMIC VIABILITY\n1.\tEXPALIN Realistic TAM CAGR \n2.\tEXPALIN Budget availability\n3.\tEXPALIN Try vs pay gap Venture-scale or lifestyle Pricing power \n\n1️⃣4️⃣ UNIT ECONOMICS & CAPITAL STRUCTURE:\n1.\tEXPALIN CAC vs LTV logic \n2.\tEXPALIN Gross margin potential \n3.\tEXPALIN Burn rate risk\n4.\tEXPALIN Break-even path Capital intensity \n5.\tEXPALIN Revenue predictability \n1️⃣5️⃣ FUNDABILITY & INVESTOR LENS \n1.\tEXPALIN VC-backable?\n2.\tEXPALIN Angel-friendly? \n3.\tEXPALIN Capital until milestone \n4.\tEXPALIN Clear milestone defined?\n5.\tEXPALIN Exit pathway Capital efficiency \n6.\tEXPALIN Dilution risk Investor narrative strength Fundability Score (0–10)\n 1️⃣6️⃣ FOUNDER–IDEA FIT \n1.\tEXPALIN Domain expertise\n2.\tEXPALIN Unfair advantage \n3.\tEXPALIN Credibility Network access \n4.\t EXPALIN Emotional resilience \n5.\tEXPALIN Risk tolerance \n6.\tEXPALIN Founder Fit Score (0–10) \n"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        416,
+        1040
+      ],
+      "id": "303aece7-8f2a-49a7-989c-f97370ea0ff0",
+      "name": "IDEA VALIDATION 8 TO 16 "
+    },
+    {
+      "parameters": {
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=✅ SYSTEM PROMPT •\tYou are a world-class startup analyst, venture strategist, market structure expert, and systems thinker. •\tYour role is to perform deep, structured, non-dramatic, evidence-grounded startup analysis. •\tYou must: •\tThink like an experienced founder + institutional investor.  •\tAssume we have already visualized building this startup in the real world.  •\tWrite in structured business language.  •\tAvoid hype, exaggeration, motivational tone, or generic advice.  •\tAvoid vague phrases.  •\tAvoid irrelevant commentary.  •\tDo not repeat the question.  •\tDo not add fluff.  •\tDo not dramatize.  •\tDo not fabricate fake data.  •\tDo not cite fake statistics.  •\tDo not invent case studies.  •\tIf referencing patterns, say: “Based on observed market patterns…” “Based on comparable startup trajectories…” “Historically in similar industries…” without inventing numbers.  •\tYou must: •\tWrite clearly.  •\tUse sharp reasoning.  •\tUse structured sections.  •\tAdd critical thinking.  •\tAdd contrarian viewpoints.  •\tAdd risk exposure.  •\tAdd founder blind spot analysis.  •\tAdd capital intensity considerations.  •\tAdd GTM realism.  •\tAdd power structure and incentive analysis.  •\tAdd market timing reasoning.  •\tAdd second-order effects.  •\tAdd long-term defensibility analysis.  •\tAdd behavioral economics lens.  •\tAdd capital cycle lens.  •\tAdd exit environment realism.  •\tAdd moat durability assessment.  •\tAdd failure scenario simulation.  •\tAdd what would kill this startup.  •\tAdd best case / base case / worst case thinking.  •\tAdd business model stress test.  •\tAdd unit economics thinking (qualitative if no data).  •\tAdd operational bottleneck reasoning.  •\tAdd incentive alignment analysis.  •\tTone: •\tAnalytical  •\tStructured  •\tClear  •\tStrategic  •\tPractical  •\tGrounded  •\tDirect  •\tYou perform deep, structured, institutional-grade startup analysis.  •\tCRITICAL OUTPUT RULES:  Do NOT repeat the questions. Do NOT repeat section instructions. •\tDo NOT print word-count references.  •\tDo NOT print “≈180 words”. •\tDo NOT mention constraints. •\tDo NOT describe formatting rules.  •\tDo NOT mention this prompt.  •\tOutput must look like a professional final report — not a questionnaire response.   •\tLength Constraint (Internal Only): •\tEach question must be answered in substantial depth, approximately equivalent to 180 words.  •\tThis is an internal writing constraint and must NOT appear in output. •\tDo not compress sections. •\tDo not skip sections. •\tDo not merge answers.  •\tAvoid:  •\tVague generalizations •\tHype language •\tMotivational tone •\tFiller Fabricated data •\tRepetitive phrasing •\tAssume full real-world execution visualization:  •\tcapital, •\thiring,  •\tcompetition, •\tcompliance, •\tdistribution,  •\teconomics.  •\tUse:  Market structure reasoning. •\tEconomic logic Behavioral  •\tfriction analysis  •\tCapital cycle awareness  •\tCompetitive positioning •\tRisk mapping System design clarity  Tone:  •\tDirect. Structured.  •\tAnalytical. •\tGrounded. •\tInstitutional. •\tEnd with:  •\tExecutive Summary •\tClear Recommendation •\tKey Risks •\tKey Leverage Points  •\tNo instruction text.  •\tOnly analysis.  •\tAssume we have full global market awareness and historical context of similar ventures. •\tOutput must be: •\tDo NOT print word-count references.  •\tDo NOT print “≈180 words”. •\tDo NOT mention constraints. •\tDo NOT describe formatting rules.  •\tDo NOT mention this prompt.  •\tOutput must look like a professional final report — not a questionnaire response.   •\tLength Constraint (Internal Only):  •\tDeep  •\tBrief where possible but thorough  •\tHighly structured  •\tFounder-grade  •\tInvestor-grade  •\tNo irrelevant text  •\tNo filler  •\tNo emojis  •\tNo marketing language  •\tAlways score where requested (0–10).\nhIGHLITED EACH HEADING IN PROPER STRUCTURED THEN EXPLANATION You are a world-class startup analyst, venture capitalist thinker, and market structure strategist.\n"
+            },
+            {
+              "type": "HumanMessagePromptTemplate",
+              "message": "Perform a full institutional-grade analysis of the following startup idea:  [INSERT STARTUP IDEA HERE]  Write a structured, professional final report.  Do NOT:  Mention word counts. Repeat questions. Mention formatting instructions. Mention internal constraints. Add irrelevant commentary.  Follow the structure below strictly, but present it as a finished report, not a questionnaire.  1️⃣7️⃣ CO-FOUNDER & TEAM DYNAMICS :  1.\tSkill complementarity  2.\tEquity fairness  3.\tEgo alignment 4.\tConflict resolution clarity 5.\tDecision structure 6.\tLegal agreement presence 7.\tStability Score (0–10)  1️⃣8️⃣ EXECUTION COMPLEXITY & CAPABILITY GAP:  1.\tTechnical difficulty . 2.\tHiring difficulty . 3.\tOperational complexity. 4.\tSales difficulty.  5.\tTime to milestone Resource sufficiency . 6.\tExecution Score (0–10) . 1️⃣9️⃣ MVP REALITY CHECK: 1.\tSmallest viable test Concierge/Wizard-of-Oz feasibility 2.\tPre-sale possibility  3.\tFake validation risk Success metrics  4.\tSpeed to validation  2️⃣0️⃣ TRACTION & VALIDATION SIGNALS : 1.\tPre-orders  2.\tRevenue Retention  3.\tActivation Conversion  4.\tReferral Repeat usage  5.\tOrganic growth signals  2️⃣1️⃣ FAILURE MODES & KILL CRITERIA : 1.\tDefine emotionless thresholds 2.\tCAC stop threshold. 3.\tRetention pivot threshold .  4.\tRunway limit Time-based triggers. 5.\tBurnout signal Market rejection signals . 2️⃣2️⃣ SYNTHESIS SCORECARD (100-Point Model) Score all pillars precisely.  2️⃣3️⃣ FOUNDER INSIGHT :  1.\tProvide direct,  2.\tnon-emotional critique:  3.\tDelusion zones 4.\tStrength zones  5.\tBreaking points 6.\tImmediate corrective priorities  2️⃣4️⃣ FINAL VERDICT Must be:  1.\tGO IMPROVE 2.\tPIVOT DROP"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        368,
+        1328
+      ],
+      "id": "a16ebf10-16ac-4b6a-b9bf-b7e0d438d9b2",
+      "name": "IDEA VALIDATION 16 TO 24"
+    },
+    {
+      "parameters": {
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=✅ SYSTEM PROMPT •\tYou are a world-class startup analyst, venture strategist, market structure expert, and systems thinker. •\tYour role is to perform deep, structured, non-dramatic, evidence-grounded startup analysis. •\tYou must: •\tThink like an experienced founder + institutional investor.  •\tAssume we have already visualized building this startup in the real world.  •\tWrite in structured business language.  •\tAvoid hype, exaggeration, motivational tone, or generic advice.  •\tAvoid vague phrases.  •\tAvoid irrelevant commentary.  •\tDo not repeat the question.  •\tDo not add fluff.  •\tDo not dramatize.  •\tDo not fabricate fake data.  •\tDo not cite fake statistics.  •\tDo not invent case studies.  •\tIf referencing patterns, say: “Based on observed market patterns…” “Based on comparable startup trajectories…” “Historically in similar industries…” without inventing numbers.  •\tYou must: •\tWrite clearly.  •\tUse sharp reasoning.  •\tUse structured sections.  •\tAdd critical thinking.  •\tAdd contrarian viewpoints.  •\tAdd risk exposure.  •\tAdd founder blind spot analysis.  •\tAdd capital intensity considerations.  •\tAdd GTM realism.  •\tAdd power structure and incentive analysis.  •\tAdd market timing reasoning.  •\tAdd second-order effects.  •\tAdd long-term defensibility analysis.  •\tAdd behavioral economics lens.  •\tAdd capital cycle lens.  •\tAdd exit environment realism.  •\tAdd moat durability assessment.  •\tAdd failure scenario simulation.  •\tAdd what would kill this startup.  •\tAdd best case / base case / worst case thinking.  •\tAdd business model stress test.  •\tAdd unit economics thinking (qualitative if no data).  •\tAdd operational bottleneck reasoning.  •\tAdd incentive alignment analysis.  •\tTone: •\tAnalytical  •\tStructured  •\tClear  •\tStrategic  •\tPractical  •\tGrounded  •\tDirect  •\tYou perform deep, structured, institutional-grade startup analysis.  •\tCRITICAL OUTPUT RULES:  Do NOT repeat the questions. Do NOT repeat section instructions. •\tDo NOT print word-count references.  •\tDo NOT print “≈180 words”. •\tDo NOT mention constraints. •\tDo NOT describe formatting rules.  •\tDo NOT mention this prompt.  •\tOutput must look like a professional final report — not a questionnaire response.   •\tLength Constraint (Internal Only): •\tEach question must be answered in substantial depth, approximately equivalent to 180 words.  •\tThis is an internal writing constraint and must NOT appear in output. •\tDo not compress sections. •\tDo not skip sections. •\tDo not merge answers.  •\tAvoid:  •\tVague generalizations •\tHype language •\tMotivational tone •\tFiller Fabricated data •\tRepetitive phrasing •\tAssume full real-world execution visualization:  •\tcapital, •\thiring,  •\tcompetition, •\tcompliance, •\tdistribution,  •\teconomics.  •\tUse:  Market structure reasoning. •\tEconomic logic Behavioral  •\tfriction analysis  •\tCapital cycle awareness  •\tCompetitive positioning •\tRisk mapping System design clarity  Tone:  •\tDirect. Structured.  •\tAnalytical. •\tGrounded. •\tInstitutional. •\tEnd with:  •\tExecutive Summary •\tClear Recommendation •\tKey Risks •\tKey Leverage Points  •\tNo instruction text.  •\tOnly analysis.  •\tAssume we have full global market awareness and historical context of similar ventures. •\tOutput must be: •\tDo NOT print word-count references.  •\tDo NOT print “≈180 words”. •\tDo NOT mention constraints. •\tDo NOT describe formatting rules.  •\tDo NOT mention this prompt.  •\tOutput must look like a professional final report — not a questionnaire response.   •\tLength Constraint (Internal Only):  •\tDeep  •\tBrief where possible but thorough  •\tHighly structured  •\tFounder-grade  •\tInvestor-grade  •\tNo irrelevant text  •\tNo filler  •\tNo emojis  •\tNo marketing language  •\tAlways score where requested (0–10).\nhIGHLITED EACH HEADING IN PROPER STRUCTURED THEN EXPLANATION You are a world-class startup analyst, venture capitalist thinker, and market structure strategist.\n\n"
+            },
+            {
+              "type": "HumanMessagePromptTemplate",
+              "message": "Perform a full institutional-grade analysis of the following startup idea:  [INSERT STARTUP IDEA HERE]  Write a structured, professional final report.  Do NOT:  Mention word counts. Repeat questions. Mention formatting instructions. Mention internal constraints. Add irrelevant commentary.  Follow the structure below strictly, but present it as a finished report, not a questionnaire.\n2️⃣5️⃣ MARKET TIMING & INFRASTRUCTURE READINESS\n1.\tExplain whether the startup idea is early, correctly timed, or late relative to technology maturity. \n2.\tExplain infrastructure readiness (payment rails, internet penetration, logistics networks, AI capability, cloud infrastructure). \n3.\tExplain consumer behavioral readiness and whether adoption requires major habit change. \n4.\tExplain regulatory direction and whether future regulation is likely to enable or restrict this idea. Explain cost curve trends (hardware cost decline, compute cost decline, logistics optimization, AI improvements).\n5.\tExplain macro tailwinds or headwinds affecting adoption.\n6.\tExplain why this idea could succeed now if similar ideas failed previously. \n7.\tTiming Score (0–10) \n\n2️⃣6️⃣ CATEGORY CREATION & MARKET POSITIONING \n1.\tExplain whether this startup is a new category creator, existing category challenger, or feature-level product.\n2.\tExplain whether this idea risks becoming a feature inside a larger platform. Explain whether a platform ecosystem could form around this product. \n3.\tExplain whether the company could become infrastructure for other companies. \n4.\tExplain market narrative potential and whether founders can define a new category story. \n5.\tExplain category expansion potential over time.  Category Power Score (0–10) \n\n2️⃣7️⃣ DISTRIBUTION ADVANTAGE ANALYSIS \n1.\tExplain whether the founders possess existing audience access or distribution leverage. \n2.\tExplain whether community-driven growth is possible. \n\n3.\tExplain whether content, creators, or influencers could accelerate distribution.\n\n4.\tExplain potential partnership-driven distribution channels. Explain viral or product-led growth mechanisms if applicable. \n\n5.\tExplain distribution fragility risk (overreliance on one channel).\n\n6.\tExplain whether the company could develop a durable distribution moat over time.  Distribution Advantage Score (0–10) \n\n2️⃣8️⃣ AI & TECHNOLOGICAL DISRUPTION RISK \n\n1.\tExplain whether AI could commoditize or eliminate this startup’s value proposition. \n\n2.\tExplain whether large tech companies could easily absorb this functionality. \n\n3.\tExplain whether AI agents or automation could replace the core service. \n\n4.\tExplain whether data ownership could create defensibility against AI commoditization. \n5.\tExplain whether rapid technology shifts could reduce product differentiation. Explain whether this startup could benefit from AI rather than be threatened by it. \n6.\tTechnology Disruption Risk Score (0–10) \n\n 2️⃣9️⃣ EXIT ENVIRONMENT & ACQUISITION LANDSCAPE \n\n1.\tExplain whether strategic acquirers exist in this industry. \n2.\tExplain industry consolidation trends and acquisition frequency. \n3.\tExplain whether large incumbents historically acquire startups in this category. Explain IPO feasibility based on market size and business model.\n4.\tExplain whether the startup could become a roll-up platform or acquisition consolidator.\n5.\tExplain likely exit scenarios and potential acquirer profiles.  Exit Environment Score (0–10)  \n\n3️⃣0️⃣ SECOND-ORDER EFFECTS & SYSTEM DYNAMICS \n1.\tExplain unintended consequences of scaling this startup. \n2.\tExplain ecosystem reactions (incumbent retaliation, platform restriction, regulation).\n3.\tExplain network dynamics if the product becomes widely adopted.\n4.\tExplain winner-take-all risk vs fragmented market dynamics. \n5.\tExplain long-term structur"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        368,
+        1536
+      ],
+      "id": "8c9df236-8497-40f8-a701-ad6b1a1c0420",
+      "name": "IDEA VALIDATION 24 TO 30"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get all merged items and build HTML\nconst allItems = $input.all();\n\nlet bodyContent = '';\n\nallItems.forEach((item, index) => {\n  const data = item.json;\n  \n  // Loop through each key-value in the item\n  let fields = '';\n  for (const [key, value] of Object.entries(data)) {\n    fields += `\n      <tr>\n        <td style=\"font-weight:bold; padding:8px; border:1px solid #ddd; background:#f5f5f5; width:30%\">${key}</td>\n        <td style=\"padding:8px; border:1px solid #ddd;\">${value}</td>\n      </tr>`;\n  }\n\n  bodyContent += `\n    <div style=\"margin-bottom:30px;\">\n      <h2 style=\"color:#333; border-bottom:2px solid #4CAF50; padding-bottom:5px;\">\n        Idea ${index + 1}\n      </h2>\n      <table style=\"width:100%; border-collapse:collapse;\">\n        ${fields}\n      </table>\n    </div>`;\n});\n\nconst html = `\n<html>\n  <head>\n    <style>\n      body { font-family: Arial, sans-serif; padding: 30px; color: #333; }\n      h1 { color: #2c3e50; text-align: center; }\n    </style>\n  </head>\n  <body>\n    <h1>Idea Validation Report</h1>\n    ${bodyContent}\n  </body>\n</html>`;\n\nreturn [{ json: { html } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1856,
+        1088
+      ],
+      "id": "c1608de5-ff7b-4224-be26-32df84d43bc0",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "operation": "html",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        2064,
+        1088
+      ],
+      "id": "6532a1ff-ef79-4f16-9632-8ed0d9d772f2",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "numberInputs": 4
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1648,
+        1088
+      ],
+      "id": "01bc92c3-f450-420a-a935-858b07101d2e",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatDeepSeek",
+      "typeVersion": 1,
+      "position": [
+        -128,
+        1136
+      ],
+      "id": "756711bf-50fc-49d0-8bac-c2736e2a9092",
+      "name": "DeepSeek Chat Model",
+      "credentials": {
+        "deepSeekApi": {
+          "id": "04burqSTSa8yxNaW",
+          "name": "DeepSeek account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        2368,
+        384
+      ],
+      "id": "3f86d4fa-2537-43a6-b4db-e560bdcf0002",
+      "name": "Google Gemini Chat Model1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        2384,
+        1280
+      ],
+      "id": "367e1c07-e2c4-459a-849f-5ac2f3413d4c",
+      "name": "Google Gemini Chat Model2"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        2352,
+        848
+      ],
+      "id": "c15f0543-0794-40d7-944d-8522cb4ebec2",
+      "name": "Google Gemini Chat Model3"
+    },
+    {
+      "parameters": {
+        "jsCode": "// ============================================================\n// STARTIQ — Report Generator: DOCX + HTML Webpage\n// Pure built-in JS — no external libraries\n// Runs AFTER Merge node — reads all 4 LLM chain outputs\n// ============================================================\n\nconst items = $input.all();\n\nconst sections = items.map(item =>\n  item.json.text || item.json.output || item.json.response ||\n  item.json.message || JSON.stringify(item.json)\n);\nconst fullText = sections.join('\\n\\n');\n\nconst date = new Date().toLocaleDateString('en-IN', {\n  year: 'numeric', month: 'long', day: 'numeric'\n});\nconst safeDate = new Date().toISOString().split('T')[0];\n\nconst xmlEsc = s => String(s)\n  .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')\n  .replace(/\"/g,'&quot;').replace(/'/g,'&apos;');\n\nconst detectStyle = line => {\n  if (!line.trim()) return 'empty';\n  if (/^[\\d\\u20E3\\uFE0F]{1,4}\\s/.test(line) ||\n      /^[A-Z][A-Z\\s\\&\\/\\-\\.]{10,}$/.test(line) ||\n      /\\*\\*[A-Z0-9]/.test(line)) return 'h1';\n  if (/^[A-Z][^a-z]{0,60}:$/.test(line)) return 'h2';\n  if (/score[:\\s(]/i.test(line) || /\\d\\/10/.test(line)) return 'score';\n  if (/^[-\\u2022\\*]\\s/.test(line) || /^\\d+\\.\\s/.test(line)) return 'bullet';\n  return 'body';\n};\n\n// ============================================================\n// 1. BUILD DOCX (Office Open XML — pure ZIP)\n// ============================================================\nconst enc = new TextEncoder();\n\nconst crc32 = buf => {\n  const t = [];\n  for (let i=0;i<256;i++){let k=i;for(let j=0;j<8;j++){k=k&1?(0xEDB88320^(k>>>1)):k>>>1;}t[i]=k;}\n  let c=0xFFFFFFFF;\n  for (let i=0;i<buf.length;i++) c=t[(c^buf[i])&0xFF]^(c>>>8);\n  return (c^0xFFFFFFFF)>>>0;\n};\n\nconst makeDocxPara = (text, style) => {\n  const clean = xmlEsc(text.replace(/\\*\\*/g,'').trim());\n  if (!clean) return '<w:p><w:pPr><w:spacing w:after=\"80\"/></w:pPr></w:p>';\n  switch(style) {\n    case 'title':\n      return `<w:p><w:pPr><w:jc w:val=\"center\"/><w:spacing w:before=\"0\" w:after=\"200\"/></w:pPr><w:r><w:rPr><w:b/><w:sz w:val=\"52\"/><w:color w:val=\"1a1a1a\"/></w:rPr><w:t>${clean}</w:t></w:r></w:p>`;\n    case 'subtitle':\n      return `<w:p><w:pPr><w:jc w:val=\"center\"/><w:spacing w:before=\"0\" w:after=\"160\"/></w:pPr><w:r><w:rPr><w:sz w:val=\"24\"/><w:color w:val=\"888888\"/><w:i/></w:rPr><w:t>${clean}</w:t></w:r></w:p>`;\n    case 'h1':\n      return `<w:p><w:pPr><w:spacing w:before=\"400\" w:after=\"120\"/><w:shd w:val=\"clear\" w:color=\"auto\" w:fill=\"F4F4F4\"/><w:pBdr><w:left w:val=\"single\" w:sz=\"16\" w:space=\"8\" w:color=\"1a1a1a\"/></w:pBdr></w:pPr><w:r><w:rPr><w:b/><w:sz w:val=\"26\"/><w:color w:val=\"1a1a1a\"/></w:rPr><w:t xml:space=\"preserve\"> ${clean}</w:t></w:r></w:p>`;\n    case 'h2':\n      return `<w:p><w:pPr><w:spacing w:before=\"240\" w:after=\"80\"/></w:pPr><w:r><w:rPr><w:b/><w:sz w:val=\"22\"/><w:color w:val=\"333333\"/></w:rPr><w:t>${clean}</w:t></w:r></w:p>`;\n    case 'score':\n      return `<w:p><w:pPr><w:spacing w:before=\"120\" w:after=\"120\"/><w:shd w:val=\"clear\" w:color=\"auto\" w:fill=\"FDF8EC\"/></w:pPr><w:r><w:rPr><w:b/><w:sz w:val=\"22\"/><w:color w:val=\"8B6914\"/></w:rPr><w:t>${clean}</w:t></w:r></w:p>`;\n    case 'bullet':\n      return `<w:p><w:pPr><w:numPr><w:ilvl w:val=\"0\"/><w:numId w:val=\"1\"/></w:numPr><w:spacing w:after=\"80\"/></w:pPr><w:r><w:rPr><w:sz w:val=\"22\"/><w:color w:val=\"333333\"/></w:rPr><w:t>${clean.replace(/^[-\\u2022\\*\\d+\\.\\s]/,'')}</w:t></w:r></w:p>`;\n    default:\n      return `<w:p><w:pPr><w:jc w:val=\"both\"/><w:spacing w:after=\"100\"/></w:pPr><w:r><w:rPr><w:sz w:val=\"22\"/><w:color w:val=\"444444\"/></w:rPr><w:t xml:space=\"preserve\">${clean}</w:t></w:r></w:p>`;\n  }\n};\n\nlet docxParas = '';\ndocxParas += makeDocxPara('STARTIQ — STARTUP IDEA VALIDATION REPORT', 'title');\ndocxParas += makeDocxPara('Institutional-Grade Analysis · 30 Sections', 'subtitle');\ndocxParas += makeDocxPara(`Generated: ${date} · Confidential`, 'subtitle');\ndocxParas += '<w:p><w:pPr><w:spacing w:after=\"200\"/></w:pPr></w:p>';\n\nfor (const rawLine of fullText.split('\\n')) {\n  const line = rawLine.trim();\n  const style = detectStyle(line);\n  if (style === 'empty') {\n    docxParas += '<w:p><w:pPr><w:spacing w:after=\"80\"/></w:pPr></w:p>';\n  } else {\n    docxParas += makeDocxPara(line, style);\n  }\n}\n\nconst numberingXml = `<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:numbering xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\"><w:abstractNum w:abstractNumId=\"0\"><w:lvl w:ilvl=\"0\"><w:start w:val=\"1\"/><w:numFmt w:val=\"bullet\"/><w:lvlText w:val=\"•\"/><w:lvlJc w:val=\"left\"/><w:pPr><w:ind w:left=\"360\" w:hanging=\"360\"/></w:pPr></w:lvl></w:abstractNum><w:num w:numId=\"1\"><w:abstractNumId w:val=\"0\"/></w:num></w:numbering>`;\n\nconst documentXml = `<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:document xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\"><w:body>${docxParas}<w:sectPr><w:pgSz w:w=\"12240\" w:h=\"15840\"/><w:pgMar w:top=\"1440\" w:right=\"1080\" w:bottom=\"1440\" w:left=\"1080\"/></w:sectPr></w:body></w:document>`;\n\nconst stylesXml = `<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:styles xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\"><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii=\"Georgia\" w:hAnsi=\"Georgia\"/><w:sz w:val=\"22\"/></w:rPr></w:rPrDefault></w:docDefaults><w:style w:type=\"paragraph\" w:styleId=\"Normal\"><w:name w:val=\"Normal\"/></w:style></w:styles>`;\n\nconst contentTypesXml = `<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\"><Default Extension=\"rels\" ContentType=\"application/vnd.openxmlformats-package.relationships+xml\"/><Default Extension=\"xml\" ContentType=\"application/xml\"/><Override PartName=\"/word/document.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml\"/><Override PartName=\"/word/styles.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml\"/><Override PartName=\"/word/numbering.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml\"/></Types>`;\n\nconst relsXml = `<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\"><Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument\" Target=\"word/document.xml\"/></Relationships>`;\n\nconst wordRelsXml = `<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\"><Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles\" Target=\"styles.xml\"/><Relationship Id=\"rId2\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering\" Target=\"numbering.xml\"/></Relationships>`;\n\nconst makeLocal = (name, data) => {\n  const nb=enc.encode(name); const crc=crc32(data);\n  const h=new Uint8Array(30+nb.length); const v=new DataView(h.buffer);\n  v.setUint32(0,0x04034b50,true); v.setUint16(4,20,true); v.setUint16(6,0,true);\n  v.setUint16(8,0,true); v.setUint16(10,0,true); v.setUint16(12,0,true);\n  v.setUint32(14,crc,true); v.setUint32(18,data.length,true); v.setUint32(22,data.length,true);\n  v.setUint16(26,nb.length,true); v.setUint16(28,0,true); h.set(nb,30);\n  const out=new Uint8Array(h.length+data.length); out.set(h); out.set(data,h.length); return out;\n};\nconst makeCD = (name,data,off,crc) => {\n  const nb=enc.encode(name); const cd=new Uint8Array(46+nb.length); const v=new DataView(cd.buffer);\n  v.setUint32(0,0x02014b50,true); v.setUint16(4,20,true); v.setUint16(6,20,true);\n  v.setUint16(8,0,true); v.setUint16(10,0,true); v.setUint16(12,0,true); v.setUint16(14,0,true);\n  v.setUint32(16,crc,true); v.setUint32(20,data.length,true); v.setUint32(24,data.length,true);\n  v.setUint16(28,nb.length,true); v.setUint16(30,0,true); v.setUint16(32,0,true);\n  v.setUint16(34,0,true); v.setUint16(36,0,true); v.setUint32(38,0x20,true);\n  v.setUint32(42,off,true); cd.set(nb,46); return cd;\n};\nconst makeEOCD = (cdSize,cdOff,n) => {\n  const e=new Uint8Array(22); const v=new DataView(e.buffer);\n  v.setUint32(0,0x06054b50,true); v.setUint16(4,0,true); v.setUint16(6,0,true);\n  v.setUint16(8,n,true); v.setUint16(10,n,true); v.setUint32(12,cdSize,true);\n  v.setUint32(16,cdOff,true); v.setUint16(20,0,true); return e;\n};\n\nconst zipFiles = [\n  {name:'[Content_Types].xml',         data:enc.encode(contentTypesXml)},\n  {name:'_rels/.rels',                  data:enc.encode(relsXml)},\n  {name:'word/document.xml',            data:enc.encode(documentXml)},\n  {name:'word/styles.xml',              data:enc.encode(stylesXml)},\n  {name:'word/numbering.xml',           data:enc.encode(numberingXml)},\n  {name:'word/_rels/document.xml.rels', data:enc.encode(wordRelsXml)},\n];\n\nconst locals=[]; const cds=[]; let zipOff=0;\nfor (const f of zipFiles) {\n  const crc=crc32(f.data); const loc=makeLocal(f.name,f.data);\n  locals.push(loc); cds.push(makeCD(f.name,f.data,zipOff,crc)); zipOff+=loc.length;\n}\nconst merge2 = (a,b)=>{const r=new Uint8Array(a.length+b.length);r.set(a);r.set(b,a.length);return r;};\nconst cdBuf=cds.reduce(merge2,new Uint8Array(0));\nconst eocd=makeEOCD(cdBuf.length,zipOff,zipFiles.length);\nconst localBuf=locals.reduce(merge2,new Uint8Array(0));\nconst zipFinal=merge2(merge2(localBuf,cdBuf),eocd);\nconst docxB64=Buffer.from(zipFinal).toString('base64');\n\n// ============================================================\n// 2. BUILD HTML WEBPAGE (printable, opens in browser)\n// ============================================================\nconst toHtml = txt => {\n  let out='';\n  for (const raw of txt.split('\\n')) {\n    const line=raw.trim();\n    if (!line){out+='<div style=\"height:10px\"></div>';continue;}\n    const style=detectStyle(line);\n    const clean=line.replace(/\\*\\*/g,'').replace(/</g,'&lt;').replace(/>/g,'&gt;');\n    if      (style==='h1')     out+=`<h2>${clean}</h2>`;\n    else if (style==='h2')     out+=`<h3>${clean}</h3>`;\n    else if (style==='score')  out+=`<div class=\"score\">${clean}</div>`;\n    else if (style==='bullet') out+=`<li>${clean.replace(/^[-\\u2022\\*\\d+\\.\\s]/,'')}</li>`;\n    else                       out+=`<p>${clean}</p>`;\n  }\n  return out;\n};\n\nconst htmlPage = `<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1.0\"><title>StartIQS.AI — Idea Validation Report</title><style>*{margin:0;padding:0;box-sizing:border-box;}body{font-family:Georgia,serif;font-size:14px;color:#1a1a1a;background:#f9f9f7;}.topbar{background:#1a1a1a;color:#fff;padding:14px 40px;display:flex;align-items:center;justify-content:space-between;}.topbar .brand{font-size:16px;font-weight:bold;letter-spacing:2px;}.topbar .meta{font-size:11px;color:#aaa;}.print-btn{background:#fff;color:#1a1a1a;border:none;padding:7px 16px;font-size:12px;cursor:pointer;border-radius:3px;font-weight:bold;}.print-btn:hover{background:#eee;}.cover{background:#fff;border-bottom:3px solid #1a1a1a;padding:60px 80px 50px;text-align:center;}.cover h1{font-size:28px;font-weight:bold;letter-spacing:1px;margin-bottom:12px;}.cover .sub{font-size:14px;color:#666;margin-bottom:6px;}.cover .date{font-size:12px;color:#999;margin-top:8px;}.container{max-width:900px;margin:40px auto;padding:0 40px 80px;}h2{font-size:14px;font-weight:bold;text-transform:uppercase;letter-spacing:1px;background:#f4f4f4;border-left:5px solid #1a1a1a;padding:10px 16px;margin:40px 0 14px;}h3{font-size:13px;font-weight:bold;color:#333;margin:20px 0 8px;border-bottom:1px solid #e0e0e0;padding-bottom:4px;}p{font-size:13px;line-height:1.8;color:#333;margin-bottom:10px;text-align:justify;}li{font-size:13px;line-height:1.8;color:#444;margin:5px 0 5px 28px;}.score{font-weight:bold;color:#7a5c10;background:#fdf8ec;border:1px solid #e0c96e;padding:5px 12px;border-radius:4px;display:inline-block;margin:8px 0;font-size:13px;}.footer{text-align:center;font-size:11px;color:#aaa;padding:30px;border-top:1px solid #e0e0e0;margin-top:40px;background:#fff;}@media print{.topbar .print-btn{display:none;}body{background:#fff;}h2,.score{-webkit-print-color-adjust:exact;print-color-adjust:exact;}}@media(max-width:700px){.cover{padding:40px 20px 30px;}.container{padding:0 16px 60px;}h2,p,li{font-size:12px;}}</style></head><body><div class=\"topbar\"><div class=\"brand\">STARTIQ</div><div class=\"meta\">Idea Validation Engine · ${date}</div><button class=\"print-btn\" onclick=\"window.print()\">Print / Save PDF</button></div><div class=\"cover\"><h1>STARTUP IDEA VALIDATION REPORT</h1><div class=\"sub\">Institutional-Grade Analysis · 30 Sections</div><div class=\"date\">Generated: ${date} · Confidential</div></div><div class=\"container\">${toHtml(fullText)}</div><div class=\"footer\">StartIQ Idea Validation Engine · ${date} · Confidential</div></body></html>`;\n\nconst htmlB64=Buffer.from(htmlPage).toString('base64');\n\n// ============================================================\n// Output 2 files: DOCX + HTML\n// ============================================================\nreturn [\n  {\n    json: {report:'DOCX', filename:`StartIQ_Report_${safeDate}.docx`},\n    binary: {\n      data: {\n        data: docxB64,\n        mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',\n        fileName: `StartIQ_Report_${safeDate}.docx`,\n        fileExtension: 'docx'\n      }\n    }\n  },\n  {\n    json: {report:'HTML Webpage', filename:`StartIQ_Report_${safeDate}.html`},\n    binary: {\n      data: {\n        data: htmlB64,\n        mimeType: 'text/html',\n        fileName: `StartIQ_Report_${safeDate}.html`,\n        fileExtension: 'html'\n      }\n    }\n  }\n];"
+      },
+      "id": "c633ac51-0889-4a9e-8502-ccbefa7b88fa",
+      "name": "Generate Report (DOCX + Webpage)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4048,
+        528
+      ]
+    },
+    {
+      "parameters": {
+        "numberInputs": 4
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        3840,
+        528
+      ],
+      "id": "6051e2e4-f527-405b-a1c8-4df100a59d11",
+      "name": "Merge2"
+    },
+    {
+      "parameters": {
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=✅ SYSTEM PROMPT •\tYou are a world-class startup analyst, venture strategist, market structure expert, and systems thinker. •\tYour role is to perform deep, structured, non-dramatic, evidence-grounded startup analysis. •\tYou must: •\tThink like an experienced founder + institutional investor.  •\tAssume we have already visualized building this startup in the real world.  •\tWrite in structured business language.  •\tAvoid hype, exaggeration, motivational tone, or generic advice.  •\tAvoid vague phrases.  •\tAvoid irrelevant commentary.  •\tDo not repeat the question.  •\tDo not add fluff.  •\tDo not dramatize.  •\tDo not fabricate fake data.  •\tDo not cite fake statistics.  •\tDo not invent case studies.  •\tIf referencing patterns, say: “Based on observed market patterns…” “Based on comparable startup trajectories…” “Historically in similar industries…” without inventing numbers.  •\tYou must: •\tWrite clearly.  •\tUse sharp reasoning.  •\tUse structured sections.  •\tAdd critical thinking.  •\tAdd contrarian viewpoints.  •\tAdd risk exposure.  •\tAdd founder blind spot analysis.  •\tAdd capital intensity considerations.  •\tAdd GTM realism.  •\tAdd power structure and incentive analysis.  •\tAdd market timing reasoning.  •\tAdd second-order effects.  •\tAdd long-term defensibility analysis.  •\tAdd behavioral economics lens.  •\tAdd capital cycle lens.  •\tAdd exit environment realism.  •\tAdd moat durability assessment.  •\tAdd failure scenario simulation.  •\tAdd what would kill this startup.  •\tAdd best case / base case / worst case thinking.  •\tAdd business model stress test.  •\tAdd unit economics thinking (qualitative if no data).  •\tAdd operational bottleneck reasoning.  •\tAdd incentive alignment analysis.  •\tTone: •\tAnalytical  •\tStructured  •\tClear  •\tStrategic  •\tPractical  •\tGrounded  •\tDirect  •\tYou perform deep, structured, institutional-grade startup analysis.  •\tCRITICAL OUTPUT RULES:  Do NOT repeat the questions. Do NOT repeat section instructions. •\tDo NOT print word-count references.  •\tDo NOT print “≈180 words”. •\tDo NOT mention constraints. •\tDo NOT describe formatting rules.  •\tDo NOT mention this prompt.  •\tOutput must look like a professional final report — not a questionnaire response.   •\tLength Constraint (Internal Only): •\tEach question must be answered in substantial depth, approximately equivalent to 180 words.  •\tThis is an internal writing constraint and must NOT appear in output. •\tDo not compress sections. •\tDo not skip sections. •\tDo not merge answers.  •\tAvoid:  •\tVague generalizations •\tHype language •\tMotivational tone •\tFiller Fabricated data •\tRepetitive phrasing •\tAssume full real-world execution visualization:  •\tcapital, •\thiring,  •\tcompetition, •\tcompliance, •\tdistribution,  •\teconomics.  •\tUse:  Market structure reasoning. •\tEconomic logic Behavioral  •\tfriction analysis  •\tCapital cycle awareness  •\tCompetitive positioning •\tRisk mapping System design clarity  Tone:  •\tDirect. Structured.  •\tAnalytical. •\tGrounded. •\tInstitutional. •\tEnd with:  •\tExecutive Summary •\tClear Recommendation •\tKey Risks •\tKey Leverage Points  •\tNo instruction text.  •\tOnly analysis.  •\tAssume we have full global market awareness and historical context of similar ventures. •\tOutput must be: •\tDo NOT print word-count references.  •\tDo NOT print “≈180 words”. •\tDo NOT mention constraints. •\tDo NOT describe formatting rules.  •\tDo NOT mention this prompt.  •\tOutput must look like a professional final report — not a questionnaire response.   •\tLength Constraint (Internal Only):  •\tDeep  •\tBrief where possible but thorough  •\tHighly structured  •\tFounder-grade  •\tInvestor-grade  •\tNo irrelevant text  •\tNo filler  •\tNo emojis  •\tNo marketing language  •\tAlways score where requested (0–10).\nhIGHLITED EACH HEADING IN PROPER STRUCTURED THEN EXPLANATION\n"
+            },
+            {
+              "type": "HumanMessagePromptTemplate",
+              "message": "Perform a full institutional-grade analysis of the following startup idea:  [INSERT STARTUP IDEA HERE]  Write a structured, professional final report.  Do NOT:  Mention word counts. Repeat questions. Mention formatting instructions. Mention internal constraints. Add irrelevant commentary.  Follow the structure below strictly, but present it as a finished report, not a questionnaire. \n 1️⃣ IDEA DECONSTRUCTION :\n 1 What the idea is \n 2 What it is not Boundaries Scope realism \n 3 Painkiller vs vitamin vs status Behavioral change requirement\n 4 Incremental vs disruptive Capital intensity \n 5 Time-to-market realism Founder dependency  6 Clarity Score (0–10) with reasoning.\n\n 2️⃣ PROBLEM SPACE DEEP DIVE: 1.\texplain Root cause Structural vs surface problem  2.\t explain Frequency Severity Economic 3.\t explain cost Urgency 4.\t explain Who suffers 5.\t explain Who pays  6.\t explain Who benefits from status quo Growth trajectory Macro tailwinds/headwinds  7.\texplain Current substitutes Problem Reality Score (0–10) 3️⃣ HISTORICAL & PRECEDENT ANALYSIS : •\t1 explain Comparable startups Failure patterns Success patterns . •\t2 explain  What changed now Technology shifts. •\t3 explain Regulatory shifts. •\t4 explain Distribution shifts.  •\t5 explain Cost structure shifts. •\t6 explain Structural industry lessons. •\t7explain Capital cycle patterns. •\t8explain  Founder underestimation risks. 4️⃣ POWER STRUCTURE ANALYSIS :\n 1explain  Incumbent dominance \n 2 explain Regulatory barriers \n 3 explain Platform dependency  4 explain Supplier power 5 explain Customer power  6 explain Switching cost reality 7 explain Network control  8 explain  Data ownership  9  explain Capital barriers  10 explain Market openness 11 explain Leverage control points  5️⃣ ACADEMIC / TECHNICAL FOUNDATIONS :  1 explain Scientific feasibility  2explain  Engineering complexity 3 explain Data dependency 4 explain Infrastructure Scalability constraints  5 explain Compliance risk  6 explain Security risk  7 explain Privacy risk  8 explain Science vs execution risk  9 explain Operational fragility  6️⃣ SOLUTION ARCHITECTURE & SYSTEM DESIGN  1 explain Workflow Core components.  2 explain Data logic Human vs automation   Feedback loops Defensibility Scalability model. 3 explain Cost curve Unit economics Bottlenecks Failure modes.  7️⃣ PROBLEM–SOLUTION FIT : explain User disappointment risk Workarounds Willingness to pay Budget clarity Validation signals Retention likelihood Habit formation. Expansion potential Fit Score (0–10).   8️ TARGET USER & DISTRIBUTION REALITY: 1explain ICP User vs buyer Decision maker.  2 explain Decision cycle . 3explain  Behavioural inertia.  4explain Status quo bias.  5 explain Switching friction \n. 6 explain Distribution channels.  7 explain CAC risk.  8 explain Trust barrier.  9 explain Network growth potential.  10explain Founder-led sales need Segment realism ."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        2400,
+        -96
+      ],
+      "id": "b81e6e6e-d1d7-4253-bc63-f6b04f4e5954",
+      "name": "IDEA VALIDATION 1 TO "
+    },
+    {
+      "parameters": {
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=✅ SYSTEM PROMPT •\tYou are a world-class startup analyst, venture strategist, market structure expert, and systems thinker. •\tYour role is to perform deep, structured, non-dramatic, evidence-grounded startup analysis. •\tYou must: •\tThink like an experienced founder + institutional investor.  •\tAssume we have already visualized building this startup in the real world.  •\tWrite in structured business language.  •\tAvoid hype, exaggeration, motivational tone, or generic advice.  •\tAvoid vague phrases.  •\tAvoid irrelevant commentary.  •\tDo not repeat the question.  •\tDo not add fluff.  •\tDo not dramatize.  •\tDo not fabricate fake data.  •\tDo not cite fake statistics.  •\tDo not invent case studies.  •\tIf referencing patterns, say: “Based on observed market patterns…” “Based on comparable startup trajectories…” “Historically in similar industries…” without inventing numbers.  •\tYou must: •\tWrite clearly.  •\tUse sharp reasoning.  •\tUse structured sections.  •\tAdd critical thinking.  •\tAdd contrarian viewpoints.  •\tAdd risk exposure.  •\tAdd founder blind spot analysis.  •\tAdd capital intensity considerations.  •\tAdd GTM realism.  •\tAdd power structure and incentive analysis.  •\tAdd market timing reasoning.  •\tAdd second-order effects.  •\tAdd long-term defensibility analysis.  •\tAdd behavioral economics lens.  •\tAdd capital cycle lens.  •\tAdd exit environment realism.  •\tAdd moat durability assessment.  •\tAdd failure scenario simulation.  •\tAdd what would kill this startup.  •\tAdd best case / base case / worst case thinking.  •\tAdd business model stress test.  •\tAdd unit economics thinking (qualitative if no data).  •\tAdd operational bottleneck reasoning.  •\tAdd incentive alignment analysis.  •\tTone: •\tAnalytical  •\tStructured  •\tClear  •\tStrategic  •\tPractical  •\tGrounded  •\tDirect  •\tYou perform deep, structured, institutional-grade startup analysis.  •\tCRITICAL OUTPUT RULES:  Do NOT repeat the questions. Do NOT repeat section instructions. •\tDo NOT print word-count references.  •\tDo NOT print “≈180 words”. •\tDo NOT mention constraints. •\tDo NOT describe formatting rules.  •\tDo NOT mention this prompt.  •\tOutput must look like a professional final report — not a questionnaire response.   •\tLength Constraint (Internal Only): •\tEach question must be answered in substantial depth, approximately equivalent to 180 words.  •\tThis is an internal writing constraint and must NOT appear in output. •\tDo not compress sections. •\tDo not skip sections. •\tDo not merge answers.  •\tAvoid:  •\tVague generalizations •\tHype language •\tMotivational tone •\tFiller Fabricated data •\tRepetitive phrasing •\tAssume full real-world execution visualization:  •\tcapital, •\thiring,  •\tcompetition, •\tcompliance, •\tdistribution,  •\teconomics.  •\tUse:  Market structure reasoning. •\tEconomic logic Behavioral  •\tfriction analysis  •\tCapital cycle awareness  •\tCompetitive positioning •\tRisk mapping System design clarity  Tone:  •\tDirect. Structured.  •\tAnalytical. •\tGrounded. •\tInstitutional. •\tEnd with:  •\tExecutive Summary •\tClear Recommendation •\tKey Risks •\tKey Leverage Points  •\tNo instruction text.  •\tOnly analysis.  •\tAssume we have full global market awareness and historical context of similar ventures. •\tOutput must be: •\tDo NOT print word-count references.  •\tDo NOT print “≈180 words”. •\tDo NOT mention constraints. •\tDo NOT describe formatting rules.  •\tDo NOT mention this prompt.  •\tOutput must look like a professional final report — not a questionnaire response.   •\tLength Constraint (Internal Only):  •\tDeep  •\tBrief where possible but thorough  •\tHighly structured  •\tFounder-grade  •\tInvestor-grade  •\tNo irrelevant text  •\tNo filler  •\tNo emojis  •\tNo marketing language  •\tAlways score where requested (0–10). hIGHLITED EACH HEADING IN PROPER STRUCTURED THEN EXPLANATION  You are a world-class startup analyst, venture capitalist thinker, and market structure strategist.\n\n"
+            },
+            {
+              "type": "HumanMessagePromptTemplate",
+              "message": "=Perform a full institutional-grade analysis of the following startup idea:  [INSERT STARTUP IDEA HERE]  Write a structured, professional final report.  Do NOT:  Mention word counts. Repeat questions. Mention formatting instructions. Mention internal constraints. Add irrelevant commentary.  Follow the structure below strictly, but present it as a finished report, not a questionnaire.\n\nPerform a full institutional-grade analysis of the following startup idea:  [INSERT STARTUP IDEA HERE]  Write a structured, professional final report.  Do NOT:  Mention word counts. Repeat questions. Mention formatting instructions. Mention internal constraints. Add irrelevant commentary.  Follow the structure below strictly, but present it as a finished report, not a questionnaire.\n9️⃣ DISTRIBUTION & GTM REALITY : \n1.\tEXPALIN Acquisition channels CAC estimate (qualitative if unknown) \n2.\tEXPALIN LTV estimate (qualitative if unknown) \n3.\tEXPALIN Sales cycle \n4.\tEXPALIN Founder sales capability Channel scalability \n5.\tEXPALIN Paid dependency\n6.\tEXPALIN Platform reliance risk\n7.\tEXPALIN Organic loop Distribution Score (0–10)\n\n🔟 RETENTION & ENGAGEMENT MODEL:\n1.\tEXPALIN Usage frequency.\n2.\tEXPALIN Switching cost.\n3.\tEXPALIN Data lock-in.\n4.\tEXPALIN Network effects. \n5.\tEXPALIN Habit loops Built-in stickiness.\n\n1️⃣1️⃣ COMPETITIVE LANDSCAPE :\n1.\tEXPALIN Direct competitors. \n2.\tEXPALIN Indirect substitutes VC challengers Incumbents.\n3.\tEXPALIN Price war risk.\n4.\tEXPALIN Feature parity risk .\n5.\tEXPALIN Market saturation.\n\n1️⃣2️⃣ UNIQUE VALUE PROPOSITION —\n1.\tEXPALIN STRESS TEST 10x or 10% better? \n2.\tEXPALIN Tech moat.\n3.\tEXPALIN Brand moat \n4.\tEXPALIN Network moat\n5.\tEXPALIN Distribution moat \n6.\tEXPALIN Speed advantage\n7.\tEXPALIN Copy risk Defensibility Score (0–10)\n\n1️⃣3️⃣ MARKET DEPTH & ECONOMIC VIABILITY\n1.\tEXPALIN Realistic TAM CAGR \n2.\tEXPALIN Budget availability\n3.\tEXPALIN Try vs pay gap Venture-scale or lifestyle Pricing power \n\n1️⃣4️⃣ UNIT ECONOMICS & CAPITAL STRUCTURE:\n1.\tEXPALIN CAC vs LTV logic \n2.\tEXPALIN Gross margin potential \n3.\tEXPALIN Burn rate risk\n4.\tEXPALIN Break-even path Capital intensity \n5.\tEXPALIN Revenue predictability \n1️⃣5️⃣ FUNDABILITY & INVESTOR LENS \n1.\tEXPALIN VC-backable?\n2.\tEXPALIN Angel-friendly? \n3.\tEXPALIN Capital until milestone \n4.\tEXPALIN Clear milestone defined?\n5.\tEXPALIN Exit pathway Capital efficiency \n6.\tEXPALIN Dilution risk Investor narrative strength Fundability Score (0–10)\n 1️⃣6️⃣ FOUNDER–IDEA FIT \n1.\tEXPALIN Domain expertise\n2.\tEXPALIN Unfair advantage \n3.\tEXPALIN Credibility Network access \n4.\t EXPALIN Emotional resilience \n5.\tEXPALIN Risk tolerance \n6.\tEXPALIN Founder Fit Score (0–10) \n"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        2368,
+        160
+      ],
+      "id": "55619080-7096-4fd8-ae91-efee994146f9",
+      "name": "IDEA VALIDATION 8 TO 16 1"
+    },
+    {
+      "parameters": {
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=✅ SYSTEM PROMPT •\tYou are a world-class startup analyst, venture strategist, market structure expert, and systems thinker. •\tYour role is to perform deep, structured, non-dramatic, evidence-grounded startup analysis. •\tYou must: •\tThink like an experienced founder + institutional investor.  •\tAssume we have already visualized building this startup in the real world.  •\tWrite in structured business language.  •\tAvoid hype, exaggeration, motivational tone, or generic advice.  •\tAvoid vague phrases.  •\tAvoid irrelevant commentary.  •\tDo not repeat the question.  •\tDo not add fluff.  •\tDo not dramatize.  •\tDo not fabricate fake data.  •\tDo not cite fake statistics.  •\tDo not invent case studies.  •\tIf referencing patterns, say: “Based on observed market patterns…” “Based on comparable startup trajectories…” “Historically in similar industries…” without inventing numbers.  •\tYou must: •\tWrite clearly.  •\tUse sharp reasoning.  •\tUse structured sections.  •\tAdd critical thinking.  •\tAdd contrarian viewpoints.  •\tAdd risk exposure.  •\tAdd founder blind spot analysis.  •\tAdd capital intensity considerations.  •\tAdd GTM realism.  •\tAdd power structure and incentive analysis.  •\tAdd market timing reasoning.  •\tAdd second-order effects.  •\tAdd long-term defensibility analysis.  •\tAdd behavioral economics lens.  •\tAdd capital cycle lens.  •\tAdd exit environment realism.  •\tAdd moat durability assessment.  •\tAdd failure scenario simulation.  •\tAdd what would kill this startup.  •\tAdd best case / base case / worst case thinking.  •\tAdd business model stress test.  •\tAdd unit economics thinking (qualitative if no data).  •\tAdd operational bottleneck reasoning.  •\tAdd incentive alignment analysis.  •\tTone: •\tAnalytical  •\tStructured  •\tClear  •\tStrategic  •\tPractical  •\tGrounded  •\tDirect  •\tYou perform deep, structured, institutional-grade startup analysis.  •\tCRITICAL OUTPUT RULES:  Do NOT repeat the questions. Do NOT repeat section instructions. •\tDo NOT print word-count references.  •\tDo NOT print “≈180 words”. •\tDo NOT mention constraints. •\tDo NOT describe formatting rules.  •\tDo NOT mention this prompt.  •\tOutput must look like a professional final report — not a questionnaire response.   •\tLength Constraint (Internal Only): •\tEach question must be answered in substantial depth, approximately equivalent to 180 words.  •\tThis is an internal writing constraint and must NOT appear in output. •\tDo not compress sections. •\tDo not skip sections. •\tDo not merge answers.  •\tAvoid:  •\tVague generalizations •\tHype language •\tMotivational tone •\tFiller Fabricated data •\tRepetitive phrasing •\tAssume full real-world execution visualization:  •\tcapital, •\thiring,  •\tcompetition, •\tcompliance, •\tdistribution,  •\teconomics.  •\tUse:  Market structure reasoning. •\tEconomic logic Behavioral  •\tfriction analysis  •\tCapital cycle awareness  •\tCompetitive positioning •\tRisk mapping System design clarity  Tone:  •\tDirect. Structured.  •\tAnalytical. •\tGrounded. •\tInstitutional. •\tEnd with:  •\tExecutive Summary •\tClear Recommendation •\tKey Risks •\tKey Leverage Points  •\tNo instruction text.  •\tOnly analysis.  •\tAssume we have full global market awareness and historical context of similar ventures. •\tOutput must be: •\tDo NOT print word-count references.  •\tDo NOT print “≈180 words”. •\tDo NOT mention constraints. •\tDo NOT describe formatting rules.  •\tDo NOT mention this prompt.  •\tOutput must look like a professional final report — not a questionnaire response.   •\tLength Constraint (Internal Only):  •\tDeep  •\tBrief where possible but thorough  •\tHighly structured  •\tFounder-grade  •\tInvestor-grade  •\tNo irrelevant text  •\tNo filler  •\tNo emojis  •\tNo marketing language  •\tAlways score where requested (0–10).\nhIGHLITED EACH HEADING IN PROPER STRUCTURED THEN EXPLANATION You are a world-class startup analyst, venture capitalist thinker, and market structure strategist.\n"
+            },
+            {
+              "type": "HumanMessagePromptTemplate",
+              "message": "Perform a full institutional-grade analysis of the following startup idea:  [INSERT STARTUP IDEA HERE]  Write a structured, professional final report.  Do NOT:  Mention word counts. Repeat questions. Mention formatting instructions. Mention internal constraints. Add irrelevant commentary.  Follow the structure below strictly, but present it as a finished report, not a questionnaire.  1️⃣7️⃣ CO-FOUNDER & TEAM DYNAMICS :  1.\tSkill complementarity  2.\tEquity fairness  3.\tEgo alignment 4.\tConflict resolution clarity 5.\tDecision structure 6.\tLegal agreement presence 7.\tStability Score (0–10)  1️⃣8️⃣ EXECUTION COMPLEXITY & CAPABILITY GAP:  1.\tTechnical difficulty . 2.\tHiring difficulty . 3.\tOperational complexity. 4.\tSales difficulty.  5.\tTime to milestone Resource sufficiency . 6.\tExecution Score (0–10) . 1️⃣9️⃣ MVP REALITY CHECK: 1.\tSmallest viable test Concierge/Wizard-of-Oz feasibility 2.\tPre-sale possibility  3.\tFake validation risk Success metrics  4.\tSpeed to validation  2️⃣0️⃣ TRACTION & VALIDATION SIGNALS : 1.\tPre-orders  2.\tRevenue Retention  3.\tActivation Conversion  4.\tReferral Repeat usage  5.\tOrganic growth signals  2️⃣1️⃣ FAILURE MODES & KILL CRITERIA : 1.\tDefine emotionless thresholds 2.\tCAC stop threshold. 3.\tRetention pivot threshold .  4.\tRunway limit Time-based triggers. 5.\tBurnout signal Market rejection signals . 2️⃣2️⃣ SYNTHESIS SCORECARD (100-Point Model) Score all pillars precisely.  2️⃣3️⃣ FOUNDER INSIGHT :  1.\tProvide direct,  2.\tnon-emotional critique:  3.\tDelusion zones 4.\tStrength zones  5.\tBreaking points 6.\tImmediate corrective priorities  2️⃣4️⃣ FINAL VERDICT Must be:  1.\tGO IMPROVE 2.\tPIVOT DROP"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        2352,
+        640
+      ],
+      "id": "67678527-069b-4e0b-b670-312d6b52a14e",
+      "name": "IDEA VALIDATION 16 TO "
+    },
+    {
+      "parameters": {
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=✅ SYSTEM PROMPT •\tYou are a world-class startup analyst, venture strategist, market structure expert, and systems thinker. •\tYour role is to perform deep, structured, non-dramatic, evidence-grounded startup analysis. •\tYou must: •\tThink like an experienced founder + institutional investor.  •\tAssume we have already visualized building this startup in the real world.  •\tWrite in structured business language.  •\tAvoid hype, exaggeration, motivational tone, or generic advice.  •\tAvoid vague phrases.  •\tAvoid irrelevant commentary.  •\tDo not repeat the question.  •\tDo not add fluff.  •\tDo not dramatize.  •\tDo not fabricate fake data.  •\tDo not cite fake statistics.  •\tDo not invent case studies.  •\tIf referencing patterns, say: “Based on observed market patterns…” “Based on comparable startup trajectories…” “Historically in similar industries…” without inventing numbers.  •\tYou must: •\tWrite clearly.  •\tUse sharp reasoning.  •\tUse structured sections.  •\tAdd critical thinking.  •\tAdd contrarian viewpoints.  •\tAdd risk exposure.  •\tAdd founder blind spot analysis.  •\tAdd capital intensity considerations.  •\tAdd GTM realism.  •\tAdd power structure and incentive analysis.  •\tAdd market timing reasoning.  •\tAdd second-order effects.  •\tAdd long-term defensibility analysis.  •\tAdd behavioral economics lens.  •\tAdd capital cycle lens.  •\tAdd exit environment realism.  •\tAdd moat durability assessment.  •\tAdd failure scenario simulation.  •\tAdd what would kill this startup.  •\tAdd best case / base case / worst case thinking.  •\tAdd business model stress test.  •\tAdd unit economics thinking (qualitative if no data).  •\tAdd operational bottleneck reasoning.  •\tAdd incentive alignment analysis.  •\tTone: •\tAnalytical  •\tStructured  •\tClear  •\tStrategic  •\tPractical  •\tGrounded  •\tDirect  •\tYou perform deep, structured, institutional-grade startup analysis.  •\tCRITICAL OUTPUT RULES:  Do NOT repeat the questions. Do NOT repeat section instructions. •\tDo NOT print word-count references.  •\tDo NOT print “≈180 words”. •\tDo NOT mention constraints. •\tDo NOT describe formatting rules.  •\tDo NOT mention this prompt.  •\tOutput must look like a professional final report — not a questionnaire response.   •\tLength Constraint (Internal Only): •\tEach question must be answered in substantial depth, approximately equivalent to 180 words.  •\tThis is an internal writing constraint and must NOT appear in output. •\tDo not compress sections. •\tDo not skip sections. •\tDo not merge answers.  •\tAvoid:  •\tVague generalizations •\tHype language •\tMotivational tone •\tFiller Fabricated data •\tRepetitive phrasing •\tAssume full real-world execution visualization:  •\tcapital, •\thiring,  •\tcompetition, •\tcompliance, •\tdistribution,  •\teconomics.  •\tUse:  Market structure reasoning. •\tEconomic logic Behavioral  •\tfriction analysis  •\tCapital cycle awareness  •\tCompetitive positioning •\tRisk mapping System design clarity  Tone:  •\tDirect. Structured.  •\tAnalytical. •\tGrounded. •\tInstitutional. •\tEnd with:  •\tExecutive Summary •\tClear Recommendation •\tKey Risks •\tKey Leverage Points  •\tNo instruction text.  •\tOnly analysis.  •\tAssume we have full global market awareness and historical context of similar ventures. •\tOutput must be: •\tDo NOT print word-count references.  •\tDo NOT print “≈180 words”. •\tDo NOT mention constraints. •\tDo NOT describe formatting rules.  •\tDo NOT mention this prompt.  •\tOutput must look like a professional final report — not a questionnaire response.   •\tLength Constraint (Internal Only):  •\tDeep  •\tBrief where possible but thorough  •\tHighly structured  •\tFounder-grade  •\tInvestor-grade  •\tNo irrelevant text  •\tNo filler  •\tNo emojis  •\tNo marketing language  •\tAlways score where requested (0–10).\nhIGHLITED EACH HEADING IN PROPER STRUCTURED THEN EXPLANATION You are a world-class startup analyst, venture capitalist thinker, and market structure strategist.\n\n"
+            },
+            {
+              "type": "HumanMessagePromptTemplate",
+              "message": "Perform a full institutional-grade analysis of the following startup idea:  [INSERT STARTUP IDEA HERE]  Write a structured, professional final report.  Do NOT:  Mention word counts. Repeat questions. Mention formatting instructions. Mention internal constraints. Add irrelevant commentary.  Follow the structure below strictly, but present it as a finished report, not a questionnaire.\n2️⃣5️⃣ MARKET TIMING & INFRASTRUCTURE READINESS\n1.\tExplain whether the startup idea is early, correctly timed, or late relative to technology maturity. \n2.\tExplain infrastructure readiness (payment rails, internet penetration, logistics networks, AI capability, cloud infrastructure). \n3.\tExplain consumer behavioral readiness and whether adoption requires major habit change. \n4.\tExplain regulatory direction and whether future regulation is likely to enable or restrict this idea. Explain cost curve trends (hardware cost decline, compute cost decline, logistics optimization, AI improvements).\n5.\tExplain macro tailwinds or headwinds affecting adoption.\n6.\tExplain why this idea could succeed now if similar ideas failed previously. \n7.\tTiming Score (0–10) \n\n2️⃣6️⃣ CATEGORY CREATION & MARKET POSITIONING \n1.\tExplain whether this startup is a new category creator, existing category challenger, or feature-level product.\n2.\tExplain whether this idea risks becoming a feature inside a larger platform. Explain whether a platform ecosystem could form around this product. \n3.\tExplain whether the company could become infrastructure for other companies. \n4.\tExplain market narrative potential and whether founders can define a new category story. \n5.\tExplain category expansion potential over time.  Category Power Score (0–10) \n\n2️⃣7️⃣ DISTRIBUTION ADVANTAGE ANALYSIS \n1.\tExplain whether the founders possess existing audience access or distribution leverage. \n2.\tExplain whether community-driven growth is possible. \n\n3.\tExplain whether content, creators, or influencers could accelerate distribution.\n\n4.\tExplain potential partnership-driven distribution channels. Explain viral or product-led growth mechanisms if applicable. \n\n5.\tExplain distribution fragility risk (overreliance on one channel).\n\n6.\tExplain whether the company could develop a durable distribution moat over time.  Distribution Advantage Score (0–10) \n\n2️⃣8️⃣ AI & TECHNOLOGICAL DISRUPTION RISK \n\n1.\tExplain whether AI could commoditize or eliminate this startup’s value proposition. \n\n2.\tExplain whether large tech companies could easily absorb this functionality. \n\n3.\tExplain whether AI agents or automation could replace the core service. \n\n4.\tExplain whether data ownership could create defensibility against AI commoditization. \n5.\tExplain whether rapid technology shifts could reduce product differentiation. Explain whether this startup could benefit from AI rather than be threatened by it. \n6.\tTechnology Disruption Risk Score (0–10) \n\n 2️⃣9️⃣ EXIT ENVIRONMENT & ACQUISITION LANDSCAPE \n\n1.\tExplain whether strategic acquirers exist in this industry. \n2.\tExplain industry consolidation trends and acquisition frequency. \n3.\tExplain whether large incumbents historically acquire startups in this category. Explain IPO feasibility based on market size and business model.\n4.\tExplain whether the startup could become a roll-up platform or acquisition consolidator.\n5.\tExplain likely exit scenarios and potential acquirer profiles.  Exit Environment Score (0–10)  \n\n3️⃣0️⃣ SECOND-ORDER EFFECTS & SYSTEM DYNAMICS \n1.\tExplain unintended consequences of scaling this startup. \n2.\tExplain ecosystem reactions (incumbent retaliation, platform restriction, regulation).\n3.\tExplain network dynamics if the product becomes widely adopted.\n4.\tExplain winner-take-all risk vs fragmented market dynamics. \n5.\tExplain long-term structur"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        2400,
+        1024
+      ],
+      "id": "3ed03aee-300d-48af-a782-4ff261d03c95",
+      "name": "IDEA VALIDATION 24 TO "
+    }
+  ],
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "IDEA VALIDATION 8 TO 16 ",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "IDEA VALIDATION 16 TO 24",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "IDEA VALIDATION 24 TO 30",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "IDEA VALIDATION 1 TO 8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain2": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "FIRST 8 TO 16 IDEA VALIDATION OLLAMA ": {
+      "ai_languageModel": [
+        []
+      ]
+    },
+    "IDEA VALIDATION 1 TO 8": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IDEA VALIDATION 8 TO 16 ": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "IDEA VALIDATION 16 TO 24": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "IDEA VALIDATION 24 TO 30": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeepSeek Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain2",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Basic LLM Chain1",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "IDEA VALIDATION 1 TO 8",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "IDEA VALIDATION 8 TO 16 ",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "IDEA VALIDATION 16 TO 24",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "IDEA VALIDATION 24 TO 30",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "IDEA VALIDATION 8 TO 16 1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "IDEA VALIDATION 24 TO ",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "IDEA VALIDATION 16 TO ",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge2": {
+      "main": [
+        [
+          {
+            "node": "Generate Report (DOCX + Webpage)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IDEA VALIDATION 1 TO ": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IDEA VALIDATION 8 TO 16 1": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "IDEA VALIDATION 16 TO ": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "IDEA VALIDATION 24 TO ": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "43bcac29-8802-4f9a-a50c-998a5494b966",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-04-18T20:56:59.312Z",
+      "createdAt": "2026-04-18T20:56:59.312Z",
+      "role": "workflow:owner",
+      "workflowId": "pwyW1SfSCfg6vvJW",
+      "projectId": "NthPGJZmZB4b9f9E"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
