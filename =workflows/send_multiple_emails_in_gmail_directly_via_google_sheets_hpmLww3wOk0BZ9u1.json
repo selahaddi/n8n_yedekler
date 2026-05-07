@@ -1,0 +1,1557 @@
+={
+  "updatedAt": "2026-05-06T17:38:31.915Z",
+  "createdAt": "2026-05-04T05:35:10.361Z",
+  "id": "hpmLww3wOk0BZ9u1",
+  "name": "Send multiple emails in Gmail directly via Google Sheets",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "401b79a0-a079-4ea0-805b-a963d9206031",
+              "operator": {
+                "name": "filter.operator.equals",
+                "type": "string",
+                "operation": "equals"
+              },
+              "leftValue": "={{ $json.Status }}",
+              "rightValue": "Waiting for sending"
+            },
+            {
+              "id": "74ec18c7-e4cc-4d82-ba05-0ec4781cbb9f",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              },
+              "leftValue": "={{ $json.Title }}",
+              "rightValue": ""
+            },
+            {
+              "id": "6e293a16-48cd-40bb-9882-09b456a97d58",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              },
+              "leftValue": "={{ $json.Subject }}",
+              "rightValue": ""
+            },
+            {
+              "id": "a02d2518-e979-4a17-ab00-dda6723d9945",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              },
+              "leftValue": "={{ $json.Email }}",
+              "rightValue": ""
+            },
+            {
+              "id": "bea4e49e-cf8a-4f05-bd6f-bdce0c5d8533",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              },
+              "leftValue": "={{ $json.Name }}",
+              "rightValue": ""
+            },
+            {
+              "id": "e33eb064-34c6-4dea-b454-10f4fb7fe630",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              },
+              "leftValue": "={{ $json.Date }}",
+              "rightValue": ""
+            },
+            {
+              "id": "1abe48e3-ba4d-4318-900d-fd58097d55ec",
+              "operator": {
+                "type": "dateTime",
+                "operation": "equals"
+              },
+              "leftValue": "={{ DateTime.fromFormat($json[\"Date\"], 'yyyy/MM/dd').startOf('day')}}\n\n",
+              "rightValue": "={{ $now.startOf('day')}}"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {
+          "looseTypeValidation": true
+        }
+      },
+      "id": "0e4c65ce-95e9-4a32-bc5c-0461cb339764",
+      "name": "Filter Status (Waiting for sending)",
+      "type": "n8n-nodes-base.filter",
+      "position": [
+        1712,
+        1216
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "fields": {
+          "values": [
+            {
+              "name": "email",
+              "stringValue": "={{ $json.Email }}"
+            },
+            {
+              "name": "name",
+              "stringValue": "={{ $json.Name }}"
+            },
+            {
+              "name": "ID",
+              "stringValue": "={{ $json.ID }}"
+            }
+          ]
+        },
+        "include": "selected",
+        "options": {}
+      },
+      "id": "27f33448-a016-4ac8-aea3-2ca267fb1628",
+      "name": "Set data",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        2288,
+        1104
+      ],
+      "typeVersion": 3.2
+    },
+    {
+      "parameters": {
+        "content": "# Node Descriptions\n\n## Retrieve Customer Messages Data (Google Sheets Node ):\n**Purpose and Use Cases:**\nThe primary purpose of this node is to retrieve data from a Google Sheets document that contains information about messages to customers. This could be used in various scenarios, such as:\n\n- Compiling a list of customer contacts for outreach campaigns.\n- Gathering feedback or responses stored in a spreadsheet.\n- Automating the process of updating customer records or tracking communications.\n\n\n## Filter Items by Current Date Node:\n- **Purpose:** Filters input items based on comparison with the current date.\n- **Parameters:**\n  - **JavaScript Code:** Compares item dates with the current date for filtering.\n- **Functionality:** Ensures only items with dates matching the current date are passed along.\n\n ### Note : The date format should be in this form (year/month/day) to be accepted.\n\n## Gmail Node:\n- **Purpose:** Likely sends emails using Gmail based on filtered items.\n- **Parameters:**\n  - **Recipient:** Extracted from input data.\n  - **Subject:** Extracted from input data.\n  - **Email Content:** Extracted from input data.\n\n## Update Message Status(Google Sheets Node ):\n- **Purpose:** Updates specific columns in the Google Sheets document.\n- **Parameters:**\n  - **Operation:** Update mode.\n  - **Columns:** Defines which columns to update with values from input data.\n\n## Filter Status (Waiting for sending) Node:\n- **Purpose:** Filters items based on specific status criteria.\n- **Parameters:**\n  - **Conditions:** Filters based on status, title, subject, email, name, and date.\n\n## Set data Node:\n- **Purpose:** Sets specified fields with extracted values from input data.\n\n## Merge feild Node:\n- **Purpose:** Merges fields from different sources based on position.\n\nFeel free to utilize these detailed descriptions to understand and enhance the workflow further.\n",
+        "height": 1171.2381808131183,
+        "width": 922.8914139860617
+      },
+      "id": "badf1d45-21e0-40a5-bcc4-c434f43c04d4",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        384,
+        256
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "# The Workflow",
+        "height": 555,
+        "width": 1371
+      },
+      "id": "0f1cd01b-4cf0-4998-9c51-02c2c9c4aa2b",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1328,
+        864
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "\n",
+        "height": 1914,
+        "width": 2359,
+        "color": 7
+      },
+      "id": "421b47fd-4707-41ec-97e4-7256be22b75d",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        352,
+        176
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## Copy this template to get started :\n- [Google Sheets](https://docs.google.com/spreadsheets/d/1efCCzfeUX0AETz2wsULQN90OBCOKK-gBoDaptzcBHdE/edit?usp=sharing)\n\n## Workflow Nodes Documentation:\n\n1. [Schedule Trigger](https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.scheduletrigger/)\n2. [Filter Items by Current Date](https://docs.n8n.io/nodes/n8n-nodes-base.code.html)\n3. [Gmail](https://docs.n8n.io/nodes/n8n-nodes-base.gmail.html)\n4. [Google Sheets](https://docs.n8n.io/nodes/n8n-nodes-base.googleSheets.html)\n5. [Filter Status (Waiting for sending)](https://docs.n8n.io/nodes/n8n-nodes-base.filter.html)\n6. [Set data](https://docs.n8n.io/nodes/n8n-nodes-base.set.html)\n7. [Merge feild](https://docs.n8n.io/nodes/n8n-nodes-base.merge.html)\n",
+        "height": 601.2740375761717,
+        "width": 342.9710297084147
+      },
+      "id": "dfb3d998-14fc-4d2a-af9e-19c7da8060f9",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1328,
+        256
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## Workflow Overview:\n\nThe workflow begins with the \"Google Sheets Trigger\" node, which monitors a specified Google Sheet for new row additions. Upon detection of a new row, the workflow progresses to the \"Filter Status (Waiting for sending)\" node, where items are filtered based on specific conditions.\n\nSubsequently, the workflow moves to the \"Filter Items by Current Date\" node, which filters items based on the current date. Items matching the current date are then processed further.\n\nThe filtered items are then forwarded to the \"Gmail\" node, where personalized emails are composed and sent to recipients based on the Google Sheet data. Finally, the workflow updates the Google Sheet using the \"Google Sheets\" node with the status of the sent emails and other relevant information.",
+        "height": 602.8437691253422,
+        "width": 1024.157503378047
+      },
+      "id": "4ed5a195-fd49-465e-9a14-fa64cd96056b",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1680,
+        256
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 1
+            }
+          ]
+        }
+      },
+      "id": "d156f0da-53e7-499b-b652-5ca0c3c9e237",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [
+        1344,
+        1120
+      ],
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "10seYMeYN0yTKTjgVMxIk8SkMZeERJFWueffD_9Iwe70",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 138359973,
+          "mode": "list",
+          "cachedResultName": "bu workflowdaki filtreden yola çıkarak bu workflo...",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10seYMeYN0yTKTjgVMxIk8SkMZeERJFWueffD_9Iwe70/edit#gid=138359973"
+        },
+        "options": {}
+      },
+      "id": "e398e809-b00f-4edb-af94-d236cfb80703",
+      "name": "Retrieve Customer Messages Data",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        1504,
+        1120
+      ],
+      "typeVersion": 4.2,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "5IPaDNEuQxdxQUAS",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "10seYMeYN0yTKTjgVMxIk8SkMZeERJFWueffD_9Iwe70",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 138359973,
+          "mode": "list",
+          "cachedResultName": "bu workflowdaki filtreden yola çıkarak bu workflo...",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10seYMeYN0yTKTjgVMxIk8SkMZeERJFWueffD_9Iwe70/edit#gid=138359973"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "email": "={{ $json.email }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Subject",
+              "displayName": "Subject",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "6de55876-3924-4fdc-aae7-b901a2ce72be",
+      "name": "Update Message Status",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        2480,
+        1104
+      ],
+      "typeVersion": 4.2,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "5IPaDNEuQxdxQUAS",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.Email }}",
+        "subject": "={{ $json.Title }}",
+        "emailType": "text",
+        "message": "={{ $json.Subject }}",
+        "options": {}
+      },
+      "id": "0401bfe7-de72-407a-a7f7-70b7da52e9c9",
+      "name": "Send a message (Gmail)",
+      "type": "n8n-nodes-base.gmail",
+      "position": [
+        1856,
+        992
+      ],
+      "notesInFlow": false,
+      "typeVersion": 2.1,
+      "alwaysOutputData": false,
+      "webhookId": "6f46dcbe-778e-42cc-977c-d4d92967a7cf",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "vO9a8kj5yWdCc9zo",
+          "name": "Serttas"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combinationMode": "mergeByPosition",
+        "options": {}
+      },
+      "id": "94ff4e81-41c6-479e-bcb5-c9786935a954",
+      "name": "Merge fields",
+      "type": "n8n-nodes-base.merge",
+      "position": [
+        2112,
+        1104
+      ],
+      "typeVersion": 2.1
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "401b79a0-a079-4ea0-805b-a963d9206031",
+              "operator": {
+                "name": "filter.operator.equals",
+                "type": "string",
+                "operation": "equals"
+              },
+              "leftValue": "={{ $('Data').item.json.Status }}",
+              "rightValue": "Waiting for sending"
+            },
+            {
+              "id": "74ec18c7-e4cc-4d82-ba05-0ec4781cbb9f",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              },
+              "leftValue": "={{ $('Data').item.json.Title }}",
+              "rightValue": ""
+            },
+            {
+              "id": "6e293a16-48cd-40bb-9882-09b456a97d58",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              },
+              "leftValue": "={{ $json.output }}",
+              "rightValue": ""
+            },
+            {
+              "id": "a02d2518-e979-4a17-ab00-dda6723d9945",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              },
+              "leftValue": "={{ $('Data').item.json.Email }}",
+              "rightValue": ""
+            },
+            {
+              "id": "bea4e49e-cf8a-4f05-bd6f-bdce0c5d8533",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              },
+              "leftValue": "={{ $('Data').item.json.Name }}",
+              "rightValue": ""
+            },
+            {
+              "id": "e33eb064-34c6-4dea-b454-10f4fb7fe630",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              },
+              "leftValue": "={{ $('Data').item.json.Date }}",
+              "rightValue": ""
+            },
+            {
+              "id": "1abe48e3-ba4d-4318-900d-fd58097d55ec",
+              "operator": {
+                "type": "dateTime",
+                "operation": "equals"
+              },
+              "leftValue": "={{ DateTime.fromFormat($('Data').item.json.Date, 'yyyy/MM/dd').startOf('day') }}",
+              "rightValue": "={{ $now.startOf('day')}}"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {
+          "looseTypeValidation": true
+        }
+      },
+      "id": "7ca7133c-9491-4cfd-9d4b-212bb05653d5",
+      "name": "Filter Status (Waiting for sending)1",
+      "type": "n8n-nodes-base.filter",
+      "position": [
+        3552,
+        448
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "fields": {
+          "values": [
+            {
+              "name": "ID",
+              "stringValue": "={{ $('Data').item.json.ID }}"
+            },
+            {
+              "name": "Status",
+              "stringValue": "={{ $json.labelIds[0] }}"
+            }
+          ]
+        },
+        "include": "selected",
+        "options": {}
+      },
+      "id": "8724b1af-385c-45d1-b3d2-623a70ea2d1d",
+      "name": "Set data1",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        4080,
+        432
+      ],
+      "typeVersion": 3.2
+    },
+    {
+      "parameters": {
+        "content": "#VERSİON1\n",
+        "height": 603,
+        "width": 1691,
+        "color": 5
+      },
+      "id": "39971a89-b98a-4420-adfa-0c43f290521f",
+      "name": "Sticky Note5",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2816,
+        256
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 1
+            }
+          ]
+        }
+      },
+      "id": "f1d373cc-9966-4549-acbf-f5abd8fe1b62",
+      "name": "Schedule Trigger1",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [
+        2880,
+        448
+      ],
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "10seYMeYN0yTKTjgVMxIk8SkMZeERJFWueffD_9Iwe70",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 138359973,
+          "mode": "list",
+          "cachedResultName": "bu workflowdaki filtreden yola çıkarak bu workflo...",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10seYMeYN0yTKTjgVMxIk8SkMZeERJFWueffD_9Iwe70/edit#gid=138359973"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "email": "=",
+            "Status": "={{ $json.Status }}",
+            "ID": "={{ $json.ID }}"
+          },
+          "matchingColumns": [
+            "ID"
+          ],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Subject",
+              "displayName": "Subject",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "a1b73786-2275-4652-a275-d247576e08a8",
+      "name": "Update Message Status1",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        4272,
+        432
+      ],
+      "typeVersion": 4.2,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "5IPaDNEuQxdxQUAS",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Data').item.json.Email }}",
+        "subject": "={{ $('Data').item.json.Title }}",
+        "emailType": "text",
+        "message": "={{ $('AI Agent').item.json.output }}",
+        "options": {}
+      },
+      "id": "58fa4460-7487-4e6f-ab7a-f064784b8bd8",
+      "name": "Send a message (Gmail)1",
+      "type": "n8n-nodes-base.gmail",
+      "position": [
+        3712,
+        272
+      ],
+      "notesInFlow": false,
+      "typeVersion": 2.1,
+      "alwaysOutputData": false,
+      "webhookId": "6f46dcbe-778e-42cc-977c-d4d92967a7cf",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "vO9a8kj5yWdCc9zo",
+          "name": "Serttas"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combinationMode": "mergeByPosition",
+        "options": {}
+      },
+      "id": "7efb298f-aea7-446f-9e23-4ba34d420b20",
+      "name": "Merge fields1",
+      "type": "n8n-nodes-base.merge",
+      "position": [
+        3888,
+        432
+      ],
+      "typeVersion": 2.1
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Müşteri bilgileri \nİsim :{{ $json.Name }}\nMesaj içeriği:{{ $json.Title }}\nTarih:{{ $json.Date }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "\"X\" şirketinin dijital asistanısın. Sana verilen müşteri bilgileri ile müşterilere basit mesaj göndermelisin. "
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        3232,
+        448
+      ],
+      "id": "15bd3d39-df6e-4939-a561-22cbc9e44c61",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3-flash-preview",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        3232,
+        688
+      ],
+      "id": "f6358695-4df1-4db1-b97a-ec7cc106377a",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "7ltGq0vUF6iG1jR5",
+          "name": "serttas1"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "10seYMeYN0yTKTjgVMxIk8SkMZeERJFWueffD_9Iwe70",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 138359973,
+          "mode": "list",
+          "cachedResultName": "bu workflowdaki filtreden yola çıkarak bu workflo...",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10seYMeYN0yTKTjgVMxIk8SkMZeERJFWueffD_9Iwe70/edit#gid=138359973"
+        },
+        "options": {}
+      },
+      "id": "d200a84d-ddee-4ef1-af9f-8cf965d593ce",
+      "name": "Data",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        3040,
+        448
+      ],
+      "typeVersion": 4.2,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "5IPaDNEuQxdxQUAS",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "401b79a0-a079-4ea0-805b-a963d9206031",
+              "operator": {
+                "name": "filter.operator.equals",
+                "type": "string",
+                "operation": "equals"
+              },
+              "leftValue": "={{ $('Data1').item.json.Status }}",
+              "rightValue": "Waiting for sending"
+            },
+            {
+              "id": "74ec18c7-e4cc-4d82-ba05-0ec4781cbb9f",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              },
+              "leftValue": "={{ $('Data1').item.json.Title }}",
+              "rightValue": ""
+            },
+            {
+              "id": "a02d2518-e979-4a17-ab00-dda6723d9945",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              },
+              "leftValue": "={{ $('Data1').item.json.Email }}",
+              "rightValue": ""
+            },
+            {
+              "id": "bea4e49e-cf8a-4f05-bd6f-bdce0c5d8533",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              },
+              "leftValue": "={{ $('Data1').item.json.Name }}",
+              "rightValue": ""
+            },
+            {
+              "id": "e33eb064-34c6-4dea-b454-10f4fb7fe630",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              },
+              "leftValue": "={{ $('Data1').item.json.Date }}",
+              "rightValue": ""
+            },
+            {
+              "id": "1abe48e3-ba4d-4318-900d-fd58097d55ec",
+              "operator": {
+                "type": "dateTime",
+                "operation": "equals"
+              },
+              "leftValue": "={{ DateTime.fromFormat($('Data1').item.json.Date, 'yyyy/MM/dd').startOf('day') }}",
+              "rightValue": "={{ $now.startOf('day')}}"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {
+          "looseTypeValidation": true
+        }
+      },
+      "id": "227028e8-f472-4fb0-b13c-34db9adaaeb7",
+      "name": "Filter Status (Waiting for sending)2",
+      "type": "n8n-nodes-base.filter",
+      "position": [
+        3216,
+        1232
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "fields": {
+          "values": [
+            {
+              "name": "ID",
+              "stringValue": "={{ $('Data1').item.json.ID }}"
+            },
+            {
+              "name": "Status",
+              "stringValue": "={{ $json.labelIds[0] }}"
+            }
+          ]
+        },
+        "include": "selected",
+        "options": {}
+      },
+      "id": "bec83b3d-d7de-4551-bc17-e1b27d2fa735",
+      "name": "Set data2",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        4080,
+        1216
+      ],
+      "typeVersion": 3.2
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 1
+            }
+          ]
+        }
+      },
+      "id": "cab9d34d-4396-4a4a-b131-eba495cade4a",
+      "name": "Schedule Trigger2",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [
+        2880,
+        1232
+      ],
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "10seYMeYN0yTKTjgVMxIk8SkMZeERJFWueffD_9Iwe70",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 138359973,
+          "mode": "list",
+          "cachedResultName": "bu workflowdaki filtreden yola çıkarak bu workflo...",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10seYMeYN0yTKTjgVMxIk8SkMZeERJFWueffD_9Iwe70/edit#gid=138359973"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "email": "=",
+            "Status": "={{ $json.Status }}",
+            "ID": "={{ $json.ID }}"
+          },
+          "matchingColumns": [
+            "ID"
+          ],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Subject",
+              "displayName": "Subject",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "0860e9d6-6564-4c3c-ba45-003560168173",
+      "name": "Update Message Status2",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        4272,
+        1216
+      ],
+      "typeVersion": 4.2,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "5IPaDNEuQxdxQUAS",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Data1').item.json.Email }}",
+        "subject": "={{ $('Data1').item.json.Title }}",
+        "emailType": "text",
+        "message": "={{ $('AI Agent1').item.json.output }}",
+        "options": {}
+      },
+      "id": "711a84e0-baa0-41c3-975a-ad28e7395f93",
+      "name": "Send a message (Gmail)2",
+      "type": "n8n-nodes-base.gmail",
+      "position": [
+        3712,
+        1056
+      ],
+      "notesInFlow": false,
+      "typeVersion": 2.1,
+      "alwaysOutputData": false,
+      "webhookId": "6f46dcbe-778e-42cc-977c-d4d92967a7cf",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "vO9a8kj5yWdCc9zo",
+          "name": "Serttas"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combinationMode": "mergeByPosition",
+        "options": {}
+      },
+      "id": "4d29e377-204c-4248-a0c8-0db7e3b3823c",
+      "name": "Merge fields2",
+      "type": "n8n-nodes-base.merge",
+      "position": [
+        3888,
+        1216
+      ],
+      "typeVersion": 2.1
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Müşteri bilgileri \nİsim :{{ $json.Name }}\nMesaj içeriği:{{ $json.Title }}\nTarih:{{ $json.Date }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "\"X\" şirketinin dijital asistanısın. Sana verilen müşteri bilgileri ile müşterilere basit mesaj göndermelisin. "
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        3408,
+        1232
+      ],
+      "id": "376c18d8-f345-47c6-854b-9ebe9eac89b7",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3-flash-preview",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        3392,
+        1408
+      ],
+      "id": "0aeed167-e981-4a1f-ac03-40e393bcc381",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "7ltGq0vUF6iG1jR5",
+          "name": "serttas1"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "10seYMeYN0yTKTjgVMxIk8SkMZeERJFWueffD_9Iwe70",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 138359973,
+          "mode": "list",
+          "cachedResultName": "bu workflowdaki filtreden yola çıkarak bu workflo...",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10seYMeYN0yTKTjgVMxIk8SkMZeERJFWueffD_9Iwe70/edit#gid=138359973"
+        },
+        "options": {}
+      },
+      "id": "fbbe6f69-8028-4928-8aaa-6f22cce28844",
+      "name": "Data1",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        3040,
+        1232
+      ],
+      "typeVersion": 4.2,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "5IPaDNEuQxdxQUAS",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "#VERSİON2\n",
+        "height": 624,
+        "width": 1744,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2800,
+        976
+      ],
+      "typeVersion": 1,
+      "id": "fb4d11bf-e170-4d76-9322-518f597fde35",
+      "name": "Sticky Note6"
+    }
+  ],
+  "connections": {
+    "Set data": {
+      "main": [
+        [
+          {
+            "node": "Update Message Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge fields": {
+      "main": [
+        [
+          {
+            "node": "Set data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Retrieve Customer Messages Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message (Gmail)": {
+      "main": [
+        [
+          {
+            "node": "Merge fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Retrieve Customer Messages Data": {
+      "main": [
+        [
+          {
+            "node": "Filter Status (Waiting for sending)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Status (Waiting for sending)": {
+      "main": [
+        [
+          {
+            "node": "Merge fields",
+            "type": "main",
+            "index": 1
+          },
+          {
+            "node": "Send a message (Gmail)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Status (Waiting for sending)1": {
+      "main": [
+        [
+          {
+            "node": "Merge fields1",
+            "type": "main",
+            "index": 1
+          },
+          {
+            "node": "Send a message (Gmail)1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set data1": {
+      "main": [
+        [
+          {
+            "node": "Update Message Status1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger1": {
+      "main": [
+        [
+          {
+            "node": "Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message (Gmail)1": {
+      "main": [
+        [
+          {
+            "node": "Merge fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge fields1": {
+      "main": [
+        [
+          {
+            "node": "Set data1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Filter Status (Waiting for sending)1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Data": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Status (Waiting for sending)2": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set data2": {
+      "main": [
+        [
+          {
+            "node": "Update Message Status2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger2": {
+      "main": [
+        [
+          {
+            "node": "Data1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message (Gmail)2": {
+      "main": [
+        [
+          {
+            "node": "Merge fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge fields2": {
+      "main": [
+        [
+          {
+            "node": "Set data2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Send a message (Gmail)2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge fields2",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Data1": {
+      "main": [
+        [
+          {
+            "node": "Filter Status (Waiting for sending)2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": {
+    "templateId": "2088",
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "cfc67419-1513-413a-94cd-8edbc6cc1a24",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-05-04T05:35:10.366Z",
+      "createdAt": "2026-05-04T05:35:10.366Z",
+      "role": "workflow:owner",
+      "workflowId": "hpmLww3wOk0BZ9u1",
+      "projectId": "NthPGJZmZB4b9f9E"
+    }
+  ],
+  "activeVersion": null,
+  "tags": [
+    {
+      "updatedAt": "2026-05-04T05:57:49.666Z",
+      "createdAt": "2026-05-04T05:57:49.666Z",
+      "id": "AFNjSWIuaRrszAZb",
+      "name": "Gmail"
+    },
+    {
+      "updatedAt": "2026-05-04T05:58:02.250Z",
+      "createdAt": "2026-05-04T05:58:02.250Z",
+      "id": "PKF1r1lWawlV15Rc",
+      "name": "b2b"
+    },
+    {
+      "updatedAt": "2026-05-04T05:57:53.209Z",
+      "createdAt": "2026-05-04T05:57:53.209Z",
+      "id": "ayMdot3fRof6psdf",
+      "name": "Sheet"
+    }
+  ]
+}
