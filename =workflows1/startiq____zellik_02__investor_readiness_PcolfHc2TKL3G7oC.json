@@ -1,0 +1,670 @@
+={
+  "updatedAt": "2026-03-30T12:40:45.455Z",
+  "createdAt": "2026-03-30T12:40:25.651Z",
+  "id": "PcolfHc2TKL3G7oC",
+  "name": "StartIQ - Özellik 02: Investor Readiness",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "investor-readiness",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "da7d75a2-f267-458d-82af-04de113519fe",
+      "name": "Kurucu Bildirimi (Veriler)",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -1056,
+        160
+      ],
+      "webhookId": "f2d05566-2348-42ec-8efc-413ac550b0e1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Traction (Büyüme/Gelir): {{ $json.body.traction || 'Yok' }}\nTakım: {{ $json.body.takim || 'Yok' }}\nİş Modeli: {{ $json.body.model || 'Yok' }}",
+        "options": {
+          "systemMessage": "Sen 'F2_A: Readiness Score' yapay zekasısın. Kurucunun girdiği pazar çekişi (traction), takım ve iş modeli verilerini 100 üzerinden değerlendir.\n\nJSON formatında şu değerleri dön:\n- \"readiness_skoru\": (sayısal, 1-100)\n- \"eksik_alanlar\": (Eksik veya zayıf olan kısımlar)\\n\\nÖNEMLİ: Kurucunun girdiği metin hangi dildeyse, yanıtını kesinlikle o dilde üret. (Eğer JSON formatı isteniyorsa anahtarları bozma, sadece değerleri o dilde yaz)."
+        }
+      },
+      "id": "e6527c1e-365f-46c4-831d-3b9001de0494",
+      "name": "F2_A: Readiness Score AI",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -864,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "let content = $input.item.json.output || $input.item.json.text || '{}';\n\ntry {\n  content = content.replace(/```json/g, '').replace(/```/g, '').trim();\n  const parsed = JSON.parse(content);\n  Object.assign($input.item.json, parsed);\n} catch (e) {\n  $input.item.json.error = \"JSON parse edilemedi: \" + e.message;\n}\n\nreturn $input.item;"
+      },
+      "id": "caf1cd04-7ffd-427b-9495-b0600c233b16",
+      "name": "JSON Ayrıştırma (Code)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -544,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{ $json.readiness_skoru }}",
+              "operation": "largerEqual",
+              "value2": 70
+            }
+          ]
+        }
+      },
+      "id": "03e71104-a6a1-49b4-b29d-9aec3b6a0268",
+      "name": "Skor >= 70 mi?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        -304,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Kurucu Verileri:\nTraction: {{ $('Kurucu Bildirimi (Veriler)').item.json.body.traction }}\nTakım: {{ $('Kurucu Bildirimi (Veriler)').item.json.body.takim }}\nModel: {{ $('Kurucu Bildirimi (Veriler)').item.json.body.model }}\nReadiness Skoru: {{ $('JSON Ayrıştırma (Code)').item.json.readiness_skoru }}",
+        "options": {
+          "systemMessage": "Sen 'F2_B: Pitch Deck Builder' yapay zekasısın. Bu startup yatırım almaya yeterince hazır (Puan >= 70). Yukarıdaki verileri kullanarak, yatırımcılara sunulacak 10 slaytlık bir sunum (Pitch Deck) anlatısı hazırla.\n\nHer slayt için (örneğin: Problem, Çözüm, Pazar, vb.) kısa ve vurucu başlıklar ve alt metinler üret.\\n\\nÖNEMLİ: Kurucunun girdiği metin hangi dildeyse, yanıtını kesinlikle o dilde üret. (Eğer JSON formatı isteniyorsa anahtarları bozma, sadece değerleri o dilde yaz)."
+        }
+      },
+      "id": "7ab0ae9f-951e-408b-8a8e-0779a3bb606a",
+      "name": "F2_B: Pitch Deck Builder AI",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Kurucu Verileri:\nTraction: {{ $('Kurucu Bildirimi (Veriler)').item.json.body.traction }}\nTakım: {{ $('Kurucu Bildirimi (Veriler)').item.json.body.takim }}\nModel: {{ $('Kurucu Bildirimi (Veriler)').item.json.body.model }}\n\nEksikler: {{ $('JSON Ayrıştırma (Code)').item.json.eksik_alanlar }}",
+        "options": {
+          "systemMessage": "Sen bir yatırım danışmanısın. Kurucunun 'Readiness Skoru' 70'in altında. Kullanıcının şu an yatırım aramak yerine ürününe dönüp geliştirmesi gereken 3 temel aksiyon adımını çıkar (Action Plan üret).\\n\\nÖNEMLİ: Kurucunun girdiği metin hangi dildeyse, yanıtını kesinlikle o dilde üret. (Eğer JSON formatı isteniyorsa anahtarları bozma, sadece değerleri o dilde yaz)."
+        }
+      },
+      "id": "320927d0-64d4-4f9a-9ddb-3199b2044f1b",
+      "name": "Geliştirme Planı AI (Skor < 70)",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        0,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatDeepSeek",
+      "typeVersion": 1,
+      "position": [
+        -864,
+        416
+      ],
+      "id": "3c0a0a94-fde4-4963-8676-e4db94755173",
+      "name": "DeepSeek Chat Model",
+      "credentials": {
+        "deepSeekApi": {
+          "id": "04burqSTSa8yxNaW",
+          "name": "DeepSeek account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatDeepSeek",
+      "typeVersion": 1,
+      "position": [
+        -144,
+        496
+      ],
+      "id": "eae4796e-46cb-4786-9c5a-546fe64372ed",
+      "name": "DeepSeek Chat Model1",
+      "credentials": {
+        "deepSeekApi": {
+          "id": "04burqSTSa8yxNaW",
+          "name": "DeepSeek account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        704,
+        144
+      ],
+      "id": "8f839d98-e049-4b41-bd02-578bd9fce3a7",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "tableId": "feature_02_readiness_history",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "traction_data",
+              "fieldValue": "={{ $('Kurucu Bildirimi (Veriler)').item.json.body.traction }}"
+            },
+            {
+              "fieldId": "team_data",
+              "fieldValue": "={{ $('Kurucu Bildirimi (Veriler)').item.json.body.takim }}"
+            },
+            {
+              "fieldId": "model_data",
+              "fieldValue": "={{ $('Kurucu Bildirimi (Veriler)').item.json.body.model }}"
+            },
+            {
+              "fieldId": "score",
+              "fieldValue": "={{ $('JSON Ayrıştırma (Code)').item.json.readiness_skoru }}"
+            },
+            {
+              "fieldId": "pitch_deck_narrative",
+              "fieldValue": "={{ $('Skor >= 70 mi?').item.json.output }}"
+            },
+            {
+              "fieldId": "action_plan",
+              "fieldValue": "={{ $json.output }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        432,
+        144
+      ],
+      "id": "3e2ddbb1-00c3-4eb6-ba15-b75f1aef6255",
+      "name": "Create a row",
+      "credentials": {
+        "supabaseApi": {
+          "id": "xeLcRlXxlGKLN5CK",
+          "name": "StarIQ"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Kurucu Bildirimi (Veriler)": {
+      "main": [
+        [
+          {
+            "node": "F2_A: Readiness Score AI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "F2_A: Readiness Score AI": {
+      "main": [
+        [
+          {
+            "node": "JSON Ayrıştırma (Code)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "JSON Ayrıştırma (Code)": {
+      "main": [
+        [
+          {
+            "node": "Skor >= 70 mi?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Skor >= 70 mi?": {
+      "main": [
+        [
+          {
+            "node": "F2_B: Pitch Deck Builder AI",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Geliştirme Planı AI (Skor < 70)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeepSeek Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "F2_A: Readiness Score AI",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeepSeek Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "F2_B: Pitch Deck Builder AI",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Geliştirme Planı AI (Skor < 70)",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Geliştirme Planı AI (Skor < 70)": {
+      "main": [
+        [
+          {
+            "node": "Create a row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "F2_B: Pitch Deck Builder AI": {
+      "main": [
+        [
+          {
+            "node": "Create a row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a row": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "304c67b4-0e50-4a1d-8d8d-a8113012fc17",
+  "activeVersionId": "304c67b4-0e50-4a1d-8d8d-a8113012fc17",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-03-30T12:40:25.653Z",
+      "createdAt": "2026-03-30T12:40:25.653Z",
+      "role": "workflow:owner",
+      "workflowId": "PcolfHc2TKL3G7oC",
+      "projectId": "NthPGJZmZB4b9f9E"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-03-30T12:40:47.000Z",
+    "createdAt": "2026-03-30T12:40:45.457Z",
+    "versionId": "304c67b4-0e50-4a1d-8d8d-a8113012fc17",
+    "workflowId": "PcolfHc2TKL3G7oC",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "investor-readiness",
+          "responseMode": "lastNode",
+          "options": {}
+        },
+        "id": "da7d75a2-f267-458d-82af-04de113519fe",
+        "name": "Kurucu Bildirimi (Veriler)",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 1,
+        "position": [
+          -1056,
+          160
+        ],
+        "webhookId": "f2d05566-2348-42ec-8efc-413ac550b0e1"
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "=Traction (Büyüme/Gelir): {{ $json.body.traction || 'Yok' }}\nTakım: {{ $json.body.takim || 'Yok' }}\nİş Modeli: {{ $json.body.model || 'Yok' }}",
+          "options": {
+            "systemMessage": "Sen 'F2_A: Readiness Score' yapay zekasısın. Kurucunun girdiği pazar çekişi (traction), takım ve iş modeli verilerini 100 üzerinden değerlendir.\n\nJSON formatında şu değerleri dön:\n- \"readiness_skoru\": (sayısal, 1-100)\n- \"eksik_alanlar\": (Eksik veya zayıf olan kısımlar)\\n\\nÖNEMLİ: Kurucunun girdiği metin hangi dildeyse, yanıtını kesinlikle o dilde üret. (Eğer JSON formatı isteniyorsa anahtarları bozma, sadece değerleri o dilde yaz)."
+          }
+        },
+        "id": "e6527c1e-365f-46c4-831d-3b9001de0494",
+        "name": "F2_A: Readiness Score AI",
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 3.1,
+        "position": [
+          -864,
+          160
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "let content = $input.item.json.output || $input.item.json.text || '{}';\n\ntry {\n  content = content.replace(/```json/g, '').replace(/```/g, '').trim();\n  const parsed = JSON.parse(content);\n  Object.assign($input.item.json, parsed);\n} catch (e) {\n  $input.item.json.error = \"JSON parse edilemedi: \" + e.message;\n}\n\nreturn $input.item;"
+        },
+        "id": "caf1cd04-7ffd-427b-9495-b0600c233b16",
+        "name": "JSON Ayrıştırma (Code)",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -544,
+          160
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "number": [
+              {
+                "value1": "={{ $json.readiness_skoru }}",
+                "operation": "largerEqual",
+                "value2": 70
+              }
+            ]
+          }
+        },
+        "id": "03e71104-a6a1-49b4-b29d-9aec3b6a0268",
+        "name": "Skor >= 70 mi?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 1,
+        "position": [
+          -304,
+          160
+        ]
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "=Kurucu Verileri:\nTraction: {{ $('Kurucu Bildirimi (Veriler)').item.json.body.traction }}\nTakım: {{ $('Kurucu Bildirimi (Veriler)').item.json.body.takim }}\nModel: {{ $('Kurucu Bildirimi (Veriler)').item.json.body.model }}\nReadiness Skoru: {{ $('JSON Ayrıştırma (Code)').item.json.readiness_skoru }}",
+          "options": {
+            "systemMessage": "Sen 'F2_B: Pitch Deck Builder' yapay zekasısın. Bu startup yatırım almaya yeterince hazır (Puan >= 70). Yukarıdaki verileri kullanarak, yatırımcılara sunulacak 10 slaytlık bir sunum (Pitch Deck) anlatısı hazırla.\n\nHer slayt için (örneğin: Problem, Çözüm, Pazar, vb.) kısa ve vurucu başlıklar ve alt metinler üret.\\n\\nÖNEMLİ: Kurucunun girdiği metin hangi dildeyse, yanıtını kesinlikle o dilde üret. (Eğer JSON formatı isteniyorsa anahtarları bozma, sadece değerleri o dilde yaz)."
+          }
+        },
+        "id": "7ab0ae9f-951e-408b-8a8e-0779a3bb606a",
+        "name": "F2_B: Pitch Deck Builder AI",
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 3.1,
+        "position": [
+          0,
+          0
+        ]
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "=Kurucu Verileri:\nTraction: {{ $('Kurucu Bildirimi (Veriler)').item.json.body.traction }}\nTakım: {{ $('Kurucu Bildirimi (Veriler)').item.json.body.takim }}\nModel: {{ $('Kurucu Bildirimi (Veriler)').item.json.body.model }}\n\nEksikler: {{ $('JSON Ayrıştırma (Code)').item.json.eksik_alanlar }}",
+          "options": {
+            "systemMessage": "Sen bir yatırım danışmanısın. Kurucunun 'Readiness Skoru' 70'in altında. Kullanıcının şu an yatırım aramak yerine ürününe dönüp geliştirmesi gereken 3 temel aksiyon adımını çıkar (Action Plan üret).\\n\\nÖNEMLİ: Kurucunun girdiği metin hangi dildeyse, yanıtını kesinlikle o dilde üret. (Eğer JSON formatı isteniyorsa anahtarları bozma, sadece değerleri o dilde yaz)."
+          }
+        },
+        "id": "320927d0-64d4-4f9a-9ddb-3199b2044f1b",
+        "name": "Geliştirme Planı AI (Skor < 70)",
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 3.1,
+        "position": [
+          0,
+          304
+        ]
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatDeepSeek",
+        "typeVersion": 1,
+        "position": [
+          -864,
+          416
+        ],
+        "id": "3c0a0a94-fde4-4963-8676-e4db94755173",
+        "name": "DeepSeek Chat Model",
+        "credentials": {
+          "deepSeekApi": {
+            "id": "04burqSTSa8yxNaW",
+            "name": "DeepSeek account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatDeepSeek",
+        "typeVersion": 1,
+        "position": [
+          -144,
+          496
+        ],
+        "id": "eae4796e-46cb-4786-9c5a-546fe64372ed",
+        "name": "DeepSeek Chat Model1",
+        "credentials": {
+          "deepSeekApi": {
+            "id": "04burqSTSa8yxNaW",
+            "name": "DeepSeek account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          704,
+          144
+        ],
+        "id": "8f839d98-e049-4b41-bd02-578bd9fce3a7",
+        "name": "Respond to Webhook"
+      },
+      {
+        "parameters": {
+          "tableId": "feature_02_readiness_history",
+          "fieldsUi": {
+            "fieldValues": [
+              {
+                "fieldId": "traction_data",
+                "fieldValue": "={{ $('Kurucu Bildirimi (Veriler)').item.json.body.traction }}"
+              },
+              {
+                "fieldId": "team_data",
+                "fieldValue": "={{ $('Kurucu Bildirimi (Veriler)').item.json.body.takim }}"
+              },
+              {
+                "fieldId": "model_data",
+                "fieldValue": "={{ $('Kurucu Bildirimi (Veriler)').item.json.body.model }}"
+              },
+              {
+                "fieldId": "score",
+                "fieldValue": "={{ $('JSON Ayrıştırma (Code)').item.json.readiness_skoru }}"
+              },
+              {
+                "fieldId": "pitch_deck_narrative",
+                "fieldValue": "={{ $('Skor >= 70 mi?').item.json.output }}"
+              },
+              {
+                "fieldId": "action_plan",
+                "fieldValue": "={{ $json.output }}"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          432,
+          144
+        ],
+        "id": "3e2ddbb1-00c3-4eb6-ba15-b75f1aef6255",
+        "name": "Create a row",
+        "credentials": {
+          "supabaseApi": {
+            "id": "xeLcRlXxlGKLN5CK",
+            "name": "StarIQ"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "Kurucu Bildirimi (Veriler)": {
+        "main": [
+          [
+            {
+              "node": "F2_A: Readiness Score AI",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "F2_A: Readiness Score AI": {
+        "main": [
+          [
+            {
+              "node": "JSON Ayrıştırma (Code)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "JSON Ayrıştırma (Code)": {
+        "main": [
+          [
+            {
+              "node": "Skor >= 70 mi?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Skor >= 70 mi?": {
+        "main": [
+          [
+            {
+              "node": "F2_B: Pitch Deck Builder AI",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Geliştirme Planı AI (Skor < 70)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "DeepSeek Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "F2_A: Readiness Score AI",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "DeepSeek Chat Model1": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "F2_B: Pitch Deck Builder AI",
+              "type": "ai_languageModel",
+              "index": 0
+            },
+            {
+              "node": "Geliştirme Planı AI (Skor < 70)",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Geliştirme Planı AI (Skor < 70)": {
+        "main": [
+          [
+            {
+              "node": "Create a row",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "F2_B: Pitch Deck Builder AI": {
+        "main": [
+          [
+            {
+              "node": "Create a row",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Create a row": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "SELAHADDİN serttas2001@gmail.com",
+    "name": "Version 304c67b4",
+    "description": "",
+    "autosaved": true
+  },
+  "tags": []
+}
