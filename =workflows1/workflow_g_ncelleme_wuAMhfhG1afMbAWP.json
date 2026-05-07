@@ -1,0 +1,145 @@
+={
+  "updatedAt": "2026-05-07T10:32:17.392Z",
+  "createdAt": "2026-05-07T08:46:52.955Z",
+  "id": "wuAMhfhG1afMbAWP",
+  "name": "Workflow Güncelleme",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -16,
+        -16
+      ],
+      "id": "4c233c38-315b-4d76-badf-3e38d0eeee41",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "filters": {},
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.n8n",
+      "typeVersion": 1,
+      "position": [
+        224,
+        -16
+      ],
+      "id": "4140a191-59d6-4add-bd78-9f3289772ead",
+      "name": "Get many workflows",
+      "credentials": {
+        "n8nApi": {
+          "id": "MyS6u1Qz3GjQBe1C",
+          "name": "n8n account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const results = [];\n\n// n8n'den gelen her bir iş akışını tek tek döngüye al\nfor (const item of $input.all()) {\n  const workflowData = item.json;\n\n  // 1. Dosya adı oluşturma: İş akışı adındaki Türkçe karakterleri ve boşlukları temizle\n  let safeName = workflowData.name \n    ? workflowData.name.replace(/[^a-z0-9]/gi, '_').toLowerCase() \n    : 'is_akisi';\n    \n  // 2. Çakışmayı önlemek için sonuna iş akışı ID'sini ekle\n  const fileName = `workflows1/${safeName}_${workflowData.id}.json`;\n\n  // 3. İş akışını n8n'in doğrudan okuyabileceği (Import edilebilir) JSON metnine çevir\n  const fileContent = JSON.stringify(workflowData, null, 2);\n\n  // 4. Her iş akışını ayrı bir öğe (item) olarak GitHub node'una gönder\n  results.push({\n    json: {\n      dosya_adi: fileName,\n      dosya_icerigi: fileContent,\n      orijinal_isim: workflowData.name\n    }\n  });\n}\n\nreturn results;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        432,
+        -16
+      ],
+      "id": "1b46de73-548f-4ffe-8cc2-8fd29b42089b",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "owner": {
+          "__rl": true,
+          "value": "https://github.com/selahaddi",
+          "mode": "url"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "https://github.com/selahaddi/n8n_yedekler",
+          "mode": "url"
+        },
+        "filePath": "=={{ $json.dosya_adi }}",
+        "fileContent": "=={{ $json.dosya_icerigi }}",
+        "commitMessage": "==\"Yedekleme güncellendi: \" + {{ $json.orijinal_isim }}"
+      },
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1.1,
+      "position": [
+        656,
+        -16
+      ],
+      "id": "4367563b-3822-415d-bba3-a979d7a7cf7d",
+      "name": "Create a file",
+      "webhookId": "030316a6-ae41-42e6-959f-9faa5330d1a4",
+      "credentials": {
+        "githubApi": {
+          "id": "wNx4vMf9ksv6BR1g",
+          "name": "GitHub account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get many workflows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many workflows": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Create a file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "ff560c53-93e3-4c42-8648-73673e744f66",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-05-07T08:46:52.965Z",
+      "createdAt": "2026-05-07T08:46:52.965Z",
+      "role": "workflow:owner",
+      "workflowId": "wuAMhfhG1afMbAWP",
+      "projectId": "NthPGJZmZB4b9f9E"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
