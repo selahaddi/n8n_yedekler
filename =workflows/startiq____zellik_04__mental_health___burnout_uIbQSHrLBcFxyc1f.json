@@ -1,0 +1,668 @@
+={
+  "updatedAt": "2026-03-30T12:42:25.979Z",
+  "createdAt": "2026-03-30T12:41:54.478Z",
+  "id": "uIbQSHrLBcFxyc1f",
+  "name": "StartIQ - Özellik 04: Mental Health & Burnout",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "burnout-monitor",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "12730d90-919d-4489-9d29-29475569e8d7",
+      "name": "Haftalık Check-in (Webhook)",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -1056,
+        160
+      ],
+      "webhookId": "b15f118f-7d28-43ed-a35f-d6545b68152d"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "Çalışma Saati: {{ $json.body.calisma_saati || 'Belirtilmedi' }}\nUyku Kalitesi: {{ $json.body.uyku || 'Belirtilmedi' }}\nDuygu Durumu: {{ $json.body.duygu || 'Belirtilmedi' }}",
+        "options": {
+          "systemMessage": "Sen 'F4_A: Stress Signals AI' (Tükenmişlik Dedektörü) ajanısın. Kurucunun girdiği 3 dakikalık check-in verilerine dayanarak stresi ve tükenmişlik riskini analiz et.\n\nLütfen hiçbir açıklama yapmadan sadece JSON formatında şu verileri dön:\n- \"burnout_risk_skoru\": (1-100 arası sayı)\n- \"kritik_mi\": (boolean - skor 75 ve üzeriyse true)\n- \"tavsiye_edilen_mudahale\": ('Acil_Akran_Gorusmesi' veya 'Kisisel_Iyilestirme')\\n\\nÖNEMLİ: Kurucunun girdiği metin hangi dildeyse, yanıtını kesinlikle o dilde üret. (Eğer JSON formatı isteniyorsa anahtarları bozma, sadece değerleri o dilde yaz)."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -800,
+        160
+      ],
+      "id": "f85d039c-76d9-4af8-99aa-0a629354bbb5",
+      "name": "F4_A: Stress Signals AI"
+    },
+    {
+      "parameters": {
+        "jsCode": "let content = $input.item.json.output || $input.item.json.text || '{}';\ntry {\n  content = content.replace(/```json/g, '').replace(/```/g, '').trim();\n  const parsed = JSON.parse(content);\n  Object.assign($input.item.json, parsed);\n} catch (e) {\n  $input.item.json.error = \"JSON Error: \" + e.message;\n}\nreturn $input.item;"
+      },
+      "id": "60c1c6b3-a996-4cca-979c-6d546d2e07de",
+      "name": "JSON Ayrıştırma",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -496,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.kritik_mi }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "04649de4-af3b-4ee2-a38f-a00cde1ddac2",
+      "name": "Kritik Tükenmişlik Mi?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        -304,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "=define",
+        "text": "Risk Skoru: {{ $('JSON Ayrıştırma').item.json.burnout_risk_skoru }}\nDuygusal Durum: {{ $('Haftalık Check-in (Webhook)').item.json.body.duygu || 'Test' }}",
+        "options": {
+          "systemMessage": "Sen 'F4_D: Peer Circle' (Akran Çemberi) ajanısın. Kurucu kırmızı çizgide. Ona kendisiyle aynı aşamada olup benzer hisleri yaşamış diğer kurucularla (Peer Circle) ACİL ve iyileştirici bir 30 dakikalık 'Grup Terapi / Paylaşım' görüşmesi organize etmesini teklif eden empatik bir uyarı ve davet metni yaz.\\n\\nÖNEMLİ: Kurucunun girdiği metin hangi dildeyse, yanıtını kesinlikle o dilde üret. (Eğer JSON formatı isteniyorsa anahtarları bozma, sadece değerleri o dilde yaz)."
+        }
+      },
+      "id": "dcdb46b1-31d5-46a2-a397-ef53cd3cf87b",
+      "name": "F4_D: Peer Circle Daveti (Kritik)",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "=define",
+        "text": "Çalışma: {{ $('Haftalık Check-in (Webhook)').item.json.body.calisma_saati || 'Test' }}\nUyku: {{ $('Haftalık Check-in (Webhook)').item.json.body.uyku || 'Test' }}\nDuygu: {{ $('Haftalık Check-in (Webhook)').item.json.body.duygu || 'Test' }}",
+        "options": {
+          "systemMessage": "Sen 'F4_C: Resource Library' (Kaynak Kütüphanesi) ajanısın. Kurucu yüksek riskte değil ancak zorlanıyor. Ona 'Odaklanma', 'Uyku Hijyeni' veya 'Bağlantıyı Kesme' konularında sadece 1 parçalık çok kısa ve pratik bir egzersiz/tavsiye (Resource) gönder.\\n\\nÖNEMLİ: Kurucunun girdiği metin hangi dildeyse, yanıtını kesinlikle o dilde üret. (Eğer JSON formatı isteniyorsa anahtarları bozma, sadece değerleri o dilde yaz)."
+        }
+      },
+      "id": "d608f2a1-4dda-4494-9aa3-f0cc2cbd066a",
+      "name": "F4_C: Resource Library (Normal Skor)",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        0,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatDeepSeek",
+      "typeVersion": 1,
+      "position": [
+        -816,
+        384
+      ],
+      "id": "c7e0033f-ff57-4a16-88c1-1e71f1a60160",
+      "name": "DeepSeek Chat Model",
+      "credentials": {
+        "deepSeekApi": {
+          "id": "04burqSTSa8yxNaW",
+          "name": "DeepSeek account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatDeepSeek",
+      "typeVersion": 1,
+      "position": [
+        -192,
+        480
+      ],
+      "id": "e2d5cd49-49c8-4798-bb19-018341686e63",
+      "name": "DeepSeek Chat Model1",
+      "credentials": {
+        "deepSeekApi": {
+          "id": "04burqSTSa8yxNaW",
+          "name": "DeepSeek account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        560,
+        144
+      ],
+      "id": "826684aa-9850-4f9d-8d30-3779081d5302",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "tableId": "feature_04_mental_health_checkins",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "hours_worked",
+              "fieldValue": "={{ $('Haftalık Check-in (Webhook)').item.json.body.calisma_saati }}"
+            },
+            {
+              "fieldId": "sleep_quality",
+              "fieldValue": "={{ $('Haftalık Check-in (Webhook)').item.json.body.uyku }}"
+            },
+            {
+              "fieldId": "dominant_emotion",
+              "fieldValue": "={{ $('Haftalık Check-in (Webhook)').item.json.body.duygu }}"
+            },
+            {
+              "fieldId": "burnout_risk_score",
+              "fieldValue": "={{ $('JSON Ayrıştırma').item.json.burnout_risk_skoru }}"
+            },
+            {
+              "fieldId": "is_critical",
+              "fieldValue": "={{ $('JSON Ayrıştırma').item.json.kritik_mi }}"
+            },
+            {
+              "fieldId": "ai_recommendation",
+              "fieldValue": "={{ $json.output }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        368,
+        144
+      ],
+      "id": "b8ac80c5-c9fe-4731-8cba-fb199b28048c",
+      "name": "Create a row",
+      "credentials": {
+        "supabaseApi": {
+          "id": "xeLcRlXxlGKLN5CK",
+          "name": "StarIQ"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Haftalık Check-in (Webhook)": {
+      "main": [
+        [
+          {
+            "node": "F4_A: Stress Signals AI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "F4_A: Stress Signals AI": {
+      "main": [
+        [
+          {
+            "node": "JSON Ayrıştırma",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "JSON Ayrıştırma": {
+      "main": [
+        [
+          {
+            "node": "Kritik Tükenmişlik Mi?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Kritik Tükenmişlik Mi?": {
+      "main": [
+        [
+          {
+            "node": "F4_D: Peer Circle Daveti (Kritik)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "F4_C: Resource Library (Normal Skor)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeepSeek Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "F4_A: Stress Signals AI",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeepSeek Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "F4_D: Peer Circle Daveti (Kritik)",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "F4_C: Resource Library (Normal Skor)",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "F4_D: Peer Circle Daveti (Kritik)": {
+      "main": [
+        [
+          {
+            "node": "Create a row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "F4_C: Resource Library (Normal Skor)": {
+      "main": [
+        [
+          {
+            "node": "Create a row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a row": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "c5f431bf-fc80-446a-958e-b906799fe49a",
+  "activeVersionId": "c5f431bf-fc80-446a-958e-b906799fe49a",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-03-30T12:41:54.484Z",
+      "createdAt": "2026-03-30T12:41:54.484Z",
+      "role": "workflow:owner",
+      "workflowId": "uIbQSHrLBcFxyc1f",
+      "projectId": "NthPGJZmZB4b9f9E"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-03-30T12:42:28.000Z",
+    "createdAt": "2026-03-30T12:42:25.980Z",
+    "versionId": "c5f431bf-fc80-446a-958e-b906799fe49a",
+    "workflowId": "uIbQSHrLBcFxyc1f",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "burnout-monitor",
+          "responseMode": "lastNode",
+          "options": {}
+        },
+        "id": "12730d90-919d-4489-9d29-29475569e8d7",
+        "name": "Haftalık Check-in (Webhook)",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 1,
+        "position": [
+          -1056,
+          160
+        ],
+        "webhookId": "b15f118f-7d28-43ed-a35f-d6545b68152d"
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "Çalışma Saati: {{ $json.body.calisma_saati || 'Belirtilmedi' }}\nUyku Kalitesi: {{ $json.body.uyku || 'Belirtilmedi' }}\nDuygu Durumu: {{ $json.body.duygu || 'Belirtilmedi' }}",
+          "options": {
+            "systemMessage": "Sen 'F4_A: Stress Signals AI' (Tükenmişlik Dedektörü) ajanısın. Kurucunun girdiği 3 dakikalık check-in verilerine dayanarak stresi ve tükenmişlik riskini analiz et.\n\nLütfen hiçbir açıklama yapmadan sadece JSON formatında şu verileri dön:\n- \"burnout_risk_skoru\": (1-100 arası sayı)\n- \"kritik_mi\": (boolean - skor 75 ve üzeriyse true)\n- \"tavsiye_edilen_mudahale\": ('Acil_Akran_Gorusmesi' veya 'Kisisel_Iyilestirme')\\n\\nÖNEMLİ: Kurucunun girdiği metin hangi dildeyse, yanıtını kesinlikle o dilde üret. (Eğer JSON formatı isteniyorsa anahtarları bozma, sadece değerleri o dilde yaz)."
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 3.1,
+        "position": [
+          -800,
+          160
+        ],
+        "id": "f85d039c-76d9-4af8-99aa-0a629354bbb5",
+        "name": "F4_A: Stress Signals AI"
+      },
+      {
+        "parameters": {
+          "jsCode": "let content = $input.item.json.output || $input.item.json.text || '{}';\ntry {\n  content = content.replace(/```json/g, '').replace(/```/g, '').trim();\n  const parsed = JSON.parse(content);\n  Object.assign($input.item.json, parsed);\n} catch (e) {\n  $input.item.json.error = \"JSON Error: \" + e.message;\n}\nreturn $input.item;"
+        },
+        "id": "60c1c6b3-a996-4cca-979c-6d546d2e07de",
+        "name": "JSON Ayrıştırma",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -496,
+          160
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "boolean": [
+              {
+                "value1": "={{ $json.kritik_mi }}",
+                "value2": true
+              }
+            ]
+          }
+        },
+        "id": "04649de4-af3b-4ee2-a38f-a00cde1ddac2",
+        "name": "Kritik Tükenmişlik Mi?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 1,
+        "position": [
+          -304,
+          160
+        ]
+      },
+      {
+        "parameters": {
+          "promptType": "=define",
+          "text": "Risk Skoru: {{ $('JSON Ayrıştırma').item.json.burnout_risk_skoru }}\nDuygusal Durum: {{ $('Haftalık Check-in (Webhook)').item.json.body.duygu || 'Test' }}",
+          "options": {
+            "systemMessage": "Sen 'F4_D: Peer Circle' (Akran Çemberi) ajanısın. Kurucu kırmızı çizgide. Ona kendisiyle aynı aşamada olup benzer hisleri yaşamış diğer kurucularla (Peer Circle) ACİL ve iyileştirici bir 30 dakikalık 'Grup Terapi / Paylaşım' görüşmesi organize etmesini teklif eden empatik bir uyarı ve davet metni yaz.\\n\\nÖNEMLİ: Kurucunun girdiği metin hangi dildeyse, yanıtını kesinlikle o dilde üret. (Eğer JSON formatı isteniyorsa anahtarları bozma, sadece değerleri o dilde yaz)."
+          }
+        },
+        "id": "dcdb46b1-31d5-46a2-a397-ef53cd3cf87b",
+        "name": "F4_D: Peer Circle Daveti (Kritik)",
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 3.1,
+        "position": [
+          0,
+          0
+        ]
+      },
+      {
+        "parameters": {
+          "promptType": "=define",
+          "text": "Çalışma: {{ $('Haftalık Check-in (Webhook)').item.json.body.calisma_saati || 'Test' }}\nUyku: {{ $('Haftalık Check-in (Webhook)').item.json.body.uyku || 'Test' }}\nDuygu: {{ $('Haftalık Check-in (Webhook)').item.json.body.duygu || 'Test' }}",
+          "options": {
+            "systemMessage": "Sen 'F4_C: Resource Library' (Kaynak Kütüphanesi) ajanısın. Kurucu yüksek riskte değil ancak zorlanıyor. Ona 'Odaklanma', 'Uyku Hijyeni' veya 'Bağlantıyı Kesme' konularında sadece 1 parçalık çok kısa ve pratik bir egzersiz/tavsiye (Resource) gönder.\\n\\nÖNEMLİ: Kurucunun girdiği metin hangi dildeyse, yanıtını kesinlikle o dilde üret. (Eğer JSON formatı isteniyorsa anahtarları bozma, sadece değerleri o dilde yaz)."
+          }
+        },
+        "id": "d608f2a1-4dda-4494-9aa3-f0cc2cbd066a",
+        "name": "F4_C: Resource Library (Normal Skor)",
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 3.1,
+        "position": [
+          0,
+          240
+        ]
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatDeepSeek",
+        "typeVersion": 1,
+        "position": [
+          -816,
+          384
+        ],
+        "id": "c7e0033f-ff57-4a16-88c1-1e71f1a60160",
+        "name": "DeepSeek Chat Model",
+        "credentials": {
+          "deepSeekApi": {
+            "id": "04burqSTSa8yxNaW",
+            "name": "DeepSeek account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatDeepSeek",
+        "typeVersion": 1,
+        "position": [
+          -192,
+          480
+        ],
+        "id": "e2d5cd49-49c8-4798-bb19-018341686e63",
+        "name": "DeepSeek Chat Model1",
+        "credentials": {
+          "deepSeekApi": {
+            "id": "04burqSTSa8yxNaW",
+            "name": "DeepSeek account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          560,
+          144
+        ],
+        "id": "826684aa-9850-4f9d-8d30-3779081d5302",
+        "name": "Respond to Webhook"
+      },
+      {
+        "parameters": {
+          "tableId": "feature_04_mental_health_checkins",
+          "fieldsUi": {
+            "fieldValues": [
+              {
+                "fieldId": "hours_worked",
+                "fieldValue": "={{ $('Haftalık Check-in (Webhook)').item.json.body.calisma_saati }}"
+              },
+              {
+                "fieldId": "sleep_quality",
+                "fieldValue": "={{ $('Haftalık Check-in (Webhook)').item.json.body.uyku }}"
+              },
+              {
+                "fieldId": "dominant_emotion",
+                "fieldValue": "={{ $('Haftalık Check-in (Webhook)').item.json.body.duygu }}"
+              },
+              {
+                "fieldId": "burnout_risk_score",
+                "fieldValue": "={{ $('JSON Ayrıştırma').item.json.burnout_risk_skoru }}"
+              },
+              {
+                "fieldId": "is_critical",
+                "fieldValue": "={{ $('JSON Ayrıştırma').item.json.kritik_mi }}"
+              },
+              {
+                "fieldId": "ai_recommendation",
+                "fieldValue": "={{ $json.output }}"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          368,
+          144
+        ],
+        "id": "b8ac80c5-c9fe-4731-8cba-fb199b28048c",
+        "name": "Create a row",
+        "credentials": {
+          "supabaseApi": {
+            "id": "xeLcRlXxlGKLN5CK",
+            "name": "StarIQ"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "Haftalık Check-in (Webhook)": {
+        "main": [
+          [
+            {
+              "node": "F4_A: Stress Signals AI",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "F4_A: Stress Signals AI": {
+        "main": [
+          [
+            {
+              "node": "JSON Ayrıştırma",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "JSON Ayrıştırma": {
+        "main": [
+          [
+            {
+              "node": "Kritik Tükenmişlik Mi?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Kritik Tükenmişlik Mi?": {
+        "main": [
+          [
+            {
+              "node": "F4_D: Peer Circle Daveti (Kritik)",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "F4_C: Resource Library (Normal Skor)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "DeepSeek Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "F4_A: Stress Signals AI",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "DeepSeek Chat Model1": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "F4_D: Peer Circle Daveti (Kritik)",
+              "type": "ai_languageModel",
+              "index": 0
+            },
+            {
+              "node": "F4_C: Resource Library (Normal Skor)",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "F4_D: Peer Circle Daveti (Kritik)": {
+        "main": [
+          [
+            {
+              "node": "Create a row",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "F4_C: Resource Library (Normal Skor)": {
+        "main": [
+          [
+            {
+              "node": "Create a row",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Create a row": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "SELAHADDİN serttas2001@gmail.com",
+    "name": "Version c5f431bf",
+    "description": "",
+    "autosaved": true
+  },
+  "tags": []
+}
