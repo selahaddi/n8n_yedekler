@@ -1,0 +1,658 @@
+={
+  "updatedAt": "2026-03-30T12:41:32.917Z",
+  "createdAt": "2026-03-30T12:41:03.811Z",
+  "id": "r1cGBxJRgBxQiXCR",
+  "name": "StartIQ - Özellik 03: Vendor & Burn Intelligence",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "burn-intelligence",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "cef3df5c-6140-4d27-851d-2112e0ad5b3c",
+      "name": "Araç & Maliyet Girdisi",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -1056,
+        160
+      ],
+      "webhookId": "0244ef89-b23b-4298-9b15-f50f1600e9e6"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Aşama: {{ $json.body.asama || 'Tohum Öncesi (Pre-seed)' }}\n\nKullanılan Araçlar ve Aylık Maliyetler: \n{{ $json.body.araclar || 'Bilgi Yok' }}",
+        "options": {
+          "systemMessage": "Sen 'F3_B: Waste Detector' yapay zekasısın. Kurucunun belirttiği startup aşamasına göre kullandığı yazılım araçlarını tarar ve analiz edersin.\n\nJSON formatında şu alanları kesin olarak döndür:\n- \"israf_var_mi\": (boolean - Piyasada birbiriyle aynı işi yapan birden fazla pahalı araç varsa veya tohum aşaması için lüks bir araç kullanılıyorsa true)\n- \"toplam_maliyet_tahmini\": (sayısal, dolar)\n- \"israf_kategorisi\": (Örn: 'CRM', 'Tasarım Araçları', 'Gereksiz Otomasyon')\\n\\nÖNEMLİ: Kurucunun girdiği metin hangi dildeyse, yanıtını kesinlikle o dilde üret. (Eğer JSON formatı isteniyorsa anahtarları bozma, sadece değerleri o dilde yaz)."
+        }
+      },
+      "id": "030ebccc-bfa5-46e7-9058-e87cde72891a",
+      "name": "F3_B: Waste Detector AI",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -832,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "let content = $input.item.json.output || $input.item.json.text || '{}';\ntry {\n  content = content.replace(/```json/g, '').replace(/```/g, '').trim();\n  const parsed = JSON.parse(content);\n  Object.assign($input.item.json, parsed);\n} catch (e) {\n  $input.item.json.error = \"JSON Error: \" + e.message;\n}\nreturn $input.item;"
+      },
+      "id": "7c81bc8d-e0c4-4a4d-8aec-44e53a6520f6",
+      "name": "JSON Ayrıştırma",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -544,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.israf_var_mi }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "811bf87f-efe9-4621-b335-2b06282d31a6",
+      "name": "İsraf Var Mı?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        -304,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Mevcut Araçlar Listesi: {{ $('Araç & Maliyet Girdisi').item.json.body.araclar }}\nTespit Edilen İsraf: {{ $('JSON Ayrıştırma').item.json.israf_kategorisi }}\nTahmini Fatura: ${{ $('JSON Ayrıştırma').item.json.toplam_maliyet_tahmini }}",
+        "options": {
+          "systemMessage": "Sen 'F3_D: Switch Advisor' (Geçiş Danışmanı) ajanısın. Startup'ı gereksiz nakit yakmaktan (burn rate) kurtar. Tespit edilen pahalı araçlar yerine, aynı işi yapacak ücretsiz veya daha uygun fiyata alternatifler sun. Yıllık tasarruf hesabı (ROI) yap ve ikna edici bir geçiş stratejisi (Action Plan) yaz.\\n\\nÖNEMLİ: Kurucunun girdiği metin hangi dildeyse, yanıtını kesinlikle o dilde üret. (Eğer JSON formatı isteniyorsa anahtarları bozma, sadece değerleri o dilde yaz)."
+        }
+      },
+      "id": "42067851-c8cf-4ff9-9b34-2d65d299b7c1",
+      "name": "F3_D: Switch Advisor AI",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "sonuc",
+              "value": "Tebrikler. İş modelinize ve aşamanıza göre yazılım maliyetleriniz (Tech Stack) gayet optimize. Herhangi bir israf tespit edilmedi."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "824833c7-c520-458f-b902-d46944177457",
+      "name": "Araçlar Optimize (Log)",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        0,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatDeepSeek",
+      "typeVersion": 1,
+      "position": [
+        -832,
+        352
+      ],
+      "id": "d527a7e4-46a1-4099-b6cc-a27166ca9854",
+      "name": "DeepSeek Chat Model",
+      "credentials": {
+        "deepSeekApi": {
+          "id": "04burqSTSa8yxNaW",
+          "name": "DeepSeek account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        560,
+        192
+      ],
+      "id": "de471217-8fb9-4c3f-bb59-5cacdc6e9116",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "tableId": "feature_03_burn_reports",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "tools_list",
+              "fieldValue": "={{ $('Araç & Maliyet Girdisi').item.json.body.araclar }}"
+            },
+            {
+              "fieldId": "has_waste",
+              "fieldValue": "={{ $('JSON Ayrıştırma').item.json.israf_var_mi }}"
+            },
+            {
+              "fieldId": "estimated_monthly_cost",
+              "fieldValue": "={{ $('JSON Ayrıştırma').item.json.toplam_maliyet_tahmini }}"
+            },
+            {
+              "fieldId": "switch_advice_roi",
+              "fieldValue": "={{ $json.output }}"
+            },
+            {
+              "fieldId": "advice_roi",
+              "fieldValue": "={{ $json.sonuc }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        368,
+        192
+      ],
+      "id": "27bce356-45d6-485c-ad88-f3632581af96",
+      "name": "Create a row",
+      "credentials": {
+        "supabaseApi": {
+          "id": "xeLcRlXxlGKLN5CK",
+          "name": "StarIQ"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatDeepSeek",
+      "typeVersion": 1,
+      "position": [
+        0,
+        176
+      ],
+      "id": "d664127d-99df-41ad-933f-29f8f2a4c428",
+      "name": "DeepSeek Chat Model1",
+      "credentials": {
+        "deepSeekApi": {
+          "id": "04burqSTSa8yxNaW",
+          "name": "DeepSeek account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Araç & Maliyet Girdisi": {
+      "main": [
+        [
+          {
+            "node": "F3_B: Waste Detector AI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "F3_B: Waste Detector AI": {
+      "main": [
+        [
+          {
+            "node": "JSON Ayrıştırma",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "JSON Ayrıştırma": {
+      "main": [
+        [
+          {
+            "node": "İsraf Var Mı?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "İsraf Var Mı?": {
+      "main": [
+        [
+          {
+            "node": "F3_D: Switch Advisor AI",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Araçlar Optimize (Log)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeepSeek Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "F3_B: Waste Detector AI",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "F3_D: Switch Advisor AI": {
+      "main": [
+        [
+          {
+            "node": "Create a row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Araçlar Optimize (Log)": {
+      "main": [
+        [
+          {
+            "node": "Create a row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a row": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeepSeek Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "F3_D: Switch Advisor AI",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "a7290309-5998-4a83-9a48-46842dbd9054",
+  "activeVersionId": "a7290309-5998-4a83-9a48-46842dbd9054",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-03-30T12:41:03.814Z",
+      "createdAt": "2026-03-30T12:41:03.814Z",
+      "role": "workflow:owner",
+      "workflowId": "r1cGBxJRgBxQiXCR",
+      "projectId": "NthPGJZmZB4b9f9E"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-03-30T12:41:39.000Z",
+    "createdAt": "2026-03-30T12:41:32.920Z",
+    "versionId": "a7290309-5998-4a83-9a48-46842dbd9054",
+    "workflowId": "r1cGBxJRgBxQiXCR",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "burn-intelligence",
+          "responseMode": "lastNode",
+          "options": {}
+        },
+        "id": "cef3df5c-6140-4d27-851d-2112e0ad5b3c",
+        "name": "Araç & Maliyet Girdisi",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 1,
+        "position": [
+          -1056,
+          160
+        ],
+        "webhookId": "0244ef89-b23b-4298-9b15-f50f1600e9e6"
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "=Aşama: {{ $json.body.asama || 'Tohum Öncesi (Pre-seed)' }}\n\nKullanılan Araçlar ve Aylık Maliyetler: \n{{ $json.body.araclar || 'Bilgi Yok' }}",
+          "options": {
+            "systemMessage": "Sen 'F3_B: Waste Detector' yapay zekasısın. Kurucunun belirttiği startup aşamasına göre kullandığı yazılım araçlarını tarar ve analiz edersin.\n\nJSON formatında şu alanları kesin olarak döndür:\n- \"israf_var_mi\": (boolean - Piyasada birbiriyle aynı işi yapan birden fazla pahalı araç varsa veya tohum aşaması için lüks bir araç kullanılıyorsa true)\n- \"toplam_maliyet_tahmini\": (sayısal, dolar)\n- \"israf_kategorisi\": (Örn: 'CRM', 'Tasarım Araçları', 'Gereksiz Otomasyon')\\n\\nÖNEMLİ: Kurucunun girdiği metin hangi dildeyse, yanıtını kesinlikle o dilde üret. (Eğer JSON formatı isteniyorsa anahtarları bozma, sadece değerleri o dilde yaz)."
+          }
+        },
+        "id": "030ebccc-bfa5-46e7-9058-e87cde72891a",
+        "name": "F3_B: Waste Detector AI",
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 3.1,
+        "position": [
+          -832,
+          160
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "let content = $input.item.json.output || $input.item.json.text || '{}';\ntry {\n  content = content.replace(/```json/g, '').replace(/```/g, '').trim();\n  const parsed = JSON.parse(content);\n  Object.assign($input.item.json, parsed);\n} catch (e) {\n  $input.item.json.error = \"JSON Error: \" + e.message;\n}\nreturn $input.item;"
+        },
+        "id": "7c81bc8d-e0c4-4a4d-8aec-44e53a6520f6",
+        "name": "JSON Ayrıştırma",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -544,
+          160
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "boolean": [
+              {
+                "value1": "={{ $json.israf_var_mi }}",
+                "value2": true
+              }
+            ]
+          }
+        },
+        "id": "811bf87f-efe9-4621-b335-2b06282d31a6",
+        "name": "İsraf Var Mı?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 1,
+        "position": [
+          -304,
+          160
+        ]
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "=Mevcut Araçlar Listesi: {{ $('Araç & Maliyet Girdisi').item.json.body.araclar }}\nTespit Edilen İsraf: {{ $('JSON Ayrıştırma').item.json.israf_kategorisi }}\nTahmini Fatura: ${{ $('JSON Ayrıştırma').item.json.toplam_maliyet_tahmini }}",
+          "options": {
+            "systemMessage": "Sen 'F3_D: Switch Advisor' (Geçiş Danışmanı) ajanısın. Startup'ı gereksiz nakit yakmaktan (burn rate) kurtar. Tespit edilen pahalı araçlar yerine, aynı işi yapacak ücretsiz veya daha uygun fiyata alternatifler sun. Yıllık tasarruf hesabı (ROI) yap ve ikna edici bir geçiş stratejisi (Action Plan) yaz.\\n\\nÖNEMLİ: Kurucunun girdiği metin hangi dildeyse, yanıtını kesinlikle o dilde üret. (Eğer JSON formatı isteniyorsa anahtarları bozma, sadece değerleri o dilde yaz)."
+          }
+        },
+        "id": "42067851-c8cf-4ff9-9b34-2d65d299b7c1",
+        "name": "F3_D: Switch Advisor AI",
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 3.1,
+        "position": [
+          0,
+          0
+        ]
+      },
+      {
+        "parameters": {
+          "values": {
+            "string": [
+              {
+                "name": "sonuc",
+                "value": "Tebrikler. İş modelinize ve aşamanıza göre yazılım maliyetleriniz (Tech Stack) gayet optimize. Herhangi bir israf tespit edilmedi."
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "824833c7-c520-458f-b902-d46944177457",
+        "name": "Araçlar Optimize (Log)",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 2,
+        "position": [
+          0,
+          304
+        ]
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatDeepSeek",
+        "typeVersion": 1,
+        "position": [
+          -832,
+          352
+        ],
+        "id": "d527a7e4-46a1-4099-b6cc-a27166ca9854",
+        "name": "DeepSeek Chat Model",
+        "credentials": {
+          "deepSeekApi": {
+            "id": "04burqSTSa8yxNaW",
+            "name": "DeepSeek account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          560,
+          192
+        ],
+        "id": "de471217-8fb9-4c3f-bb59-5cacdc6e9116",
+        "name": "Respond to Webhook"
+      },
+      {
+        "parameters": {
+          "tableId": "feature_03_burn_reports",
+          "fieldsUi": {
+            "fieldValues": [
+              {
+                "fieldId": "tools_list",
+                "fieldValue": "={{ $('Araç & Maliyet Girdisi').item.json.body.araclar }}"
+              },
+              {
+                "fieldId": "has_waste",
+                "fieldValue": "={{ $('JSON Ayrıştırma').item.json.israf_var_mi }}"
+              },
+              {
+                "fieldId": "estimated_monthly_cost",
+                "fieldValue": "={{ $('JSON Ayrıştırma').item.json.toplam_maliyet_tahmini }}"
+              },
+              {
+                "fieldId": "switch_advice_roi",
+                "fieldValue": "={{ $json.output }}"
+              },
+              {
+                "fieldId": "advice_roi",
+                "fieldValue": "={{ $json.sonuc }}"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          368,
+          192
+        ],
+        "id": "27bce356-45d6-485c-ad88-f3632581af96",
+        "name": "Create a row",
+        "credentials": {
+          "supabaseApi": {
+            "id": "xeLcRlXxlGKLN5CK",
+            "name": "StarIQ"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatDeepSeek",
+        "typeVersion": 1,
+        "position": [
+          0,
+          176
+        ],
+        "id": "d664127d-99df-41ad-933f-29f8f2a4c428",
+        "name": "DeepSeek Chat Model1",
+        "credentials": {
+          "deepSeekApi": {
+            "id": "04burqSTSa8yxNaW",
+            "name": "DeepSeek account"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "Araç & Maliyet Girdisi": {
+        "main": [
+          [
+            {
+              "node": "F3_B: Waste Detector AI",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "F3_B: Waste Detector AI": {
+        "main": [
+          [
+            {
+              "node": "JSON Ayrıştırma",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "JSON Ayrıştırma": {
+        "main": [
+          [
+            {
+              "node": "İsraf Var Mı?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "İsraf Var Mı?": {
+        "main": [
+          [
+            {
+              "node": "F3_D: Switch Advisor AI",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Araçlar Optimize (Log)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "DeepSeek Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "F3_B: Waste Detector AI",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "F3_D: Switch Advisor AI": {
+        "main": [
+          [
+            {
+              "node": "Create a row",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Araçlar Optimize (Log)": {
+        "main": [
+          [
+            {
+              "node": "Create a row",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Create a row": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "DeepSeek Chat Model1": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "F3_D: Switch Advisor AI",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "SELAHADDİN serttas2001@gmail.com",
+    "name": "Version a7290309",
+    "description": "",
+    "autosaved": true
+  },
+  "tags": []
+}
