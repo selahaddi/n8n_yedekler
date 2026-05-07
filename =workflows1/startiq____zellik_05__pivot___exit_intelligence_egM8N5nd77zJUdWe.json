@@ -1,0 +1,838 @@
+={
+  "updatedAt": "2026-04-19T14:21:29.373Z",
+  "createdAt": "2026-03-30T12:42:39.976Z",
+  "id": "egM8N5nd77zJUdWe",
+  "name": "StartIQ - Özellik 05: Pivot & Exit Intelligence",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "pivot-exit",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "1f60d510-8319-43b3-b350-3115e1ae4ced",
+      "name": "Şirket Durum Bildirimi (Webhook)",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -1072,
+        240
+      ],
+      "webhookId": "02cf23ba-822f-44c6-9934-1872033c2a58"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Kalan Nakit (Runway): {{ $json.body.runway || 'Bilinmiyor' }}\nKullanıcı Büyümesi: {{ $json.body.buyume || 'Bilinmiyor' }}\nEkip Motivasyonu: {{ $json.body.motivasyon || 'Bilinmiyor' }}",
+        "options": {
+          "systemMessage": "Sen 'F5_A: Pivot Signal AI' (Başarısızlık Sinyali) ajanısın. Startup'ın gidişatını analiz ederek şirketin yön değiştirmeye (Pivot), acilen birine satılmaya (Acquisition) veya fişi çekip tamamen kapanmaya (Wind-down) ihtiyacı olup olmadığını tespit et.\n\nSadece ve kesinlikle şu JSON formatında veri dön:\n- \"mudahale_kategorisi\": (\"Pivot\", \"Acquisition\", \"Wind-down\" veya \"Sorun_Yok\")\n- \"gerekce\": (Bu acımasız dürüst kararın çok kısa sebebi)\\n\\nÖNEMLİ: Kurucunun girdiği metin hangi dildeyse, yanıtını kesinlikle o dilde üret. (Eğer JSON formatı isteniyorsa anahtarları bozma, sadece değerleri o dilde yaz)."
+        }
+      },
+      "id": "1414b460-851a-4ebf-b172-fc231451674d",
+      "name": "F5_A: Pivot Signal AI",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -736,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "let content = $input.item.json.output || $input.item.json.text || '{}';\ntry {\n  content = content.replace(/```json/g, '').replace(/```/g, '').trim();\n  const parsed = JSON.parse(content);\n  Object.assign($input.item.json, parsed);\n} catch (e) {\n  $input.item.json.error = \"JSON Error: \" + e.message;\n}\nreturn $input.item;"
+      },
+      "id": "3ebed9c2-7f64-47f1-8748-d102124f7585",
+      "name": "JSON Ayrıştırma",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -336,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "dataType": "string",
+        "value1": "={{ $json.mudahale_kategorisi }}",
+        "rules": {
+          "rules": [
+            {
+              "value2": "Pivot"
+            },
+            {
+              "value2": "Acquisition",
+              "output": 1
+            },
+            {
+              "value2": "Wind-down",
+              "output": 2
+            }
+          ]
+        },
+        "fallbackOutput": 3
+      },
+      "id": "72d81ed1-496b-4fc9-b13c-882c78277caf",
+      "name": "Müdahale Yönü (Switch)",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 1,
+      "position": [
+        -96,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Mevcut Durum:\nRunway: {{ $('Şirket Durum Bildirimi (Webhook)').item.json.body.runway || 'Bilinmiyor' }}\nBüyüme: {{ $('Şirket Durum Bildirimi (Webhook)').item.json.body.buyume || 'Bilinmiyor' }}\n\nGerekçe: {{ $('JSON Ayrıştırma').item.json.gerekce }}",
+        "options": {
+          "systemMessage": "Sen 'F5_B: Pivot Planner' (Pivot Planlayıcı) ajanısın. Pazar uyumu olmayan ama hala parası ve enerjisi olan bu şirket için, mevcut varlıklarını/teknolojilerini kullanabilecekleri yepyeni 3 farklı agresif yön değiştirme (Pivot) alternatifi öner.\\n\\nÖNEMLİ: Kurucunun girdiği metin hangi dildeyse, yanıtını kesinlikle o dilde üret. (Eğer JSON formatı isteniyorsa anahtarları bozma, sadece değerleri o dilde yaz)."
+        }
+      },
+      "id": "6ad469a2-a885-4c84-adfd-d1a0c1068c42",
+      "name": "F5_B: Pivot Planner",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        320,
+        -208
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Mevcut Durum:\nRunway: {{ $('Şirket Durum Bildirimi (Webhook)').item.json.body.runway || 'Bilinmiyor' }}\nBüyüme: {{ $('Şirket Durum Bildirimi (Webhook)').item.json.body.buyume || 'Bilinmiyor' }}\n\nGerekçe: {{ $('JSON Ayrıştırma').item.json.gerekce }}",
+        "options": {
+          "systemMessage": "Sen 'F5_C: Acquisition Radar' (Satın Alma Radarı) ajanısın. Bu şirket kendi başına yaşayamaz ama teknolojisi veya ekibi değerli (Acqui-hire). Potansiyel alıcı sektörlerini/rakipleri analiz et ve onlara şirketi satmaları için bir e-posta giriş taslağı ve satış stratejisi hazırla.\\n\\nÖNEMLİ: Kurucunun girdiği metin hangi dildeyse, yanıtını kesinlikle o dilde üret. (Eğer JSON formatı isteniyorsa anahtarları bozma, sadece değerleri o dilde yaz)."
+        }
+      },
+      "id": "be36b367-0ef0-49d3-a4a4-bee333fd1dc3",
+      "name": "F5_C: Acquisition Radar",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        320,
+        96
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Mevcut Durum:\nRunway: {{ $('Şirket Durum Bildirimi (Webhook)').item.json.body.runway || 'Bilinmiyor' }}\n\nGerekçe: {{ $('JSON Ayrıştırma').item.json.gerekce }}",
+        "options": {
+          "systemMessage": "Sen 'F5_D: Wind-down Guide' (Kapanış Rehberi) ajanısın. Bu şirketin devam etmesi veya satılması imkansız. Kuruculara yasal süreçleri, çalışan bildirimlerini, hissedar/yatırımcı güncellemesini içeren net ve şefkatli bir şirket kapatma/tasfiye (Wind-down) kontrol listesi (Checklist) oluştur.\\n\\nÖNEMLİ: Kurucunun girdiği metin hangi dildeyse, yanıtını kesinlikle o dilde üret. (Eğer JSON formatı isteniyorsa anahtarları bozma, sadece değerleri o dilde yaz)."
+        }
+      },
+      "id": "ba49ca72-176a-46b1-8eb4-41f6a8eb4fdf",
+      "name": "F5_D: Wind-down Guide",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        320,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "log_mesaji",
+              "value": "Şirket metrikleri sağlıklı, radikal bir müdahaleye gerek yok."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "07797891-43b9-4978-9710-325bcd6ccbb4",
+      "name": "Sorun Yok (Log)",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        432,
+        608
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatDeepSeek",
+      "typeVersion": 1,
+      "position": [
+        928,
+        560
+      ],
+      "id": "469c0731-30f3-4267-8e25-30c16209302d",
+      "name": "DeepSeek Chat Model",
+      "credentials": {
+        "deepSeekApi": {
+          "id": "04burqSTSa8yxNaW",
+          "name": "DeepSeek account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatDeepSeek",
+      "typeVersion": 1,
+      "position": [
+        -736,
+        448
+      ],
+      "id": "f0c9d5da-dfbe-4616-9cf5-ca07c6e89328",
+      "name": "DeepSeek Chat Model1",
+      "credentials": {
+        "deepSeekApi": {
+          "id": "04burqSTSa8yxNaW",
+          "name": "DeepSeek account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "feature_05_strategic_decisions",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "runway_status",
+              "fieldValue": "={{ $('Şirket Durum Bildirimi (Webhook)').item.json.body.runway }}"
+            },
+            {
+              "fieldId": "growth_status",
+              "fieldValue": "={{ $('Şirket Durum Bildirimi (Webhook)').item.json.body.buyume }}"
+            },
+            {
+              "fieldId": "morale_status",
+              "fieldValue": "={{ $('Şirket Durum Bildirimi (Webhook)').item.json.body.motivasyon }}"
+            },
+            {
+              "fieldId": "decision_category",
+              "fieldValue": "={{ $('JSON Ayrıştırma').item.json.mudahale_kategorisi }}"
+            },
+            {
+              "fieldId": "ai_strategy_plan",
+              "fieldValue": "={{ $json.output }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1120,
+        224
+      ],
+      "id": "a4716df1-76a2-4c99-9233-11dcd7e245ff",
+      "name": "Create a row",
+      "credentials": {
+        "supabaseApi": {
+          "id": "xeLcRlXxlGKLN5CK",
+          "name": "StarIQ"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1328,
+        224
+      ],
+      "id": "c0d586d6-0aa1-45e6-8163-fa1cef2d3df1",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "connections": {
+    "Şirket Durum Bildirimi (Webhook)": {
+      "main": [
+        [
+          {
+            "node": "F5_A: Pivot Signal AI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "F5_A: Pivot Signal AI": {
+      "main": [
+        [
+          {
+            "node": "JSON Ayrıştırma",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "JSON Ayrıştırma": {
+      "main": [
+        [
+          {
+            "node": "Müdahale Yönü (Switch)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Müdahale Yönü (Switch)": {
+      "main": [
+        [
+          {
+            "node": "F5_B: Pivot Planner",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "F5_C: Acquisition Radar",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "F5_D: Wind-down Guide",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Sorun Yok (Log)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeepSeek Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "F5_B: Pivot Planner",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "F5_C: Acquisition Radar",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "F5_D: Wind-down Guide",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeepSeek Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "F5_A: Pivot Signal AI",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "F5_D: Wind-down Guide": {
+      "main": [
+        [
+          {
+            "node": "Create a row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "F5_C: Acquisition Radar": {
+      "main": [
+        [
+          {
+            "node": "Create a row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "F5_B: Pivot Planner": {
+      "main": [
+        [
+          {
+            "node": "Create a row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sorun Yok (Log)": {
+      "main": [
+        [
+          {
+            "node": "Create a row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a row": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "d58b7914-2c82-465c-863b-6d5d417f1bb0",
+  "activeVersionId": "aeef5bde-f7e1-44bf-a966-09b0df1d448a",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-03-30T12:42:39.978Z",
+      "createdAt": "2026-03-30T12:42:39.978Z",
+      "role": "workflow:owner",
+      "workflowId": "egM8N5nd77zJUdWe",
+      "projectId": "NthPGJZmZB4b9f9E"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-03-30T12:43:08.000Z",
+    "createdAt": "2026-03-30T12:43:05.356Z",
+    "versionId": "aeef5bde-f7e1-44bf-a966-09b0df1d448a",
+    "workflowId": "egM8N5nd77zJUdWe",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "pivot-exit",
+          "responseMode": "lastNode",
+          "options": {}
+        },
+        "id": "1f60d510-8319-43b3-b350-3115e1ae4ced",
+        "name": "Şirket Durum Bildirimi (Webhook)",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 1,
+        "position": [
+          -1072,
+          240
+        ],
+        "webhookId": "02cf23ba-822f-44c6-9934-1872033c2a58"
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "=Kalan Nakit (Runway): {{ $json.body.runway || 'Bilinmiyor' }}\nKullanıcı Büyümesi: {{ $json.body.buyume || 'Bilinmiyor' }}\nEkip Motivasyonu: {{ $json.body.motivasyon || 'Bilinmiyor' }}",
+          "options": {
+            "systemMessage": "Sen 'F5_A: Pivot Signal AI' (Başarısızlık Sinyali) ajanısın. Startup'ın gidişatını analiz ederek şirketin yön değiştirmeye (Pivot), acilen birine satılmaya (Acquisition) veya fişi çekip tamamen kapanmaya (Wind-down) ihtiyacı olup olmadığını tespit et.\n\nSadece ve kesinlikle şu JSON formatında veri dön:\n- \"mudahale_kategorisi\": (\"Pivot\", \"Acquisition\", \"Wind-down\" veya \"Sorun_Yok\")\n- \"gerekce\": (Bu acımasız dürüst kararın çok kısa sebebi)\\n\\nÖNEMLİ: Kurucunun girdiği metin hangi dildeyse, yanıtını kesinlikle o dilde üret. (Eğer JSON formatı isteniyorsa anahtarları bozma, sadece değerleri o dilde yaz)."
+          }
+        },
+        "id": "1414b460-851a-4ebf-b172-fc231451674d",
+        "name": "F5_A: Pivot Signal AI",
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 3.1,
+        "position": [
+          -736,
+          240
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "let content = $input.item.json.output || $input.item.json.text || '{}';\ntry {\n  content = content.replace(/```json/g, '').replace(/```/g, '').trim();\n  const parsed = JSON.parse(content);\n  Object.assign($input.item.json, parsed);\n} catch (e) {\n  $input.item.json.error = \"JSON Error: \" + e.message;\n}\nreturn $input.item;"
+        },
+        "id": "3ebed9c2-7f64-47f1-8748-d102124f7585",
+        "name": "JSON Ayrıştırma",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -336,
+          240
+        ]
+      },
+      {
+        "parameters": {
+          "dataType": "string",
+          "value1": "={{ $json.mudahale_kategorisi }}",
+          "rules": {
+            "rules": [
+              {
+                "value2": "Pivot"
+              },
+              {
+                "value2": "Acquisition",
+                "output": 1
+              },
+              {
+                "value2": "Wind-down",
+                "output": 2
+              }
+            ]
+          },
+          "fallbackOutput": 3
+        },
+        "id": "72d81ed1-496b-4fc9-b13c-882c78277caf",
+        "name": "Müdahale Yönü (Switch)",
+        "type": "n8n-nodes-base.switch",
+        "typeVersion": 1,
+        "position": [
+          -96,
+          208
+        ]
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "=Mevcut Durum:\nRunway: {{ $('Şirket Durum Bildirimi (Webhook)').item.json.body.runway || 'Bilinmiyor' }}\nBüyüme: {{ $('Şirket Durum Bildirimi (Webhook)').item.json.body.buyume || 'Bilinmiyor' }}\n\nGerekçe: {{ $('JSON Ayrıştırma').item.json.gerekce }}",
+          "options": {
+            "systemMessage": "Sen 'F5_B: Pivot Planner' (Pivot Planlayıcı) ajanısın. Pazar uyumu olmayan ama hala parası ve enerjisi olan bu şirket için, mevcut varlıklarını/teknolojilerini kullanabilecekleri yepyeni 3 farklı agresif yön değiştirme (Pivot) alternatifi öner.\\n\\nÖNEMLİ: Kurucunun girdiği metin hangi dildeyse, yanıtını kesinlikle o dilde üret. (Eğer JSON formatı isteniyorsa anahtarları bozma, sadece değerleri o dilde yaz)."
+          }
+        },
+        "id": "6ad469a2-a885-4c84-adfd-d1a0c1068c42",
+        "name": "F5_B: Pivot Planner",
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 3.1,
+        "position": [
+          320,
+          -112
+        ]
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "=Mevcut Durum:\nRunway: {{ $('Şirket Durum Bildirimi (Webhook)').item.json.body.runway || 'Bilinmiyor' }}\nBüyüme: {{ $('Şirket Durum Bildirimi (Webhook)').item.json.body.buyume || 'Bilinmiyor' }}\n\nGerekçe: {{ $('JSON Ayrıştırma').item.json.gerekce }}",
+          "options": {
+            "systemMessage": "Sen 'F5_C: Acquisition Radar' (Satın Alma Radarı) ajanısın. Bu şirket kendi başına yaşayamaz ama teknolojisi veya ekibi değerli (Acqui-hire). Potansiyel alıcı sektörlerini/rakipleri analiz et ve onlara şirketi satmaları için bir e-posta giriş taslağı ve satış stratejisi hazırla.\\n\\nÖNEMLİ: Kurucunun girdiği metin hangi dildeyse, yanıtını kesinlikle o dilde üret. (Eğer JSON formatı isteniyorsa anahtarları bozma, sadece değerleri o dilde yaz)."
+          }
+        },
+        "id": "be36b367-0ef0-49d3-a4a4-bee333fd1dc3",
+        "name": "F5_C: Acquisition Radar",
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 3.1,
+        "position": [
+          320,
+          112
+        ]
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "=Mevcut Durum:\nRunway: {{ $('Şirket Durum Bildirimi (Webhook)').item.json.body.runway || 'Bilinmiyor' }}\n\nGerekçe: {{ $('JSON Ayrıştırma').item.json.gerekce }}",
+          "options": {
+            "systemMessage": "Sen 'F5_D: Wind-down Guide' (Kapanış Rehberi) ajanısın. Bu şirketin devam etmesi veya satılması imkansız. Kuruculara yasal süreçleri, çalışan bildirimlerini, hissedar/yatırımcı güncellemesini içeren net ve şefkatli bir şirket kapatma/tasfiye (Wind-down) kontrol listesi (Checklist) oluştur.\\n\\nÖNEMLİ: Kurucunun girdiği metin hangi dildeyse, yanıtını kesinlikle o dilde üret. (Eğer JSON formatı isteniyorsa anahtarları bozma, sadece değerleri o dilde yaz)."
+          }
+        },
+        "id": "ba49ca72-176a-46b1-8eb4-41f6a8eb4fdf",
+        "name": "F5_D: Wind-down Guide",
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 3.1,
+        "position": [
+          320,
+          352
+        ]
+      },
+      {
+        "parameters": {
+          "values": {
+            "string": [
+              {
+                "name": "log_mesaji",
+                "value": "Şirket metrikleri sağlıklı, radikal bir müdahaleye gerek yok."
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "07797891-43b9-4978-9710-325bcd6ccbb4",
+        "name": "Sorun Yok (Log)",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 2,
+        "position": [
+          432,
+          608
+        ]
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatDeepSeek",
+        "typeVersion": 1,
+        "position": [
+          928,
+          560
+        ],
+        "id": "469c0731-30f3-4267-8e25-30c16209302d",
+        "name": "DeepSeek Chat Model",
+        "credentials": {
+          "deepSeekApi": {
+            "id": "04burqSTSa8yxNaW",
+            "name": "DeepSeek account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatDeepSeek",
+        "typeVersion": 1,
+        "position": [
+          -736,
+          448
+        ],
+        "id": "f0c9d5da-dfbe-4616-9cf5-ca07c6e89328",
+        "name": "DeepSeek Chat Model1",
+        "credentials": {
+          "deepSeekApi": {
+            "id": "04burqSTSa8yxNaW",
+            "name": "DeepSeek account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "tableId": "feature_05_strategic_decisions",
+          "fieldsUi": {
+            "fieldValues": [
+              {
+                "fieldId": "runway_status",
+                "fieldValue": "={{ $('Şirket Durum Bildirimi (Webhook)').item.json.body.runway }}"
+              },
+              {
+                "fieldId": "growth_status",
+                "fieldValue": "={{ $('Şirket Durum Bildirimi (Webhook)').item.json.body.buyume }}"
+              },
+              {
+                "fieldId": "morale_status",
+                "fieldValue": "={{ $('Şirket Durum Bildirimi (Webhook)').item.json.body.motivasyon }}"
+              },
+              {
+                "fieldId": "decision_category",
+                "fieldValue": "={{ $('JSON Ayrıştırma').item.json.mudahale_kategorisi }}"
+              },
+              {
+                "fieldId": "ai_strategy_plan",
+                "fieldValue": "={{ $json.output }}"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          1120,
+          224
+        ],
+        "id": "a4716df1-76a2-4c99-9233-11dcd7e245ff",
+        "name": "Create a row",
+        "credentials": {
+          "supabaseApi": {
+            "id": "xeLcRlXxlGKLN5CK",
+            "name": "StarIQ"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          1328,
+          224
+        ],
+        "id": "c0d586d6-0aa1-45e6-8163-fa1cef2d3df1",
+        "name": "Respond to Webhook"
+      }
+    ],
+    "connections": {
+      "Şirket Durum Bildirimi (Webhook)": {
+        "main": [
+          [
+            {
+              "node": "F5_A: Pivot Signal AI",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "F5_A: Pivot Signal AI": {
+        "main": [
+          [
+            {
+              "node": "JSON Ayrıştırma",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "JSON Ayrıştırma": {
+        "main": [
+          [
+            {
+              "node": "Müdahale Yönü (Switch)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Müdahale Yönü (Switch)": {
+        "main": [
+          [
+            {
+              "node": "F5_B: Pivot Planner",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "F5_C: Acquisition Radar",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "F5_D: Wind-down Guide",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Sorun Yok (Log)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "DeepSeek Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "F5_B: Pivot Planner",
+              "type": "ai_languageModel",
+              "index": 0
+            },
+            {
+              "node": "F5_C: Acquisition Radar",
+              "type": "ai_languageModel",
+              "index": 0
+            },
+            {
+              "node": "F5_D: Wind-down Guide",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "DeepSeek Chat Model1": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "F5_A: Pivot Signal AI",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "F5_D: Wind-down Guide": {
+        "main": [
+          [
+            {
+              "node": "Create a row",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "F5_C: Acquisition Radar": {
+        "main": [
+          [
+            {
+              "node": "Create a row",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "F5_B: Pivot Planner": {
+        "main": [
+          [
+            {
+              "node": "Create a row",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Sorun Yok (Log)": {
+        "main": [
+          [
+            {
+              "node": "Create a row",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Create a row": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "SELAHADDİN serttas2001@gmail.com",
+    "name": "Version aeef5bde",
+    "description": "",
+    "autosaved": true
+  },
+  "tags": []
+}
