@@ -1,0 +1,591 @@
+={
+  "updatedAt": "2026-04-04T15:55:50.656Z",
+  "createdAt": "2026-04-04T15:39:32.100Z",
+  "id": "PU2yKIUnVypTgIUL",
+  "name": "My workflow 4",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1pI_zxOPBKL9o5N1A7APCh9YGCGem_Kdv",
+          "mode": "id"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "id": "5d793725-c6ee-4290-bd9e-206f33f33222",
+      "name": "Google Drive Trigger",
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -2256,
+        128
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "O3iuTXTvoeTm5Mg9",
+          "name": "Serttas"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst ad = (item.name || '').toLowerCase();\nconst mime = item.mimeType || '';\n\nconst gecerli =\n  ad.endsWith('.xlsx') ||\n  mime === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';\n\nif (!gecerli) {\n  throw new Error(`Geçersiz dosya: \"${item.name}\" — yalnızca .xlsx dosyaları işlenir.`);\n}\n\nreturn [{ json: { ...item, validasyon_gecti: true } }];"
+      },
+      "id": "00da2f5e-148f-4e6e-aac6-48d3ee8557d0",
+      "name": "Dosya Validasyonu",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2016,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "id": "e45fbaf1-2541-491f-a005-fd8d6d1a79a5",
+      "name": "Dosyayı İndir",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -1776,
+        128
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "O3iuTXTvoeTm5Mg9",
+          "name": "Serttas"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fileFormat": "xlsx",
+        "options": {
+          "headerRow": true,
+          "sheetName": "Stok Verileri"
+        }
+      },
+      "id": "58171777-8c3e-4114-9c60-3b87bf4e4939",
+      "name": "Excel Oku",
+      "type": "n8n-nodes-base.spreadsheetFile",
+      "typeVersion": 2,
+      "position": [
+        -1536,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "batchSize": 5,
+        "options": {}
+      },
+      "id": "49474e0d-3604-4ca3-8b05-833de18d2df1",
+      "name": "Verileri Grupla (5'erli)",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -1344,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Sen bir süpermarket stok yönetim ve depo lojistik uzmanısın.\n\nAşağıdaki ürün verileri için iki görevi eksiksiz tamamla:\n\n━━━ GÖREV 1: SİPARİŞ ANALİZİ ━━━\n\nKural seti:\n• Mevcut Stok < Minimum Stok              → siparis_durumu: \"SİPARİŞ VER\", oncelik: \"ACİL\"\n• Mevcut Stok < Minimum Stok × 1.5       → siparis_durumu: \"SİPARİŞ VER\", oncelik: \"NORMAL\"\n• Mevcut Stok ≥ Minimum Stok × 1.5       → siparis_durumu: \"STOK YETERLİ\", oncelik: \"YOK\"\n\nHesaplamalar:\n• siparis_adedi   = MAX(0, (Son 30 Gün Satış × 1.5) − Mevcut Stok)\n• tahmini_maliyet = siparis_adedi × Birim Fiyat  (iki ondalık)\n• gunluk_tuketim  = Son 30 Gün Satış / 30  (iki ondalık)\n• stok_gun_sayisi = Mevcut Stok / gunluk_tuketim  (iki ondalık — kaç günlük stok var)\n\n━━━ GÖREV 2: DEPO YERLEŞİMİ (ABC ANALİZİ) ━━━\n\nDepo Bölgesi:\n• Süt / Yoğurt / Peynir / Et / Tavuk / Şarküteri → \"Soğuk Hava\"\n• Deterjan / Çamaşır / Sabun / Tuvalet / Temizlik → \"Kimyasal\"\n• Bebek / Kişisel Bakım                           → \"Kişisel Bakım\"\n• Meyve / Sebze                                   → \"Taze Ürün\"\n• Diğer tüm ürünler                               → \"Kuru Gıda\"\n\nKoridor (Son 30 Gün Satışa göre):\n• Satış > 100 → Koridor \"A\"  (Giriş / Hızlı Erişim)\n• Satış 50-100 → Koridor \"B\" (Orta)\n• Satış < 50  → Koridor \"C\"  (Arka / Yavaş)\n\nRaf Numarası (1=Zemin, 5=Tepe):\n• Raf 1 — Ağır ürünler (≥5 kg/L: deterjan bidonu, un, yağ tenekesi)\n• Raf 2 — Orta ağırlık, orta satış\n• Raf 3 — En popüler ve hafif ürünler (göz hizası)\n• Raf 4 — Hafif, orta satış\n• Raf 5 — Çok hafif veya çok az satan\n\n━━━ VERİ ━━━\n{{ JSON.stringify($json) }}\n\n━━━ KRİTİK TALİMAT ━━━\nYALNIZCA geçerli JSON döndür. Açıklama, başlık veya markdown kodu YAZMA.",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "id": "c7ff22cb-eae8-465b-8b46-4ae7e9e37328",
+      "name": "AI Agent - Stok Analizi",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -1120,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "model": "deepseek-reasoner",
+        "options": {}
+      },
+      "id": "7bf5c7ba-df75-4b9b-8ae9-39ac997d977a",
+      "name": "DeepSeek Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatDeepSeek",
+      "typeVersion": 1,
+      "position": [
+        -1120,
+        224
+      ],
+      "credentials": {
+        "deepSeekApi": {
+          "id": "04burqSTSa8yxNaW",
+          "name": "DeepSeek account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"urunler\": [\n    {\n      \"urun_kodu\": \"UR-001\",\n      \"urun_adi\": \"Tam Yağlı Süt 1L\",\n      \"kategori\": \"Süt Ürünleri\",\n      \"tedarikci\": \"Pınar Gıda\",\n      \"mevcut_stok\": 10,\n      \"minimum_stok\": 30,\n      \"son_30_gun_satis\": 120,\n      \"birim_fiyat\": 38.50,\n      \"siparis_durumu\": \"SİPARİŞ VER\",\n      \"siparis_adedi\": 170,\n      \"tahmini_maliyet\": 6545.00,\n      \"oncelik\": \"ACİL\",\n      \"gunluk_tuketim\": 4.00,\n      \"stok_gun_sayisi\": 2.50,\n      \"sebep\": \"Stok kritik seviyenin altında.\",\n      \"depo_bolgesi\": \"Soğuk Hava\",\n      \"koridor\": \"A\",\n      \"raf_no\": 3,\n      \"yerlesim_gerekcesi\": \"Çok satan A grubu soğuk zincir ürünü.\"\n    }\n  ]\n}"
+      },
+      "id": "82524690-b9b7-446f-98a3-ff1f3c4a46a5",
+      "name": "Structured Output Parser",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -912,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = [];\n\nfor (const item of $input.all()) {\n  try {\n    const data = item.json.output || item.json;\n\n    if (data.urunler && Array.isArray(data.urunler)) {\n      for (const p of data.urunler) items.push({ json: p });\n    } else if (Array.isArray(data)) {\n      for (const p of data) items.push({ json: p });\n    } else if (data.urun_kodu) {\n      items.push({ json: data });\n    } else {\n      let content = typeof data === 'string' ? data : JSON.stringify(data);\n      content = content.replace(/```json\\n?/g, '').replace(/```\\n?/g, '').trim();\n      const match = content.match(/\\[\\s*\\{[\\s\\S]*\\}\\s*\\]/);\n      const parsed = JSON.parse(match ? match[0] : content);\n      if (Array.isArray(parsed)) for (const p of parsed) items.push({ json: p });\n      else items.push({ json: parsed });\n    }\n  } catch (err) {\n    console.error('Parse hatası:', err.message);\n    items.push({ json: { _hata: true, hata_detay: err.message, ham: JSON.stringify(item.json).substring(0, 300) } });\n  }\n}\n\nreturn items;"
+      },
+      "id": "49a5ae6f-25d6-4fee-b444-f739e19cbf42",
+      "name": "AI Cevabını İşle",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -816,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "tum_urunler",
+        "options": {}
+      },
+      "id": "ee67f0c6-271f-4e42-9800-9a1e83d964f5",
+      "name": "Tüm Sonuçları Topla",
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        -576,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const ham = $input.first().json.tum_urunler || [];\nconst urunler = ham.filter(u => !u._hata && u.urun_kodu);\nconst hataliSayisi = ham.filter(u => u._hata).length;\n\n// ── Sipariş listesi ──\nconst oncelikSira = { 'ACİL': 0, 'NORMAL': 1, 'YOK': 2 };\nconst siparisListesi = urunler\n  .filter(u => u.siparis_durumu === 'SİPARİŞ VER')\n  .sort((a, b) => (oncelikSira[a.oncelik] ?? 2) - (oncelikSira[b.oncelik] ?? 2));\n\n// ── Sayısal özetler ──\nconst acil    = urunler.filter(u => u.oncelik === 'ACİL').length;\nconst normal  = urunler.filter(u => u.oncelik === 'NORMAL').length;\nconst yeterli = urunler.filter(u => u.siparis_durumu === 'STOK YETERLİ').length;\nconst toplamMaliyet = siparisListesi.reduce((s, u) => s + (Number(u.tahmini_maliyet) || 0), 0);\n\n// ── Kategori özeti ──\nconst katMap = {};\nfor (const u of urunler) {\n  const k = u.kategori || 'Diğer';\n  if (!katMap[k]) katMap[k] = { acil: 0, normal: 0, yeterli: 0, maliyet: 0 };\n  if (u.oncelik === 'ACİL')        katMap[k].acil++;\n  else if (u.oncelik === 'NORMAL') katMap[k].normal++;\n  else                             katMap[k].yeterli++;\n  katMap[k].maliyet += Number(u.tahmini_maliyet) || 0;\n}\n\n// ── Tedarikçi özeti ──\nconst tedMap = {};\nfor (const u of siparisListesi) {\n  const t = u.tedarikci || 'Bilinmiyor';\n  if (!tedMap[t]) tedMap[t] = { urunler: [], maliyet: 0, acil: 0 };\n  tedMap[t].urunler.push(u.urun_adi);\n  tedMap[t].maliyet += Number(u.tahmini_maliyet) || 0;\n  if (u.oncelik === 'ACİL') tedMap[t].acil++;\n}\n\n// ── En kritik 5 ürün ──\nconst kritikTop5 = [...urunler]\n  .filter(u => u.stok_gun_sayisi != null)\n  .sort((a, b) => Number(a.stok_gun_sayisi) - Number(b.stok_gun_sayisi))\n  .slice(0, 5);\n\nreturn [{ json: {\n  siparis_listesi: siparisListesi,\n  tum_urunler: urunler,\n  kritik_top5: kritikTop5,\n  hatali_sayisi: hataliSayisi,\n  ozet: {\n    toplam_urun: urunler.length,\n    acil_siparis: acil,\n    normal_siparis: normal,\n    stok_yeterli: yeterli,\n    siparis_gereken_toplam: acil + normal,\n    tahmini_toplam_maliyet: Math.round(toplamMaliyet * 100) / 100,\n    rapor_tarihi: new Date().toLocaleString('tr-TR', { timeZone: 'Europe/Istanbul' })\n  },\n  kategori_ozeti: Object.entries(katMap).map(([k, v]) => ({\n    kategori: k, acil: v.acil, normal: v.normal, yeterli: v.yeterli,\n    maliyet_tl: Math.round(v.maliyet)\n  })),\n  tedarikci_ozeti: Object.entries(tedMap)\n    .sort((a, b) => b[1].maliyet - a[1].maliyet)\n    .map(([t, v]) => ({\n      tedarikci: t,\n      urun_sayisi: v.urunler.length,\n      urun_listesi: v.urunler.join(' | '),\n      acil_adet: v.acil,\n      toplam_maliyet_tl: Math.round(v.maliyet)\n    }))\n}}];"
+      },
+      "id": "bc4f5add-925a-4b35-82b2-941988ec3384",
+      "name": "Rapor Verilerini Hazırla",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -336,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// n8n'de tek bir Excel dosyasına birden fazla sheet yazmak için\n// binary veriyi base64 olarak üretip ileriki node'a aktarıyoruz.\n// SpreadsheetFile node'u tek sheet desteklediğinden bu yaklaşım gereklidir.\n\nconst d = $input.first().json;\n\n// ── SAYFA 1: Sipariş Listesi ──\nconst siparisRows = [[\n  'ÖNCELİK','ÜRÜN KODU','ÜRÜN ADI','KATEGORİ','TEDARİKÇİ',\n  'MEVCUT STOK','MİN. STOK','STOK (GÜN)','SON 30 GÜN SATIŞ',\n  'SİPARİŞ ADEDİ','BİRİM FİYAT (TL)','TAHMİNİ MALİYET (TL)','SEBEP'\n]];\nfor (const u of d.siparis_listesi) {\n  siparisRows.push([\n    u.oncelik, u.urun_kodu, u.urun_adi, u.kategori, u.tedarikci,\n    u.mevcut_stok, u.minimum_stok, u.stok_gun_sayisi, u.son_30_gun_satis,\n    u.siparis_adedi, u.birim_fiyat, u.tahmini_maliyet, u.sebep\n  ]);\n}\n\n// ── SAYFA 2: Yönetici Özeti ──\nconst ozetRows = [['BÖLÜM','METRİK','DEĞER']];\nozetRows.push(['▌ GENEL ÖZET','','']);\nozetRows.push(['','Toplam Ürün', d.ozet.toplam_urun]);\nozetRows.push(['','🔴 Acil Sipariş', d.ozet.acil_siparis]);\nozetRows.push(['','🟡 Normal Sipariş', d.ozet.normal_siparis]);\nozetRows.push(['','🟢 Stok Yeterli', d.ozet.stok_yeterli]);\nozetRows.push(['','💰 Toplam Maliyet (TL)', d.ozet.tahmini_toplam_maliyet]);\nozetRows.push(['','📅 Rapor Tarihi', d.ozet.rapor_tarihi]);\nozetRows.push(['','','']);\n\nozetRows.push(['▌ EN KRİTİK 5 ÜRÜN','Mevcut Stok','Stok (Gün)']);\nfor (const u of d.kritik_top5) {\n  ozetRows.push([u.urun_adi, u.mevcut_stok, u.stok_gun_sayisi]);\n}\nozetRows.push(['','','']);\n\nozetRows.push(['▌ KATEGORİ BAZLI ÖZET','Acil|Normal|Yeterli','Maliyet (TL)']);\nfor (const k of d.kategori_ozeti) {\n  ozetRows.push([k.kategori, `Acil:${k.acil}  Normal:${k.normal}  Yeterli:${k.yeterli}`, k.maliyet_tl]);\n}\nozetRows.push(['','','']);\n\nozetRows.push(['▌ TEDARİKÇİ SİPARİŞLERİ','Ürünler','Maliyet (TL)']);\nfor (const t of d.tedarikci_ozeti) {\n  const label = `${t.tedarikci} (${t.urun_sayisi} ürün${t.acil_adet > 0 ? ' ⚠️ ' + t.acil_adet + ' acil' : ''})`;\n  ozetRows.push([label, t.urun_listesi, t.toplam_maliyet_tl]);\n}\n\n// ── SAYFA 3: Depo Yerleşim Planı ──\nconst depoRows = [[\n  'DEPO BÖLGESİ','KORİDOR','RAF NO','ÜRÜN KODU','ÜRÜN ADI',\n  'KATEGORİ','SATIŞ HIZI','SON 30 GÜN','GÜNDELİK TÜKETİM','YERLEŞİM GEREKÇESİ'\n]];\nconst sortedDepo = [...d.tum_urunler].sort((a, b) => {\n  if ((a.depo_bolgesi||'') !== (b.depo_bolgesi||'')) return (a.depo_bolgesi||'').localeCompare(b.depo_bolgesi||'', 'tr');\n  if ((a.koridor||'') !== (b.koridor||'')) return (a.koridor||'').localeCompare(b.koridor||'');\n  return (a.raf_no||0) - (b.raf_no||0);\n});\nfor (const u of sortedDepo) {\n  const hiz = u.son_30_gun_satis > 100 ? 'Hızlı' : u.son_30_gun_satis >= 50 ? 'Orta' : 'Yavaş';\n  depoRows.push([u.depo_bolgesi, u.koridor, u.raf_no, u.urun_kodu, u.urun_adi,\n    u.kategori, hiz, u.son_30_gun_satis, u.gunluk_tuketim, u.yerlesim_gerekcesi]);\n}\n\n// Veriyi bir sonraki node'a geçir (SpreadsheetFile 3 ayrı çağrı yerine bu data kullanılacak)\nreturn [{ json: {\n  siparis_rows: siparisRows,\n  ozet_rows:    ozetRows,\n  depo_rows:    depoRows,\n  rapor_adi:    `Akilli_Depo_Raporu_${new Date().toISOString().slice(0,16).replace('T','_').replace(':','-')}.xlsx`,\n  ozet_data:    d.ozet,\n  tedarikci_ozeti: d.tedarikci_ozeti,\n  acil_urunler: d.siparis_listesi.filter(u => u.oncelik === 'ACİL')\n}}];"
+      },
+      "id": "6642a0ff-9461-42ee-a06f-d58cfe21423c",
+      "name": "3 Sayfalı Excel Oluştur",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -96,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "toFile",
+        "fileFormat": "xlsx",
+        "options": {
+          "fileName": "={{ $json.rapor_adi }}",
+          "sheetName": "Sipariş Listesi"
+        }
+      },
+      "id": "83658bc1-7b82-4a31-911c-0c4bcc907492",
+      "name": "Excel - Sipariş Sayfası",
+      "type": "n8n-nodes-base.spreadsheetFile",
+      "typeVersion": 2,
+      "position": [
+        144,
+        -64
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "toFile",
+        "fileFormat": "xlsx",
+        "options": {
+          "fileName": "={{ $json.rapor_adi }}",
+          "sheetName": "Yönetici Özeti"
+        }
+      },
+      "id": "e31bd786-af9c-40b6-96c9-3edde9ffa32a",
+      "name": "Excel - Özet Sayfası",
+      "type": "n8n-nodes-base.spreadsheetFile",
+      "typeVersion": 2,
+      "position": [
+        144,
+        128
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "toFile",
+        "fileFormat": "xlsx",
+        "options": {
+          "fileName": "={{ $json.rapor_adi }}",
+          "sheetName": "Depo Yerleşim Planı"
+        }
+      },
+      "id": "c5ae059e-2eba-480c-9129-daf6479e995a",
+      "name": "Excel - Depo Sayfası",
+      "type": "n8n-nodes-base.spreadsheetFile",
+      "typeVersion": 2,
+      "position": [
+        144,
+        320
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "options": {}
+      },
+      "id": "9693078f-4148-4f69-95cd-4bf8e35236e8",
+      "name": "Excel Dosyalarını Birleştir",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        432,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "name": "={{ $('3 Sayfalı Excel Oluştur').item.json.rapor_adi }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1NKxP7cvNlbxovI3Vn8Y_gITf84oxxVN2",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "id": "e6fad931-773f-4708-90bb-f1d425f41a02",
+      "name": "Drive'a Yükle",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        864,
+        128
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "O3iuTXTvoeTm5Mg9",
+          "name": "Serttas"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "serttas2001@gmail.com",
+        "subject": "=🏪 Stok Raporu Hazır — {{ $('3 Sayfalı Excel Oluştur').item.json.ozet_data.rapor_tarihi }}",
+        "message": "=<h2>📊 Akıllı Depo Stok Analiz Raporu</h2>\n<p>Merhaba,</p>\n<p>Otomatik stok analizi tamamlandı. Özet bilgiler aşağıdadır:</p>\n\n<table border=\"1\" cellpadding=\"6\" cellspacing=\"0\" style=\"border-collapse:collapse;font-family:Arial;\">\n  <tr style=\"background:#2F5496;color:white;\">\n    <th>Metrik</th><th>Değer</th>\n  </tr>\n  <tr><td>📦 Toplam Ürün</td><td><b>{{ $('3 Sayfalı Excel Oluştur').item.json.ozet_data.toplam_urun }}</b></td></tr>\n  <tr style=\"background:#FFE0E0;\"><td>🔴 Acil Sipariş Gereken</td><td><b>{{ $('3 Sayfalı Excel Oluştur').item.json.ozet_data.acil_siparis }}</b></td></tr>\n  <tr style=\"background:#FFF9E0;\"><td>🟡 Normal Sipariş Gereken</td><td><b>{{ $('3 Sayfaliz Excel Oluştur').item.json.ozet_data.normal_siparis }}</b></td></tr>\n  <tr style=\"background:#E8F5E9;\"><td>🟢 Stok Yeterli</td><td><b>{{ $('3 Sayfalı Excel Oluştur').item.json.ozet_data.stok_yeterli }}</b></td></tr>\n  <tr><td>💰 Tahmini Sipariş Maliyeti</td><td><b>{{ $('3 Sayfalı Excel Oluştur').item.json.ozet_data.tahmini_toplam_maliyet.toLocaleString('tr-TR') }} TL</b></td></tr>\n</table>\n\n<br/>\n<p>📁 Detaylı rapor (3 sayfalı Excel) Google Drive'a yüklendi.</p>\n<p><i>Bu e-posta otomatik olarak gönderilmiştir.</i></p>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "8ab9da7a-cdec-431b-931b-5427e140cc20",
+      "name": "E-posta Bildirimi",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1104,
+        128
+      ],
+      "webhookId": "6593ed59-c7b6-41ef-a472-a355977fcc61",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "vO9a8kj5yWdCc9zo",
+          "name": "Serttas"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const hatalar = $input.all().filter(i => i.json._hata);\nconst basarili = $input.all().filter(i => !i.json._hata);\nconsole.log(`✅ Başarılı: ${basarili.length} | ❌ Hatalı: ${hatalar.length}`);\nif (hatalar.length > 0) {\n  console.error('Hata detayları:', JSON.stringify(hatalar.map(h => h.json.hata_detay)));\n}\nreturn [{ json: {\n  basarili: basarili.length,\n  hatali: hatalar.length,\n  zaman: new Date().toISOString(),\n  detaylar: hatalar.map(h => h.json.hata_detay)\n}}];"
+      },
+      "id": "491994e4-b98d-4dac-b512-0f061f6a9796",
+      "name": "Hata Yakalayıcı",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -576,
+        336
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        592,
+        160
+      ],
+      "id": "82eada3b-ad07-46e3-84ce-27d18612822c",
+      "name": "Merge"
+    }
+  ],
+  "connections": {
+    "Google Drive Trigger": {
+      "main": [
+        [
+          {
+            "node": "Dosya Validasyonu",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dosya Validasyonu": {
+      "main": [
+        [
+          {
+            "node": "Dosyayı İndir",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dosyayı İndir": {
+      "main": [
+        [
+          {
+            "node": "Excel Oku",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Excel Oku": {
+      "main": [
+        [
+          {
+            "node": "Verileri Grupla (5'erli)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verileri Grupla (5'erli)": {
+      "main": [
+        [],
+        [
+          {
+            "node": "AI Agent - Stok Analizi",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent - Stok Analizi": {
+      "main": [
+        [
+          {
+            "node": "AI Cevabını İşle",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Cevabını İşle": {
+      "main": [
+        [
+          {
+            "node": "Tüm Sonuçları Topla",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tüm Sonuçları Topla": {
+      "main": [
+        [
+          {
+            "node": "Rapor Verilerini Hazırla",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rapor Verilerini Hazırla": {
+      "main": [
+        [
+          {
+            "node": "3 Sayfalı Excel Oluştur",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "3 Sayfalı Excel Oluştur": {
+      "main": [
+        [
+          {
+            "node": "Excel - Sipariş Sayfası",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Excel - Özet Sayfası",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Excel - Depo Sayfası",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Excel - Sipariş Sayfası": {
+      "main": [
+        [
+          {
+            "node": "Excel Dosyalarını Birleştir",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Excel - Özet Sayfası": {
+      "main": [
+        [
+          {
+            "node": "Excel Dosyalarını Birleştir",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Excel Dosyalarını Birleştir": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Drive'a Yükle": {
+      "main": [
+        [
+          {
+            "node": "E-posta Bildirimi",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeepSeek Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent - Stok Analizi",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent - Stok Analizi",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Excel - Depo Sayfası": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "ed986900-45a6-4508-bd8c-26ea5f72c719",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-04-04T15:39:32.105Z",
+      "createdAt": "2026-04-04T15:39:32.105Z",
+      "role": "workflow:owner",
+      "workflowId": "PU2yKIUnVypTgIUL",
+      "projectId": "NthPGJZmZB4b9f9E"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
