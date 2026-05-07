@@ -1,0 +1,672 @@
+={
+  "updatedAt": "2026-05-05T11:18:36.399Z",
+  "createdAt": "2026-05-05T11:18:19.914Z",
+  "id": "nJytySKt4Y5r0EFL",
+  "name": "Ai workflow( image add)",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "const allArticles = [];\n\n// Inputtan gelen her bir ana öğe (NewsAPI yanıtı) için döngü\nfor (const item of $input.all()) {\n  const articles = item.json.articles;\n\n  // Eğer articles dizisi varsa, içindeki her bir makaleyi işle\n  if (articles && Array.isArray(articles)) {\n    for (const article of articles) {\n      \n      // Haber verilerini düzleştiriyoruz\n      const flattenedArticle = {\n        ...article,\n        // Kaynak (source) bilgilerini düzleştir\n        source_id: article.source ? article.source.id : null,\n        source_name: article.source ? article.source.name : null,\n        \n        // GÖRSEL BURADA EKLENİYOR:\n        // NewsAPI'den gelen orijinal görsel linkini url_image adıyla kaydediyoruz\n        url_image: article.urlToImage ? article.urlToImage : null\n      };\n      \n      // Artık ihtiyacımız olmayan karmaşık objeyi siliyoruz\n      delete flattenedArticle.source;\n\n      // Temizlenmiş veriyi listeye ekle\n      allArticles.push({ json: flattenedArticle });\n    }\n  }\n}\n\nreturn allArticles;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        464,
+        336
+      ],
+      "id": "5b56654e-19eb-49d8-9a04-8bfacc21d5e1",
+      "name": "JSON Düzleştir (Flatten)"
+    },
+    {
+      "parameters": {
+        "url": "https://newsapi.org/v2/everything",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "(artificial intelligence OR AI OR machine learning OR deep learning) AND (technology OR software OR healthcare)"
+            },
+            {
+              "name": "language",
+              "value": "en"
+            },
+            {
+              "name": "sortBy",
+              "value": "publishedAt"
+            },
+            {
+              "name": "pageSize",
+              "value": "10"
+            },
+            {
+              "name": "from",
+              "value": "={{$now.minus({days: 1}).toFormat('yyyy-MM-dd')}}"
+            },
+            {
+              "name": "apiKey",
+              "value": "d3b244ef9c8e4ce59a41e3bb75944ac4"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "6add16e2-d71a-42f2-b0d9-d6c27114dd8b",
+      "name": "AI Haberlerini Çek",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -16,
+        256
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://newsapi.org/v2/top-headlines",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "category",
+              "value": "technology"
+            },
+            {
+              "name": "language",
+              "value": "en"
+            },
+            {
+              "name": "pageSize",
+              "value": "10"
+            },
+            {
+              "name": "apiKey",
+              "value": "d3b244ef9c8e4ce59a41e3bb75944ac4"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f40dd0dd-00a5-40c2-95be-2b3050ce51ea",
+      "name": "Teknoloji Haberlerini Çek",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -16,
+        416
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "76b0aa9a-e7ee-4897-8786-9c05c3c8d3e8",
+      "name": "Haberleri Birleştir",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2.1,
+      "position": [
+        240,
+        336
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Sen günlük teknoloji ve yapay zeka haber asistanısın. Sana verdiğim haberleri özetle (İçerik ve başlık Türkçe olsun). önem sırası için  1 ile 10 arasında integer değer ver.\nhaber başlığı:({{ $json.title }})\nHaber linki:({{ $json.url }})\n\n",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1248,
+        352
+      ],
+      "id": "b4474176-52ae-430d-b560-72cccfd057e6",
+      "name": "AI Agent1",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3-pro-preview",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1024,
+        528
+      ],
+      "id": "46526462-9157-4110-8304-fa678638b012",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "7ltGq0vUF6iG1jR5",
+          "name": "serttas1"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"haberler\": [\n    {\n      \"baslik\": \"Haberin kısa ve öz Türkçe başlığı\",\n      \"ozet\": \"Haberin ana fikrini anlatan 1-2 cümlelik özet\",\n      \"onem_skoru\": \"1-10 arasında bir sayı örnek:[3] (Haberin teknoloji dünyasındaki etkisi)\",\n      \"kategori\": \"Yapay Zeka / Ekonomi / Eğitim / Bilim\",\n      \"url\": \"Haberin orijinal linki\"\n    }\n  ]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1504,
+        560
+      ],
+      "id": "bb5f39a3-c6a3-4b65-b9f0-9b0bead7c566",
+      "name": "Structured Output Parser1"
+    },
+    {
+      "parameters": {
+        "batchSize": 2,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        672,
+        336
+      ],
+      "id": "410146d2-cf3f-4945-9a0e-0abc6e2fa5b8",
+      "name": "Split In Batches"
+    },
+    {
+      "parameters": {
+        "amount": 3
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1872,
+        352
+      ],
+      "id": "c86d3f82-4ae3-4389-acc1-a8f6aad54bc4",
+      "name": "Wait 5 Mins",
+      "webhookId": "3e7274a4-382b-4199-9b6d-ce65a58c9d3b"
+    },
+    {
+      "parameters": {
+        "model": "deepseek-reasoner",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatDeepSeek",
+      "typeVersion": 1,
+      "position": [
+        1232,
+        576
+      ],
+      "id": "0e7274df-0cd3-47c2-b85f-0eb99bd4ef7a",
+      "name": "DeepSeek Chat Model1",
+      "credentials": {
+        "deepSeekApi": {
+          "id": "04burqSTSa8yxNaW",
+          "name": "DeepSeek account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "13Rv-KgfjEFhRbTJ181NuKxXyFZr-siH9VQ-6N3y_abc",
+          "mode": "list",
+          "cachedResultName": "Ai-Teknoloji Haber",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/13Rv-KgfjEFhRbTJ181NuKxXyFZr-siH9VQ-6N3y_abc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "=AA{{ $now.format('yyyy-MM-dd') }}",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "baslik",
+              "displayName": "baslik",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ozet",
+              "displayName": "ozet",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "onem_skoru",
+              "displayName": "onem_skoru",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "kategori",
+              "displayName": "kategori",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "url",
+              "displayName": "url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2672,
+        544
+      ],
+      "id": "f5d7e4c3-426c-43c6-89f0-72c54056ec22",
+      "name": "Append or update row in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "5IPaDNEuQxdxQUAS",
+          "name": "Google Sheets account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// AI Agent'tan gelen karmaşık yapıyı (output.haberler) düz listeye çevirir\nconst results = [];\nfor (const item of $input.all()) {\n  if (item.json.output && item.json.output.haberler) {\n    for (const haber of item.json.output.haberler) {\n      results.push({ json: haber });\n    }\n  }\n}\nreturn results;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1888,
+        608
+      ],
+      "id": "b2a49e01-044e-47ed-84f8-ba81d6fbdaba",
+      "name": "Code in JavaScript4"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Gelen tüm haberleri tek bir HTML gövdesinde birleştiriyoruz\nlet htmlBody = `\n<div style=\"font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: auto; border: 1px solid #eee; padding: 20px; color: #333;\">\n  <h2 style=\"color: #2c3e50; text-align: center; border-bottom: 2px solid #3498db; padding-bottom: 10px;\">\n    🚀 Günlük Teknoloji Raporu - ${new Date().toLocaleDateString('tr-TR')}\n  </h2>\n`;\n\nfor (const item of $input.all()) {\n  // Eğer NewsAPI'den gelen görsel varsa onu kullan, yoksa şık bir placeholder göster\n  const imageUrl = item.json.url_image || 'https://via.placeholder.com/600x300?text=Teknoloji+Haberleri';\n\n  htmlBody += `\n    <div style=\"margin-bottom: 30px; padding: 0 0 20px 0; background-color: #fff; border-bottom: 1px solid #eee;\">\n      \n      <div style=\"width: 100%; margin-bottom: 15px;\">\n        <img src=\"${imageUrl}\" alt=\"${item.json.baslik}\" style=\"width: 100%; height: auto; border-radius: 8px; display: block; max-height: 300px; object-fit: cover;\">\n      </div>\n\n      <h3 style=\"margin-top: 0; color: #1a0dab; font-size: 18px;\">${item.json.baslik}</h3>\n      \n      <p style=\"color: #444; font-size: 14px; line-height: 1.6; margin-bottom: 15px;\">${item.json.ozet}</p>\n      \n      <div style=\"margin-top: 10px; margin-bottom: 15px;\">\n        <span style=\"background: #e1f5fe; color: #01579b; padding: 5px 10px; border-radius: 20px; font-size: 12px; font-weight: bold;\">\n          # ${item.json.kategori}\n        </span>\n        <span style=\"margin-left: 10px; color: #e67e22; font-weight: bold; font-size: 12px; border: 1px solid #e67e22; padding: 4px 8px; border-radius: 4px;\">\n          Önem Skoru: ${item.json.onem_skoru} / 10\n        </span>\n      </div>\n      \n      <a href=\"${item.json.url}\" target=\"_blank\" style=\"display: inline-block; padding: 10px 20px; background-color: #3498db; color: #ffffff; text-decoration: none; font-weight: bold; border-radius: 5px; font-size: 14px;\">\n        Haberin Tamamı →\n      </a>\n    </div>\n  `;\n}\n\nhtmlBody += `\n  <p style=\"text-align: center; color: #bdc3c7; font-size: 12px; margin-top: 30px;\">\n    Bu rapor n8n otomasyonu ve yapay zeka tarafından otomatik olarak derlenmiştir.<br>\n    © ${new Date().getFullYear()} Teknoloji Haber Servisi\n  </p>\n</div>\n`;\n\nreturn { html: htmlBody };"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2864,
+        544
+      ],
+      "id": "5dfe6cfc-dd37-407d-a36e-56e7f6c51c80",
+      "name": "Code in JavaScript5"
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "documentId": {
+          "__rl": true,
+          "value": "13Rv-KgfjEFhRbTJ181NuKxXyFZr-siH9VQ-6N3y_abc",
+          "mode": "list",
+          "cachedResultName": "Ai-Teknoloji Haber",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/13Rv-KgfjEFhRbTJ181NuKxXyFZr-siH9VQ-6N3y_abc/edit?usp=drivesdk"
+        },
+        "title": "=AA{{ $now.format('yyyy-MM-dd') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        0,
+        0
+      ],
+      "id": "209c4995-1c4f-460c-9f28-2f4f4a8eae10",
+      "name": "Create sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "5IPaDNEuQxdxQUAS",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 21
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -256,
+        336
+      ],
+      "id": "8aebe78a-d6b6-453d-a4a3-1064072c36ba",
+      "name": "Schedule Trigger1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Gelen tüm verileri alıyoruz\nconst items = $input.all().map(item => item.json);\n\n// Puanları standardize eden (normalleştiren) fonksiyon\nfunction normalizeScore(scoreRaw) {\n  if (scoreRaw === undefined || scoreRaw === null) return 0;\n  \n  const str = String(scoreRaw).toLowerCase().trim();\n  \n  // Eğer zaten bir sayıysa direkt sayıya çevir\n  if (!isNaN(str) && str !== \"\") return parseFloat(str);\n  \n  // Metin bazlı puanları sayıya dönüştür\n  if (str.includes(\"yüksek\") || str.includes(\"high\") || str.includes(\"kritik\")) return 9;\n  if (str.includes(\"orta\") || str.includes(\"medium\")) return 5;\n  if (str.includes(\"düşük\") || str.includes(\"low\")) return 2;\n  \n  return 0; // Tanımlanamayanlar en sona\n}\n\n// Büyükten küçüğe sıralama (En yüksek puanlı haber en üstte)\nitems.sort((a, b) => {\n  // Not: 'onem_skoru' veya 'importance_score' alanına göre sıralar\n  const scoreA = normalizeScore(a.onem_skoru || a.importance_score);\n  const scoreB = normalizeScore(b.onem_skoru || b.importance_score);\n  \n  return scoreB - scoreA;\n});\n\n// Veriyi n8n formatında geri döndür\nreturn items.map(item => ({ json: item }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2128,
+        544
+      ],
+      "id": "6c283133-ac72-45d7-8daa-8610ed796da5",
+      "name": "Code in JavaScript6"
+    },
+    {
+      "parameters": {
+        "sendTo": "serttas2001@gmail.com",
+        "subject": "Günlük AI Haberleri ",
+        "message": "={{ $json.html }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        3040,
+        544
+      ],
+      "id": "3f4fc774-9e9c-4dbe-a947-d0cb3d0bf1c4",
+      "name": "Send a message2",
+      "webhookId": "3aacb753-e500-4851-b20e-1ea4c6167d77",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "vO9a8kj5yWdCc9zo",
+          "name": "Serttas"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Gelen tüm json satırlarını tek bir dizi (array) içine alıyoruz\nconst allData = $input.all().map(item => item.json);\n\n// Vercel'in okuyabileceği ai_news.json formatına çeviriyoruz\nreturn [{ \n  json: { \n    fileContent: JSON.stringify(allData, null, 2) \n  } \n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2320,
+        384
+      ],
+      "id": "fc25eb83-9117-485e-9156-d7dfc8f1d72f",
+      "name": "Code in JavaScript7"
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "edit",
+        "owner": {
+          "__rl": true,
+          "value": "https://github.com/selahaddi",
+          "mode": "url"
+        },
+        "repository": {
+          "__rl": true,
+          "mode": "list",
+          "value": "Proje-Sunumlari"
+        },
+        "filePath": "ai_news.json",
+        "fileContent": "={{ $json.fileContent }}",
+        "commitMessage": "Otomatik AI Haber Güncellemesi"
+      },
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1.1,
+      "position": [
+        2512,
+        384
+      ],
+      "id": "82f99cfd-d676-43e2-9ef0-c35c2626455b",
+      "name": "Edit a file1",
+      "webhookId": "0e407acc-98bc-4cc8-b031-022c9117572d",
+      "credentials": {
+        "githubApi": {
+          "id": "wNx4vMf9ksv6BR1g",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "# HTML e resim ekleme nodu. ",
+        "height": 176,
+        "width": 336
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -640,
+        64
+      ],
+      "typeVersion": 1,
+      "id": "b9cd9fa4-b2b0-40f0-bf18-e77448855d0d",
+      "name": "Sticky Note"
+    }
+  ],
+  "connections": {
+    "JSON Düzleştir (Flatten)": {
+      "main": [
+        [
+          {
+            "node": "Split In Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Haberlerini Çek": {
+      "main": [
+        [
+          {
+            "node": "Haberleri Birleştir",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Teknoloji Haberlerini Çek": {
+      "main": [
+        [
+          {
+            "node": "Haberleri Birleştir",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Haberleri Birleştir": {
+      "main": [
+        [
+          {
+            "node": "JSON Düzleştir (Flatten)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Wait 5 Mins",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split In Batches": {
+      "main": [
+        [],
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 5 Mins": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeepSeek Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript4": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript5": {
+      "main": [
+        [
+          {
+            "node": "Send a message2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger1": {
+      "main": [
+        [
+          {
+            "node": "Create sheet1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "AI Haberlerini Çek",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Teknoloji Haberlerini Çek",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript6": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript7": {
+      "main": [
+        [
+          {
+            "node": "Edit a file1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "1cf984a7-ae5d-4523-a847-97bb5bd15b1a",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-05-05T11:18:19.919Z",
+      "createdAt": "2026-05-05T11:18:19.919Z",
+      "role": "workflow:owner",
+      "workflowId": "nJytySKt4Y5r0EFL",
+      "projectId": "NthPGJZmZB4b9f9E"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
