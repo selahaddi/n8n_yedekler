@@ -1,0 +1,90 @@
+={
+  "updatedAt": "2026-04-04T23:03:20.954Z",
+  "createdAt": "2026-04-04T23:03:02.864Z",
+  "id": "9v47xKcFA9ZALVqt",
+  "name": "My workflow 5",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "c5acab59-ae08-4657-9d87-b0e5d3240bdd",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {},
+      "type": "CUSTOM.trendyol",
+      "typeVersion": 1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "2e2b0aa9-ff55-419b-bc85-c251dbb1db33",
+      "name": "List orders"
+    },
+    {
+      "parameters": {
+        "operation": "updateTracking"
+      },
+      "type": "CUSTOM.trendyol",
+      "typeVersion": 1,
+      "position": [
+        416,
+        0
+      ],
+      "id": "cdf70d4f-097b-48ff-bab3-83211fac7906",
+      "name": "Update tracking number"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "List orders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "List orders": {
+      "main": [
+        [
+          {
+            "node": "Update tracking number",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "11087979-4d56-418b-91e5-57ab4b3766b9",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-04-04T23:03:02.870Z",
+      "createdAt": "2026-04-04T23:03:02.870Z",
+      "role": "workflow:owner",
+      "workflowId": "9v47xKcFA9ZALVqt",
+      "projectId": "NthPGJZmZB4b9f9E"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
