@@ -1,0 +1,776 @@
+={
+  "updatedAt": "2026-04-03T14:03:53.447Z",
+  "createdAt": "2026-04-03T13:17:15.709Z",
+  "id": "BDQH4QdwETMBPurf",
+  "name": "My workflow 3",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "url": "https://www.nasa.gov/rss/dyn/image_of_the_day.rss",
+        "options": {}
+      },
+      "id": "d243742e-3e42-47d6-9bec-82d208c6a8a3",
+      "name": "NASA Image of the Day",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [
+        528,
+        -432
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return $input.all().map(item => {\n    const data = item.json;\n    return {\n        json: {\n            source: \"Space_Daily\",\n            title: data.title,\n            date: data.isoDate || data.pubDate,\n            summary: data.contentSnippet || data.content,\n            url: data.link\n        }\n    };\n});;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -96,
+        176
+      ],
+      "id": "4e641a9a-18c0-488d-abed-24efd61a0365",
+      "name": "Code in JavaScript6",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "url": "https://www.universetoday.com/feed",
+        "options": {}
+      },
+      "id": "b1668746-91d9-4de6-84a1-b5082a14ea0e",
+      "name": "Universe Today1",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [
+        432,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://phys.org/rss-feed/space-news/astronomy/",
+        "options": {}
+      },
+      "id": "53ce066c-78ab-4151-a755-9ec39e0485b0",
+      "name": "Phys.org Space1",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [
+        448,
+        592
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 6
+            }
+          ]
+        }
+      },
+      "id": "236789c7-a52e-4a92-892b-cea04b319daf",
+      "name": "Her 6 Saatte Tetikle1",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        48,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Sen Haftalık astronomi ve bilim haber asistanısın. Sana verdiğim haberleri özetle. önem sırası için  1 ile 10 arasında integer değer ver.\nhaber başlığı:({{ $json.title }})\nHaber içeriği:{{ $json.summary }}\nHaber Kaynağı:{{ $json.source }}\nHaber linki:({{ $json.url }})\n\n",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1616,
+        480
+      ],
+      "id": "67c9e6df-d3a8-4d17-82cc-1c0490c4bc37",
+      "name": "AI Agent1",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3-pro-preview",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1328,
+        656
+      ],
+      "id": "c109427c-b0b7-4996-bd73-c75b8ea451c9",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "7ltGq0vUF6iG1jR5",
+          "name": "serttas1"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"haberler\": [\n    {\n      \"baslik\": \"Haberin kısa ve öz Türkçe başlığı\",\n      \"ozet\": \"Haberin ana fikrini anlatan 1-2 cümlelik özet\",\n      \"onem_skoru\": \"1-10 arasında bir sayı örnek:[3] (Haberin teknoloji dünyasındaki etkisi)\",\n      \"kategori\": \"Astronomi / Sağlık / Fizik / Kimya\",\n      \"kaynak\":\"Nasa\",\n      \"url\": \"Haberin orijinal linki\"\n    }\n  ]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1808,
+        688
+      ],
+      "id": "16c33be5-9fa2-451c-b3de-341eeb7b2415",
+      "name": "Structured Output Parser1"
+    },
+    {
+      "parameters": {
+        "batchSize": 2,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1136,
+        464
+      ],
+      "id": "30470bcd-5e6f-4c6a-b72e-6ac908fb5b47",
+      "name": "Split In Batches"
+    },
+    {
+      "parameters": {
+        "amount": 30
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2032,
+        480
+      ],
+      "id": "a3624464-0743-499c-ab0e-f3afa9af12f6",
+      "name": "Wait 5 Mins",
+      "webhookId": "3e7274a4-382b-4199-9b6d-ce65a58c9d3b"
+    },
+    {
+      "parameters": {
+        "model": "deepseek-reasoner",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatDeepSeek",
+      "typeVersion": 1,
+      "position": [
+        1552,
+        688
+      ],
+      "id": "3ce1e9dc-1d84-486f-a064-91fc8694c58a",
+      "name": "DeepSeek Chat Model1",
+      "credentials": {
+        "deepSeekApi": {
+          "id": "04burqSTSa8yxNaW",
+          "name": "DeepSeek account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "serttas2001@gmail.com",
+        "subject": "Günlük AI Haberleri ",
+        "message": "={{ $json.html }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2032,
+        368
+      ],
+      "id": "60d76cc1-544b-47e5-bbf2-a7383a5f5e7d",
+      "name": "Send a message1",
+      "webhookId": "789b1b8e-a312-4db8-92c7-07af68f67007",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "vO9a8kj5yWdCc9zo",
+          "name": "Serttas"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1AL7eAHM8YDwWiF4snUMe8umh8_Rgo73C4JzCCCgycpY",
+          "mode": "list",
+          "cachedResultName": "Astro-Bilim_Haber",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1AL7eAHM8YDwWiF4snUMe8umh8_Rgo73C4JzCCCgycpY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "=B{{ $now.format('yyyy-MM-dd') }}",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1616,
+        368
+      ],
+      "id": "35cc3b50-26a1-448f-965e-1c318824ff46",
+      "name": "Append or update row in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "5IPaDNEuQxdxQUAS",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// AI Agent'tan gelen karmaşık yapıyı (output.haberler) düz listeye çevirir\nconst results = [];\nfor (const item of $input.all()) {\n  if (item.json.output && item.json.output.haberler) {\n    for (const haber of item.json.output.haberler) {\n      results.push({ json: haber });\n    }\n  }\n}\nreturn results;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2032,
+        688
+      ],
+      "id": "a65a0550-c0ea-4b68-a1f1-6239935d6bbd",
+      "name": "Code in JavaScript12"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Gelen tüm haberleri tek bir HTML gövdesinde birleştiriyoruz\nlet htmlBody = `\n<div style=\"font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #eee; padding: 20px;\">\n  <h2 style=\"color: #2c3e50; text-align: center; border-bottom: 2px solid #3498db; padding-bottom: 10px;\">\n    🚀 Haftalık ASTO-Bilim Raporu - ${new Date().toLocaleDateString('tr-TR')}\n  </h2>\n`;\n\nfor (const item of $input.all()) {\n  htmlBody += `\n    <div style=\"margin-bottom: 25px; padding: 15px; background-color: #f9f9f9; border-left: 5px solid #3498db;\">\n      <h3 style=\"margin-top: 0; color: #333;\">${item.json.baslik}</h3>\n      <p style=\"color: #666; font-size: 14px; line-height: 1.6;\">${item.json.ozet}</p>\n      <div style=\"margin-top: 10px;\">\n        <span style=\"background: #e1f5fe; color: #01579b; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold;\">\n          ${item.json.kategori}\n        </span>\n        <span style=\"margin-left: 10px; color: #e67e22; font-weight: bold; font-size: 12px;\">\n          Önem: ${item.json.onem_skoru}\n        </span>\n      </div>\n      <a href=\"${item.json.url}\" style=\"display: inline-block; margin-top: 12px; color: #3498db; text-decoration: none; font-weight: bold;\">\n        Haberin Tamamı →\n      </a>\n    </div>\n  `;\n}\n\nhtmlBody += `\n  <p style=\"text-align: center; color: #bdc3c7; font-size: 12px;\">\n    Bu e-posta n8n otomasyonu ile otomatik olarak oluşturulmuştur.\n  </p>\n</div>\n`;\n\nreturn { html: htmlBody };"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1824,
+        368
+      ],
+      "id": "f8e71b83-2ca0-4896-9550-17a8301a63e0",
+      "name": "Code in JavaScript13"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Gelen tüm verileri alıyoruz\nconst items = $input.all().map(item => item.json);\n\n// Puanları standardize eden (normalleştiren) fonksiyon\nfunction normalizeScore(scoreRaw) {\n  if (scoreRaw === undefined || scoreRaw === null) return 0;\n  \n  const str = String(scoreRaw).toLowerCase().trim();\n  \n  // Eğer zaten bir sayıysa direkt sayıya çevir\n  if (!isNaN(str) && str !== \"\") return parseFloat(str);\n  \n  // Metin bazlı puanları sayıya dönüştür\n  if (str.includes(\"yüksek\") || str.includes(\"high\") || str.includes(\"kritik\")) return 9;\n  if (str.includes(\"orta\") || str.includes(\"medium\")) return 5;\n  if (str.includes(\"düşük\") || str.includes(\"low\")) return 2;\n  \n  return 0; // Tanımlanamayanlar en sona\n}\n\n// Büyükten küçüğe sıralama (En yüksek puanlı haber en üstte)\nitems.sort((a, b) => {\n  // Not: 'onem_skoru' veya 'importance_score' alanına göre sıralar\n  const scoreA = normalizeScore(a.onem_skoru || a.importance_score);\n  const scoreB = normalizeScore(b.onem_skoru || b.importance_score);\n  \n  return scoreB - scoreA;\n});\n\n// Veriyi n8n formatında geri döndür\nreturn items.map(item => ({ json: item }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1408,
+        368
+      ],
+      "id": "5131e4ff-4173-4b10-9ac0-d6d71f2b356a",
+      "name": "Code in JavaScript14"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        896,
+        464
+      ],
+      "id": "96af04cb-d9f0-4ca3-8869-3b0f6ca2b850",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Son 1 haftanın tarihini hesapla\nconst oneWeekAgo = new Date();\noneWeekAgo.setDate(oneWeekAgo.getDate() - 7);\n\n// 2. Gelen tüm öğeleri al ve sırayla işlemlerden geçir\nconst processedItems = $input.all()\n  .filter(item => {\n      const data = item.json;\n      // Haberin tarihini JavaScript'in anlayacağı formata çevir\n      const itemDate = new Date(data.isoDate || data.pubDate);\n      \n      // Eğer haberin tarihi son 1 hafta içindeyse listeye dahil et (true döndür)\n      return itemDate >= oneWeekAgo; \n  })\n  .slice(0, 10) // 3. Filtreden geçen haberlerden SADECE İLK 10 tanesini al\n  .map(item => {\n      const data = item.json;\n      \n      // 4. Son kalan haberleri standart formata çevir\n      return {\n          json: {\n              source: \"NASA\", // Diğer node'larda burayı \"ESA\", \"Space.com\" vb. olarak değiştir\n              title: data.title,\n              date: data.isoDate || data.pubDate,\n              summary: data.contentSnippet || data.content || \"Özet bulunamadı.\",\n              url: data.link\n          }\n      };\n  });\n\n// Sonucu n8n'e döndür\nreturn processedItems;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        640,
+        400
+      ],
+      "id": "a3bee254-b4f1-49ab-a175-e9c0133d48ab",
+      "name": "Code in JavaScript16"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Son 1 haftanın tarihini hesapla\nconst oneWeekAgo = new Date();\noneWeekAgo.setDate(oneWeekAgo.getDate() - 7);\n\n// 2. Gelen tüm öğeleri al ve sırayla işlemlerden geçir\nconst processedItems = $input.all()\n  .filter(item => {\n      const data = item.json;\n      // Haberin tarihini JavaScript'in anlayacağı formata çevir\n      const itemDate = new Date(data.isoDate || data.pubDate);\n      \n      // Eğer haberin tarihi son 1 hafta içindeyse listeye dahil et (true döndür)\n      return itemDate >= oneWeekAgo; \n  })\n  .slice(0, 10) // 3. Filtreden geçen haberlerden SADECE İLK 10 tanesini al\n  .map(item => {\n      const data = item.json;\n      \n      // 4. Son kalan haberleri standart formata çevir\n      return {\n          json: {\n              source: \"NASA\", // Diğer node'larda burayı \"ESA\", \"Space.com\" vb. olarak değiştir\n              title: data.title,\n              date: data.isoDate || data.pubDate,\n              summary: data.contentSnippet || data.content || \"Özet bulunamadı.\",\n              url: data.link\n          }\n      };\n  });\n\n// Sonucu n8n'e döndür\nreturn processedItems;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        640,
+        592
+      ],
+      "id": "3c299443-95c5-470a-9bdd-9c704711186f",
+      "name": "Code in JavaScript17"
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "documentId": {
+          "__rl": true,
+          "value": "1AL7eAHM8YDwWiF4snUMe8umh8_Rgo73C4JzCCCgycpY",
+          "mode": "list",
+          "cachedResultName": "Başlıksız e-tablo",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1AL7eAHM8YDwWiF4snUMe8umh8_Rgo73C4JzCCCgycpY/edit?usp=drivesdk"
+        },
+        "title": "=B{{ $now.format('yyyy-MM-dd') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        464,
+        192
+      ],
+      "id": "cb0371e8-e87b-439d-9f59-ccd6c6fccfb7",
+      "name": "Create sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "5IPaDNEuQxdxQUAS",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1",
+              "name": "baslik",
+              "value": "={{ $json.title }}",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "icerik",
+              "value": "={{ $json.content }}",
+              "type": "string"
+            },
+            {
+              "id": "3",
+              "name": "resim_url",
+              "value": "={{ $json.enclosure.url.trim() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "0b6bf604-6a1d-4ce2-93f1-fabf2e92dda9",
+      "name": "Verileri Ayıkla",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        976,
+        -448
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.resim_url }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "id": "d1c4fd58-eafd-43a5-99b1-bad5a89621e6",
+      "name": "Resmi İndir",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1200,
+        -448
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Sen, çocuklara uzayı ve astronomiyi sevdirmeyi amaçlayan heyecanlı, eğlenceli ve bilgili bir uzay rehberisin. \n\nAmacın, aşağıda verilen karmaşık NASA haberlerini ve astronomi olaylarını 7-10 yaş arası çocukların anlayabileceği, bilimsel gerçeklere sadık ama masalsı/eğlenceli bir dille yeniden yazmak. \n\nLütfen şu kurallara dikkat et:\n1. Karmaşık terimleri kullanırsan, çocukların anlayacağı çok kısa ve eğlenceli bir benzetmeyle açıkla.\n2. Anlatımın merak uyandırıcı ve enerjik olsun.\n\nÖNEMLİ KURAL: \nSana arka planda bir JSON şeması (formatı) sunuldu. Bana o şemanın tanımını (description alanlarını vs.) ASLA geri döndürme! Sadece o şemanın gerektirdiği alanları (cocuk_baslik, uzay_hikayesi, egitici_bilgi, resim_ipucu) NASA verileriyle ve kendi ürettiğin çocukça içeriklerle doldurarak GERÇEK bir JSON çıktısı ver.\n\nİşte bugünün uzay haberi:\nOrijinal Başlık: {{ $json.baslik }}\nOrijinal İçerik: {{ $json.icerik }}",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1408,
+        -448
+      ],
+      "id": "5f1dbf20-f3c2-497a-9014-264a7b4d77b0",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"cocuk_baslik\": {\n      \"type\": \"string\",\n      \"description\": \"Çocuklar için ilgi çekici, eğlenceli ve heyecan verici Türkçe başlık. (Örn: Ay'a Giden Uzay Otobüsü!)\"\n    },\n    \"uzay_hikayesi\": {\n      \"type\": \"string\",\n      \"description\": \"Orijinal haberi 7-10 yaş arasına uygun, bilimsel gerçeklere sadık kalarak basitleştiren eğlenceli anlatım (Maksimum 3 paragraf).\"\n    },\n    \"egitici_bilgi\": {\n      \"type\": \"string\",\n      \"description\": \"Haberle bağlantılı, çocukları şaşırtacak 'Biliyor muydunuz?' tarzı kısa, ekstra bir astronomi veya fizik bilgisi.\"\n    },\n    \"resim_ipucu\": {\n      \"type\": \"string\",\n      \"description\": \"Çocuğun ekrandaki resme bakarken neye dikkat etmesi gerektiğini anlatan kısa ve samimi bir yönlendirme. (Örn: 'Resimdeki parlak turuncu renklere iyi bak, işte orası yıldızın doğduğu yer!')\"\n    }\n  },\n  \"required\": [\n    \"cocuk_baslik\",\n    \"uzay_hikayesi\",\n    \"egitici_bilgi\",\n    \"resim_ipucu\"\n  ]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1568,
+        -208
+      ],
+      "id": "8a248899-2a84-41ac-a78d-a1c7d71f6b63",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        992,
+        544
+      ],
+      "id": "9b04613d-dea5-41e9-9959-538a141e31fd",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "7ltGq0vUF6iG1jR5",
+          "name": "serttas1"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        736,
+        -480
+      ],
+      "id": "c1d68503-a38c-4903-afa8-910e385e6b69",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "model": "deepseek-reasoner",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatDeepSeek",
+      "typeVersion": 1,
+      "position": [
+        1408,
+        -96
+      ],
+      "id": "905655d5-a390-470b-8b6b-f747fd069883",
+      "name": "DeepSeek Chat Model",
+      "credentials": {
+        "deepSeekApi": {
+          "id": "04burqSTSa8yxNaW",
+          "name": "DeepSeek account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Universe Today1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript16",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Phys.org Space1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript17",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Her 6 Saatte Tetikle1": {
+      "main": [
+        [
+          {
+            "node": "Universe Today1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Phys.org Space1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Create sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Wait 5 Mins",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split In Batches": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript14",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 5 Mins": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript12",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeepSeek Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript13",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript12": {
+      "main": [
+        [
+          {
+            "node": "Split In Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript13": {
+      "main": [
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript14": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Split In Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript16": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript17": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "NASA Image of the Day": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verileri Ayıkla": {
+      "main": [
+        [
+          {
+            "node": "Resmi İndir",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Resmi İndir": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        []
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Verileri Ayıkla",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeepSeek Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "dadcd84f-e8a3-4ad3-9499-d861b0eed855",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-04-03T13:17:15.715Z",
+      "createdAt": "2026-04-03T13:17:15.715Z",
+      "role": "workflow:owner",
+      "workflowId": "BDQH4QdwETMBPurf",
+      "projectId": "NthPGJZmZB4b9f9E"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
