@@ -1,0 +1,565 @@
+={
+  "updatedAt": "2026-04-19T12:37:06.189Z",
+  "createdAt": "2026-04-19T12:29:05.448Z",
+  "id": "qMQjqmxlWqwV5iuz",
+  "name": "Engine 1 - Brand Intelligence (Startiqo V2)",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "engine-1-generate",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "54e97c1f-81ef-46bc-8793-80d36cfc221c",
+      "name": "Webhook (Frontend Trigger)",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "af7e74b0-21d0-4ee8-80d4-ce9b6bcdf22d"
+    },
+    {
+      "parameters": {
+        "operation": "insert"
+      },
+      "id": "7af8ba78-f095-4185-a7eb-eabdb011c0d3",
+      "name": "Supabase: Create Session",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        224,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "YOUR_ANTHROPIC_API_KEY_HERE"
+            },
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            },
+            {
+              "name": "content-type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "model",
+              "value": "claude-3-5-sonnet-latest"
+            },
+            {
+              "name": "max_tokens",
+              "value": "1500"
+            },
+            {
+              "name": "system",
+              "value": "You are a world-class startup brand strategist. Analyze the user's startup inputs and output an intelligence brief containing brand archetype, positioning statement, tone of voice, and exactly 6 suggested names with rationale. YOU MUST OUTPUT ONLY VALID JSON. Do not write markdown blocks or conversational text. Follow this schema exactly:\n{\n  \"brand_archetype\": \"string\",\n  \"positioning_statement\": \"string\",\n  \"tone_of_voice\": \"string\",\n  \"suggested_names\": [\n    { \"name\": \"string\", \"rationale\": \"string\", \"syllable_count\": number }\n  ]\n}"
+            },
+            {
+              "name": "messages",
+              "value": "=[ { \"role\": \"user\", \"content\": \"Analyze this startup:\nIndustry: {{ $('Webhook (Frontend Trigger)').item.json.body.intake_data.industry }}\nAudience: {{ $('Webhook (Frontend Trigger)').item.json.body.intake_data.target_audience }}\nCore Values: {{ $('Webhook (Frontend Trigger)').item.json.body.intake_data.core_value }}\nCompetitors: {{ $('Webhook (Frontend Trigger)').item.json.body.intake_data.competitors }}\" } ]"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "02d94e3f-2d53-444c-ae02-cf1d37d4968a",
+      "name": "Claude 3.5 Sonnet (HTTP)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        304,
+        -368
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "id",
+              "fieldValue": "={{ $('Supabase: Create Session').item.json.id }}"
+            },
+            {
+              "fieldId": "current_status",
+              "fieldValue": "engine_1_done"
+            },
+            {
+              "fieldId": "engine_1_intelligence",
+              "fieldValue": "={{ $json.content[0].text }}"
+            }
+          ]
+        }
+      },
+      "id": "040851e7-8377-4b33-8c2d-a01886cdbd8f",
+      "name": "Supabase: Save Engine 1",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        816,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        432,
+        0
+      ],
+      "id": "006f7452-6689-45d4-983c-c82978f388f4",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        608,
+        208
+      ],
+      "id": "6a31403c-86c9-4fb4-a90d-e0ed60dcd930",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatDeepSeek",
+      "typeVersion": 1,
+      "position": [
+        400,
+        224
+      ],
+      "id": "37d30839-c256-4f15-93ff-d40a79941d10",
+      "name": "DeepSeek Chat Model",
+      "credentials": {
+        "deepSeekApi": {
+          "id": "04burqSTSa8yxNaW",
+          "name": "DeepSeek account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "engine-1-generate",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "8415d608-366f-4543-a549-f4c08c020666",
+      "name": "Webhook (Frontend Trigger)1",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        1168,
+        -112
+      ],
+      "webhookId": "674bcc5c-124b-476d-84c1-7ee4a4a748b8"
+    },
+    {
+      "parameters": {
+        "operation": "insert"
+      },
+      "id": "bb4ba8c2-c8e8-43c9-a2e7-a31eb43f2794",
+      "name": "Supabase: Create Session1",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1392,
+        -112
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "YOUR_ANTHROPIC_API_KEY_HERE"
+            },
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            },
+            {
+              "name": "content-type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "model",
+              "value": "claude-3-5-sonnet-latest"
+            },
+            {
+              "name": "max_tokens",
+              "value": "1500"
+            },
+            {
+              "name": "system",
+              "value": "You are a world-class startup brand strategist. Analyze the user's startup inputs and output an intelligence brief containing brand archetype, positioning statement, tone of voice, and exactly 6 suggested names with rationale. YOU MUST OUTPUT ONLY VALID JSON. Do not write markdown blocks or conversational text. Follow this schema exactly:\n{\n  \"brand_archetype\": \"string\",\n  \"positioning_statement\": \"string\",\n  \"tone_of_voice\": \"string\",\n  \"suggested_names\": [\n    { \"name\": \"string\", \"rationale\": \"string\", \"syllable_count\": number }\n  ]\n}"
+            },
+            {
+              "name": "messages",
+              "value": "=[ { \"role\": \"user\", \"content\": \"Analyze this startup:\nIndustry: {{ $('Webhook (Frontend Trigger)1').item.json.body.intake_data.industry }}\nAudience: {{ $('Webhook (Frontend Trigger)1').item.json.body.intake_data.target_audience }}\nCore Values: {{ $('Webhook (Frontend Trigger)1').item.json.body.intake_data.core_value }}\nCompetitors: {{ $('Webhook (Frontend Trigger)1').item.json.body.intake_data.competitors }}\" } ]"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "1ae9c370-4b2d-4ff6-8adc-b3be4589bcf7",
+      "name": "Claude 3.5 Sonnet (HTTP)1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        1616,
+        -112
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "id",
+              "fieldValue": "={{ $('Supabase: Create Session1').item.json.id }}"
+            },
+            {
+              "fieldId": "current_status",
+              "fieldValue": "engine_1_done"
+            },
+            {
+              "fieldId": "engine_1_intelligence",
+              "fieldValue": "={{ $json.content[0].text }}"
+            }
+          ]
+        }
+      },
+      "id": "b4f0c255-b0d8-42f7-8300-cd8549e13b13",
+      "name": "Supabase: Save Engine ",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1840,
+        -112
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "engine-1-generate",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "be2f6320-4869-46da-bab0-cbb85d097e6c",
+      "name": "Webhook (Frontend Trigger)2",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        1136,
+        384
+      ],
+      "webhookId": "af7e74b0-21d0-4ee8-80d4-ce9b6bcdf22d"
+    },
+    {
+      "parameters": {
+        "operation": "insert"
+      },
+      "id": "69a6fbe3-78d5-451b-ae93-1249029785d7",
+      "name": "Supabase: Create Session2",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1360,
+        384
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "xeLcRlXxlGKLN5CK",
+          "name": "StarIQ"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Analyze this startup and generate a brand intelligence brief.\n\nIndustry: {{ $('Webhook (Frontend Trigger)2').item.json.body.intake_data.industry }}\nAudience: {{ $('Webhook (Frontend Trigger)2').item.json.body.intake_data.target_audience }}\nCore Values: {{ $('Webhook (Frontend Trigger)2').item.json.body.intake_data.core_value }}\nCompetitors: {{ $('Webhook (Frontend Trigger)2').item.json.body.intake_data.competitors }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are a world-class startup brand strategist. Analyze the user's startup inputs and output an intelligence brief containing brand archetype, positioning statement, tone of voice, and exactly 6 suggested names with rationale."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1568,
+        384
+      ],
+      "id": "daf3956e-c869-4e9e-875f-c19059e16830",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"brand_archetype\": \"Creator\",\n  \"positioning_statement\": \"A single, powerful sentence explaining where this sits in the market.\",\n  \"tone_of_voice\": \"3 adjectives and a brief explanation of how the brand speaks.\",\n  \"suggested_names\": [\n    {\n      \"name\": \"Brandify\",\n      \"rationale\": \"Why this works based on the audience\",\n      \"syllable_count\": 3\n    }\n  ]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1744,
+        592
+      ],
+      "id": "0fd46199-1507-4dc4-9533-6b887669c284",
+      "name": "Structured Output Parser1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatDeepSeek",
+      "typeVersion": 1,
+      "position": [
+        1536,
+        608
+      ],
+      "id": "08760849-eb2e-40fd-b612-2cec1374df35",
+      "name": "DeepSeek Chat Model1",
+      "credentials": {
+        "deepSeekApi": {
+          "id": "04burqSTSa8yxNaW",
+          "name": "DeepSeek account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "id",
+              "fieldValue": "={{ $('Supabase: Create Session2').item.json.id }}"
+            },
+            {
+              "fieldId": "current_status",
+              "fieldValue": "engine_1_done"
+            },
+            {
+              "fieldId": "engine_1_intelligence",
+              "fieldValue": "={{ $json.output }}"
+            }
+          ]
+        }
+      },
+      "id": "81397dfc-a530-42b6-abe7-5713ff000f9c",
+      "name": "Supabase: Save Engine 2",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1952,
+        384
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook (Frontend Trigger)": {
+      "main": [
+        [
+          {
+            "node": "Supabase: Create Session",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase: Create Session": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude 3.5 Sonnet (HTTP)": {
+      "main": [
+        []
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Supabase: Save Engine 1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeepSeek Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook (Frontend Trigger)1": {
+      "main": [
+        [
+          {
+            "node": "Supabase: Create Session1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase: Create Session1": {
+      "main": [
+        [
+          {
+            "node": "Claude 3.5 Sonnet (HTTP)1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude 3.5 Sonnet (HTTP)1": {
+      "main": [
+        [
+          {
+            "node": "Supabase: Save Engine ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook (Frontend Trigger)2": {
+      "main": [
+        [
+          {
+            "node": "Supabase: Create Session2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase: Create Session2": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Supabase: Save Engine 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeepSeek Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "e6e324ab-fcb8-4ecf-9d65-a6d0141ae87c",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-04-19T12:29:05.453Z",
+      "createdAt": "2026-04-19T12:29:05.453Z",
+      "role": "workflow:owner",
+      "workflowId": "qMQjqmxlWqwV5iuz",
+      "projectId": "NthPGJZmZB4b9f9E"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
