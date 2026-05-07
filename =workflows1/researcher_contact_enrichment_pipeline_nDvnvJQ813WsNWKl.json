@@ -1,0 +1,321 @@
+={
+  "updatedAt": "2026-04-20T13:59:29.921Z",
+  "createdAt": "2026-04-20T13:58:52.927Z",
+  "id": "nDvnvJQ813WsNWKl",
+  "name": "Researcher Contact Enrichment Pipeline",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "ff90ca10-24d5-474c-bb24-7781cd1cff4f",
+      "name": "When clicking 'Test workflow'",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1184,
+        -96
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "[\n  {\n    \"ResearcherName\": \"Andrew Ng\",\n    \"Institution\": \"Stanford University\"\n  },\n  {\n    \"ResearcherName\": \"Lex Fridman\",\n    \"Institution\": \"MIT\"\n  },\n  {\n    \"ResearcherName\": \"Yann LeCun\",\n    \"Institution\": \"New York University\"\n  }\n]",
+        "options": {}
+      },
+      "id": "f2954894-5d31-415a-83c0-c72d2c59a06c",
+      "name": "Researcher Data (Supabase Sim.)",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -944,
+        -96
+      ],
+      "notesInFlow": true,
+      "notes": "Supabase veritabanından gelen araştırmacı listesini simüle eder.\nProduction'da bu node Supabase node ile değiştirilecektir."
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "b092c19c-abf8-4956-99c1-b3ab2c289c67",
+      "name": "Loop Over Items",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -704,
+        -96
+      ],
+      "notesInFlow": true,
+      "notes": "Her araştırmacıyı tek tek işler.\nRate limiting ve hata yönetimi için önemli."
+    },
+    {
+      "parameters": {
+        "command": "=python \"C:/Users/sertt/Desktop/Yazılım/N8N_2(upwork)/researcher_enrichment.py\" \"{{ $json.ResearcherName }}\" \"{{ $json.Institution }}\" --demo"
+      },
+      "id": "4861aa22-338e-4ce2-8447-7dc2a45c3a5b",
+      "name": "Run Python Enrichment",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        -448,
+        240
+      ],
+      "notesInFlow": true,
+      "notes": "Python web scraper'ı araştırmacı adı ve kurum argümanları ile çalıştırır.\n--demo bayrağı kaldırılarak gerçek web scraping aktif edilir."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Python script'in stdout çıktısını JSON olarak parse eder\nconst stdout = $input.item.json.stdout;\n\ntry {\n  const parsed = JSON.parse(stdout.trim());\n  return [{ json: parsed }];\n} catch (e) {\n  return [{ json: {\n    ResearcherName: 'PARSE_ERROR',\n    Institution: '',\n    LinkedIn: '',\n    Email: '',\n    Phone: '',\n    Source: 'error',\n    Status: 'error',\n    ErrorMessage: e.message,\n    RawOutput: stdout\n  }}];\n}"
+      },
+      "id": "ecf27453-017a-42a3-8574-7ea15f6632ba",
+      "name": "Parse JSON Output",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -256,
+        -144
+      ],
+      "notesInFlow": true,
+      "notes": "Python stdout JSON string'ini n8n objesine dönüştürür.\nHata durumunda detaylı hata bilgisi döndürür."
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "condition-001",
+              "leftValue": "={{ $json.Status }}",
+              "rightValue": "found",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "f69c666d-dc97-49ee-a041-5f28c8654634",
+      "name": "Check Status",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        80,
+        -16
+      ],
+      "notesInFlow": true,
+      "notes": "Status = 'found' olanları Google Sheets'e gönderir.\nDiğerlerini hata loguna yönlendirir."
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID_HERE",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Sheet1",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {}
+        },
+        "options": {}
+      },
+      "id": "347b67b3-2a33-4ac5-9c58-06a2b4929ad8",
+      "name": "Export to Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        352,
+        -128
+      ],
+      "notesInFlow": true,
+      "notes": "Zenginleştirilmiş iletişim verilerini Google Sheet'e ekler.\nSütunlar: ResearcherName, Institution, LinkedIn, Email, Phone, Source, Status"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "assign-001",
+              "name": "ErrorLog",
+              "value": "={{ $json.ResearcherName }} - {{ $json.Institution }} : {{ $json.Status }}",
+              "type": "string"
+            },
+            {
+              "id": "assign-002",
+              "name": "Timestamp",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "0b1fb954-beb3-4b9f-a839-91ac2c8544a2",
+      "name": "Log Failed Lookup",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        352,
+        96
+      ],
+      "notesInFlow": true,
+      "notes": "Bulunamayan araştırmacıları loglar.\nManuel inceleme için timestamp ile kaydeder."
+    },
+    {
+      "parameters": {},
+      "id": "40954078-07f9-4174-b7c3-3b4930ef66bf",
+      "name": "Wait Between Requests",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        640,
+        96
+      ],
+      "notesInFlow": true,
+      "webhookId": "3778327a-9144-4ac1-be89-dbd8c21424c3",
+      "notes": "Rate limiting: İstekler arasında 2 saniye bekler.\nGoogle'ın rate limit'ine takılmamak için."
+    },
+    {
+      "parameters": {},
+      "id": "b23706e1-f26a-4501-8cad-0d4f09f7fc58",
+      "name": "No Operation",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        128,
+        336
+      ]
+    }
+  ],
+  "connections": {
+    "When clicking 'Test workflow'": {
+      "main": [
+        [
+          {
+            "node": "Researcher Data (Supabase Sim.)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Researcher Data (Supabase Sim.)": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "No Operation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse JSON Output": {
+      "main": [
+        [
+          {
+            "node": "Check Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Status": {
+      "main": [
+        [
+          {
+            "node": "Export to Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Log Failed Lookup",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Export to Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Wait Between Requests",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Failed Lookup": {
+      "main": [
+        [
+          {
+            "node": "Wait Between Requests",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait Between Requests": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "9c923aa0-96ec-4789-85bf-ea292baf335f",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-04-20T13:58:52.934Z",
+      "createdAt": "2026-04-20T13:58:52.934Z",
+      "role": "workflow:owner",
+      "workflowId": "nDvnvJQ813WsNWKl",
+      "projectId": "NthPGJZmZB4b9f9E"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
