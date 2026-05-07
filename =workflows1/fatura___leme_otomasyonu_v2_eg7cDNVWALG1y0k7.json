@@ -1,0 +1,450 @@
+={
+  "updatedAt": "2026-03-27T06:18:42.795Z",
+  "createdAt": "2026-03-27T06:18:42.795Z",
+  "id": "eg7cDNVWALG1y0k7",
+  "name": "Fatura İşleme Otomasyonu v2",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "options": {
+          "customEmailConfig": "",
+          "forceReconnect": true
+        }
+      },
+      "id": "d51161f3-997c-420a-8fee-7dfe8ff767b2",
+      "name": "📩 E-posta Dinleyici (IMAP)",
+      "type": "n8n-nodes-base.emailReadImap",
+      "typeVersion": 2,
+      "position": [
+        -1376,
+        80
+      ],
+      "notes": "Gelen kutusunu dinler. Yeni e-posta geldiğinde tetiklenir. postProcessAction: read → okundu olarak işaretler."
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "cond-has-attachment",
+              "leftValue": "={{ $json.hasAttachments }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "4e74a0b7-01fa-46da-bf4b-052c51bf70df",
+      "name": "🔍 Ek Kontrol (Attachment?)",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2,
+      "position": [
+        -1136,
+        80
+      ],
+      "notes": "E-postada ek var mı kontrol eder. Ek yoksa iş akışı burada durur."
+    },
+    {
+      "parameters": {
+        "jsCode": "// E-postadaki tüm ekleri (attachment) ayrıştır\n// Her eki ayrı bir item olarak döndür\nconst attachments = [];\nconst binaryKeys = Object.keys(items[0].binary || {});\n\nfor (const key of binaryKeys) {\n  const binary = items[0].binary[key];\n  const fileName = binary.fileName || 'bilinmeyen';\n  const mimeType = binary.mimeType || '';\n  \n  // Sadece PDF dosyalarını al\n  if (mimeType === 'application/pdf' || fileName.toLowerCase().endsWith('.pdf')) {\n    attachments.push({\n      json: {\n        attachmentKey: key,\n        fileName: fileName,\n        mimeType: mimeType,\n        emailSubject: items[0].json.subject || 'Konu Yok',\n        emailFrom: items[0].json.from || 'Bilinmeyen Gönderici',\n        emailDate: items[0].json.date || new Date().toISOString(),\n        processedAt: new Date().toISOString()\n      },\n      binary: {\n        data: items[0].binary[key]\n      }\n    });\n  }\n}\n\nif (attachments.length === 0) {\n  // PDF eki yoksa boş bir uyarı döndür\n  return [{\n    json: {\n      error: true,\n      message: 'E-postada PDF eki bulunamadı.',\n      emailSubject: items[0].json.subject || 'Konu Yok',\n      emailFrom: items[0].json.from || 'Bilinmeyen'\n    }\n  }];\n}\n\nreturn attachments;"
+      },
+      "id": "5d7112c3-2bd6-44ba-b3e1-426322e4be30",
+      "name": "📎 PDF Eklerini Ayır",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -928,
+        80
+      ],
+      "notes": "E-postadaki PDF eklerini ayrıştırır. Her PDF için ayrı bir item oluşturur. PDF olmayan ekleri filtreler."
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "cond-no-error",
+              "leftValue": "={{ $json.error }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "d14db3e5-3dbc-4312-b8f7-8ab50b343356",
+      "name": "✅ PDF Var Mı?",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2,
+      "position": [
+        -704,
+        80
+      ],
+      "notes": "PDF eki bulunamadıysa hata yoluna yönlendirir."
+    },
+    {
+      "parameters": {
+        "resource": "chat",
+        "model": "gpt-4o",
+        "prompt": {
+          "messages": [
+            {
+              "role": "system",
+              "content": "Sen profesyonel bir Türk muhasebe asistanısın. Faturalardan veri çıkarmada uzmansın.\n\nSana verilen fatura görüntüsünden veya PDF'ten aşağıdaki alanları çıkar:\n\n1. **fatura_no**: Fatura numarası (Seri ve Sıra No dahil, örn: ABC2024000123)\n2. **fatura_tarihi**: Fatura tarihi (GG.AA.YYYY formatında, örn: 15.03.2024)\n3. **tedarikci_adi**: Tedarikçi/Satıcı firma veya kişi adı\n4. **tedarikci_vkn**: Tedarikçi Vergi Kimlik Numarası (10 veya 11 haneli)\n5. **tedarikci_vergi_dairesi**: Tedarikçi Vergi Dairesi adı\n6. **ara_toplam**: KDV hariç toplam tutar (sayısal, virgüllü, örn: 1.250,00)\n7. **kdv_orani**: KDV oranı (yüzde olarak, örn: 20)\n8. **kdv_tutari**: KDV tutarı (sayısal, virgüllü, örn: 250,00)\n9. **toplam_tutar**: KDV dahil genel toplam (sayısal, virgüllü, örn: 1.500,00)\n10. **para_birimi**: Para birimi (TRY, USD, EUR vb, varsayılan: TRY)\n11. **fatura_tipi**: Fatura tipi (satis / alis / iade / proforma, tahmin et)\n12. **aciklama**: Faturadaki ürün/hizmet açıklaması (kısa özet, max 200 karakter)\n\nKURALLAR:\n- SADECE geçerli JSON döndür, başka hiçbir metin ekleme.\n- Eğer bir alan okunamıyorsa değerini null yap.\n- Tutarları Türk formatında yaz (nokta binlik ayracı, virgül ondalık ayracı).\n- Tarihleri GG.AA.YYYY formatında yaz.\n- Birden fazla KDV oranı varsa, en yüksek oranı ve toplam KDV tutarını yaz."
+            },
+            {
+              "content": "Lütfen ekteki faturayı analiz et ve tüm verileri belirtilen JSON formatında çıkar."
+            }
+          ]
+        },
+        "options": {
+          "maxTokens": 2000,
+          "temperature": 0.1
+        },
+        "requestOptions": {}
+      },
+      "id": "15776d36-2eea-48ab-b6bc-cae7e1f0b0da",
+      "name": "🤖 OpenAI Fatura Analizi (GPT-4o)",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1,
+      "position": [
+        -464,
+        80
+      ],
+      "notes": "PDF'i GPT-4o Vision ile analiz eder. Düşük temperature (0.1) ile tutarlı sonuçlar alır. Çıktı: yapılandırılmış JSON."
+    },
+    {
+      "parameters": {
+        "jsCode": "// AI'dan gelen yanıtı temizle ve JSON'a dönüştür\nconst results = [];\n\nfor (const item of items) {\n  try {\n    let aiResponse = item.json.message?.content || item.json.choices?.[0]?.message?.content || '';\n    \n    // Markdown code block temizliği\n    aiResponse = aiResponse.replace(/```json\\s*/gi, '').replace(/```\\s*/gi, '').trim();\n    \n    // JSON parse et\n    const parsed = JSON.parse(aiResponse);\n    \n    // Temel doğrulama\n    const isValid = (\n      parsed.fatura_tarihi !== null &&\n      parsed.tedarikci_adi !== null &&\n      parsed.toplam_tutar !== null\n    );\n    \n    // Tutar temizleme fonksiyonu (Türk formatı -> sayıya çevir)\n    function cleanAmount(val) {\n      if (val === null || val === undefined) return null;\n      if (typeof val === 'number') return val;\n      // \"1.250,50\" -> 1250.50\n      return parseFloat(String(val).replace(/\\./g, '').replace(',', '.'));\n    }\n    \n    results.push({\n      json: {\n        ...parsed,\n        _meta: {\n          gecerli: isValid,\n          isleme_zamani: new Date().toISOString(),\n          dosya_adi: item.json.fileName || 'bilinmeyen.pdf',\n          email_konu: item.json.emailSubject || '',\n          email_gonderen: item.json.emailFrom || '',\n          ara_toplam_sayi: cleanAmount(parsed.ara_toplam),\n          kdv_tutari_sayi: cleanAmount(parsed.kdv_tutari),\n          toplam_tutar_sayi: cleanAmount(parsed.toplam_tutar)\n        }\n      }\n    });\n    \n  } catch (parseError) {\n    // Parse hatası olursa hata bilgisi döndür\n    results.push({\n      json: {\n        _meta: {\n          gecerli: false,\n          hata: `JSON parse hatası: ${parseError.message}`,\n          ham_yanit: item.json.message?.content || 'Yanıt alınamadı',\n          isleme_zamani: new Date().toISOString(),\n          dosya_adi: item.json.fileName || 'bilinmeyen.pdf'\n        },\n        fatura_no: null,\n        fatura_tarihi: null,\n        tedarikci_adi: null,\n        toplam_tutar: null,\n        kdv_tutari: null\n      }\n    });\n  }\n}\n\nreturn results;"
+      },
+      "id": "0b753897-128d-4564-8341-57e08ee4052e",
+      "name": "🧹 JSON Temizle & Doğrula",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -224,
+        80
+      ],
+      "notes": "AI yanıtını temizler, JSON'a çevirir, doğrulama yapar. Hatalı parse durumunda bile iş akışını kırmaz."
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "cond-valid",
+              "leftValue": "={{ $json._meta.gecerli }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "e55a96fc-35fe-4af8-8a20-4d359fb3879a",
+      "name": "🔀 Geçerli Mi?",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2,
+      "position": [
+        0,
+        -32
+      ],
+      "notes": "Veri geçerliyse → Google Sheets'e kaydet. Geçersizse → Hata bildirimi gönder."
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_SPREADSHEET_ID_HERE",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Faturalar",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Fatura No": "={{ $json.fatura_no }}",
+            "Fatura Tarihi": "={{ $json.fatura_tarihi }}",
+            "Tedarikçi Adı": "={{ $json.tedarikci_adi }}",
+            "Tedarikçi VKN": "={{ $json.tedarikci_vkn }}",
+            "Vergi Dairesi": "={{ $json.tedarikci_vergi_dairesi }}",
+            "Ara Toplam": "={{ $json.ara_toplam }}",
+            "KDV Oranı (%)": "={{ $json.kdv_orani }}",
+            "KDV Tutarı": "={{ $json.kdv_tutari }}",
+            "Toplam Tutar": "={{ $json.toplam_tutar }}",
+            "Para Birimi": "={{ $json.para_birimi }}",
+            "Fatura Tipi": "={{ $json.fatura_tipi }}",
+            "Açıklama": "={{ $json.aciklama }}",
+            "Dosya Adı": "={{ $json._meta.dosya_adi }}",
+            "E-posta Gönderen": "={{ $json._meta.email_gonderen }}",
+            "İşlenme Zamanı": "={{ $json._meta.isleme_zamani }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "f93ea14a-eeb9-4ef7-a376-82e6f8c6d3ef",
+      "name": "📊 Google Sheets'e Kaydet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        240,
+        -128
+      ],
+      "notes": "Çıkarılan fatura verilerini Google Sheets'e yeni satır olarak ekler. 15 sütun: Fatura No, Tarih, Tedarikçi, VKN, Vergi Dairesi, Ara Toplam, KDV Oranı, KDV Tutarı, Toplam, Para Birimi, Tip, Açıklama, Dosya, Gönderen, İşlenme Zamanı."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Başarılı işleme logu oluştur\nconst logEntry = {\n  json: {\n    durum: '✅ BAŞARILI',\n    fatura_no: items[0].json.fatura_no || 'N/A',\n    tedarikci: items[0].json.tedarikci_adi || 'N/A',\n    toplam: items[0].json.toplam_tutar || 'N/A',\n    islem_zamani: new Date().toLocaleString('tr-TR', { timeZone: 'Europe/Istanbul' }),\n    mesaj: `Fatura başarıyla işlendi ve Google Sheets'e kaydedildi.`\n  }\n};\n\nreturn [logEntry];"
+      },
+      "id": "b2a1ecc8-7647-4efe-a9c6-2956c4ad8b93",
+      "name": "📝 Başarı Logu",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        -128
+      ],
+      "notes": "Başarılı işleme sonrası log kaydı oluşturur."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Hata bildirim mesajı oluştur\nconst errorInfo = {\n  json: {\n    durum: '❌ HATA',\n    hata_detay: items[0].json._meta?.hata || 'Veri doğrulama başarısız',\n    dosya_adi: items[0].json._meta?.dosya_adi || 'bilinmeyen',\n    ham_yanit: items[0].json._meta?.ham_yanit || 'Yanıt yok',\n    islem_zamani: new Date().toLocaleString('tr-TR', { timeZone: 'Europe/Istanbul' }),\n    mesaj: 'Fatura otomatik olarak işlenemedi. Lütfen manuel kontrol edin.',\n    email_konu: items[0].json._meta?.email_konu || '',\n    email_gonderen: items[0].json._meta?.email_gonderen || ''\n  }\n};\n\nreturn [errorInfo];"
+      },
+      "id": "1fb12200-4d53-4582-a181-7ec5cf5ee13e",
+      "name": "⚠️ Hata Raporu Oluştur",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        176
+      ],
+      "notes": "İşlenemeyen faturalar için detaylı hata raporu oluşturur."
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_SPREADSHEET_ID_HERE",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Hata Logu",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Durum": "={{ $json.durum }}",
+            "Hata Detayı": "={{ $json.hata_detay }}",
+            "Dosya Adı": "={{ $json.dosya_adi }}",
+            "E-posta Konusu": "={{ $json.email_konu }}",
+            "E-posta Gönderen": "={{ $json.email_gonderen }}",
+            "İşlem Zamanı": "={{ $json.islem_zamani }}",
+            "Mesaj": "={{ $json.mesaj }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "9ac1d3cf-648c-45dc-89de-86bb9a6e4382",
+      "name": "📋 Hata Logunu Kaydet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        480,
+        176
+      ],
+      "notes": "İşlenemeyen faturaların hata bilgilerini 'Hata Logu' sayfasına yazar."
+    },
+    {
+      "parameters": {
+        "jsCode": "// PDF eki olmayan e-postalar için bilgi logu\nconst info = {\n  json: {\n    durum: 'ℹ️ BİLGİ',\n    mesaj: items[0].json.message || 'E-postada PDF eki bulunamadı',\n    email_konu: items[0].json.emailSubject || 'Konu Yok',\n    email_gonderen: items[0].json.emailFrom || 'Bilinmeyen',\n    islem_zamani: new Date().toLocaleString('tr-TR', { timeZone: 'Europe/Istanbul' })\n  }\n};\n\nreturn [info];"
+      },
+      "id": "285424cc-346c-49ee-9097-8b4b4cd4a156",
+      "name": "📌 PDF Yok Bildirimi",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -464,
+        272
+      ],
+      "notes": "E-postada PDF eki bulunamadığında bilgi kaydı oluşturur."
+    }
+  ],
+  "connections": {
+    "📩 E-posta Dinleyici (IMAP)": {
+      "main": [
+        [
+          {
+            "node": "🔍 Ek Kontrol (Attachment?)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔍 Ek Kontrol (Attachment?)": {
+      "main": [
+        [
+          {
+            "node": "📎 PDF Eklerini Ayır",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📎 PDF Eklerini Ayır": {
+      "main": [
+        [
+          {
+            "node": "✅ PDF Var Mı?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "✅ PDF Var Mı?": {
+      "main": [
+        [
+          {
+            "node": "🤖 OpenAI Fatura Analizi (GPT-4o)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🤖 OpenAI Fatura Analizi (GPT-4o)": {
+      "main": [
+        [
+          {
+            "node": "🧹 JSON Temizle & Doğrula",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🧹 JSON Temizle & Doğrula": {
+      "main": [
+        [
+          {
+            "node": "🔀 Geçerli Mi?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔀 Geçerli Mi?": {
+      "main": [
+        [
+          {
+            "node": "📊 Google Sheets'e Kaydet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📊 Google Sheets'e Kaydet": {
+      "main": [
+        [
+          {
+            "node": "📝 Başarı Logu",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "⚠️ Hata Raporu Oluştur": {
+      "main": [
+        [
+          {
+            "node": "📋 Hata Logunu Kaydet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "503392eb-4001-4f46-9c07-9eeb90bbd44b",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-03-27T06:18:42.801Z",
+      "createdAt": "2026-03-27T06:18:42.801Z",
+      "role": "workflow:owner",
+      "workflowId": "eg7cDNVWALG1y0k7",
+      "projectId": "NthPGJZmZB4b9f9E"
+    }
+  ],
+  "activeVersion": null,
+  "tags": [
+    {
+      "updatedAt": "2026-03-27T06:18:41.170Z",
+      "createdAt": "2026-03-27T06:18:41.170Z",
+      "id": "7pJS1897VM7Sgzea",
+      "name": "otomasyon"
+    },
+    {
+      "updatedAt": "2026-03-27T06:18:41.163Z",
+      "createdAt": "2026-03-27T06:18:41.163Z",
+      "id": "KthUXwg5nynVpP9n",
+      "name": "fatura"
+    },
+    {
+      "updatedAt": "2026-03-27T06:18:41.196Z",
+      "createdAt": "2026-03-27T06:18:41.196Z",
+      "id": "jfeiweh9EoaS6Inx",
+      "name": "muhasebe"
+    }
+  ]
+}
