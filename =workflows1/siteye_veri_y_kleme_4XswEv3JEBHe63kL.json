@@ -1,0 +1,220 @@
+={
+  "updatedAt": "2026-04-29T02:48:18.693Z",
+  "createdAt": "2026-04-20T16:37:51.045Z",
+  "id": "4XswEv3JEBHe63kL",
+  "name": "Siteye Veri yükleme",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "tableId": "contents",
+        "dataToSend": "autoMapInputData"
+      },
+      "id": "47f5d30d-9965-4d51-936a-db2ef39d4f34",
+      "name": "Supabase'e Ekle (Contents)",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        832,
+        128
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "QxsxlFoPxNHnqEfa",
+          "name": "WebSitem"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "a14d3443-3280-485b-8cdc-6d148cffcf9e",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        624,
+        128
+      ],
+      "id": "653f33fe-bcb3-4f50-a024-fb2943b02816",
+      "name": "Webhook",
+      "webhookId": "a14d3443-3280-485b-8cdc-6d148cffcf9e"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1040,
+        128
+      ],
+      "id": "fab8552e-15b0-4590-b336-87b3ecfb3f10",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [\n  {\n    json: {\n      \"title\": \"Yeni Nesil Teleskoplar Hakkında Her Şey\",\n      \"slug\": \"yeni-nesil-teleskoplar-2026\",\n      \"summary\": \"James Webb'den sonra gelecek olan yeni gözlem teknolojilerini inceliyoruz.\",\n      \"body\": \"Buraya uzunca bir makale metni gelecek...\",\n      \"image_url\": \"https://unsplash.com/photos/several-small-boats-moored-near-a-larger-vessel-cL8s2n8Yao0\",\n      \"category\": \"Teknoloji\",\n      \"status\": true,\n      \"tags\": [\"astronomi\", \"teknoloji\", \"haber\"]\n    }\n  }\n];"
+      },
+      "id": "794818c8-52e4-4c55-b72e-1bb8658e6ab6",
+      "name": "Code ile JSON Hazırlama",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        704,
+        320
+      ],
+      "disabled": true
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Supabase'e Ekle (Contents)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase'e Ekle (Contents)": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook": {
+      "main": [
+        []
+      ]
+    },
+    "Code ile JSON Hazırlama": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "b5593c95-b211-4017-a56b-a651571f0427",
+  "activeVersionId": "80042dd0-0ebf-4059-8faa-fcae4966ef8d",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-04-20T16:37:51.064Z",
+      "createdAt": "2026-04-20T16:37:51.064Z",
+      "role": "workflow:owner",
+      "workflowId": "4XswEv3JEBHe63kL",
+      "projectId": "NthPGJZmZB4b9f9E"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-04-29T02:38:46.000Z",
+    "createdAt": "2026-04-29T02:38:45.891Z",
+    "versionId": "80042dd0-0ebf-4059-8faa-fcae4966ef8d",
+    "workflowId": "4XswEv3JEBHe63kL",
+    "nodes": [
+      {
+        "parameters": {
+          "jsCode": "return [\n  {\n    json: {\n      \"title\": \"Yeni Nesil Teleskoplar Hakkında Her Şey\",\n      \"slug\": \"yeni-nesil-teleskoplar-2026\",\n      \"summary\": \"James Webb'den sonra gelecek olan yeni gözlem teknolojilerini inceliyoruz.\",\n      \"body\": \"Buraya uzunca bir makale metni gelecek...\",\n      \"image_url\": \"https://unsplash.com/photos/several-small-boats-moored-near-a-larger-vessel-cL8s2n8Yao0\",\n      \"category\": \"Teknoloji\",\n      \"status\": true,\n      \"tags\": [\"astronomi\", \"teknoloji\", \"haber\"]\n    }\n  }\n];"
+        },
+        "id": "794818c8-52e4-4c55-b72e-1bb8658e6ab6",
+        "name": "Code ile JSON Hazırlama",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          928,
+          144
+        ]
+      },
+      {
+        "parameters": {
+          "tableId": "contents",
+          "dataToSend": "autoMapInputData"
+        },
+        "id": "47f5d30d-9965-4d51-936a-db2ef39d4f34",
+        "name": "Supabase'e Ekle (Contents)",
+        "type": "n8n-nodes-base.supabase",
+        "typeVersion": 1,
+        "position": [
+          1152,
+          144
+        ],
+        "credentials": {
+          "supabaseApi": {
+            "id": "QxsxlFoPxNHnqEfa",
+            "name": "WebSitem"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "a14d3443-3280-485b-8cdc-6d148cffcf9e",
+          "responseMode": "responseNode",
+          "options": {
+            "allowedOrigins": "*"
+          }
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          672,
+          144
+        ],
+        "id": "653f33fe-bcb3-4f50-a024-fb2943b02816",
+        "name": "Webhook",
+        "webhookId": "a14d3443-3280-485b-8cdc-6d148cffcf9e"
+      }
+    ],
+    "connections": {
+      "Code ile JSON Hazırlama": {
+        "main": [
+          [
+            {
+              "node": "Supabase'e Ekle (Contents)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "Code ile JSON Hazırlama",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "SELAHADDİN serttas2001@gmail.com",
+    "name": "Version 80042dd0",
+    "description": "",
+    "autosaved": false
+  },
+  "tags": []
+}
