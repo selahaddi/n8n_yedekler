@@ -1,0 +1,737 @@
+={
+  "updatedAt": "2026-03-27T05:57:54.085Z",
+  "createdAt": "2026-03-27T05:53:42.907Z",
+  "id": "FFx9RQOdwURLABhL",
+  "name": "Hisse_Takip",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 2
+            }
+          ]
+        }
+      },
+      "name": "Schedule Trigger5",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [
+        -224,
+        560
+      ],
+      "id": "1dbd2436-0d5d-4cf7-96c4-3d76e094e640"
+    },
+    {
+      "parameters": {
+        "url": "=https://query1.finance.yahoo.com/v8/finance/chart/{{ $json.yahooSymbol }}",
+        "options": {}
+      },
+      "name": "Get Stock Price5",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        592,
+        480
+      ],
+      "id": "2f4103ac-2289-4fad-aa09-3619aefe4485",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "symbol",
+              "name": "symbol",
+              "type": "string",
+              "value": "={{ $json.chart.result[0].meta.symbol }}"
+            },
+            {
+              "id": "currentPrice",
+              "name": "currentPrice",
+              "type": "number",
+              "value": "={{ $json.chart.result[0].meta.regularMarketPrice }}"
+            },
+            {
+              "id": "previousClose",
+              "name": "previousClose",
+              "type": "number",
+              "value": "={{ $json.chart.result[0].meta.previousClose }}"
+            },
+            {
+              "id": "change",
+              "name": "change",
+              "type": "number",
+              "value": "={{ $json.chart.result[0].meta.regularMarketPrice - $json.chart.result[0].meta.previousClose }}"
+            },
+            {
+              "id": "changePercent",
+              "name": "changePercent",
+              "type": "number",
+              "value": "={{ (($json.chart.result[0].meta.regularMarketPrice - $json.chart.result[0].meta.previousClose) / $json.chart.result[0].meta.previousClose * 100).toFixed(2) }}"
+            },
+            {
+              "id": "timestamp",
+              "name": "timestamp",
+              "type": "string",
+              "value": "={{ $now.format('DD/MM/YYYY HH:mm') }}"
+            },
+            {
+              "id": "dayHigh",
+              "name": "dayHigh",
+              "type": "number",
+              "value": "={{ $json.chart.result[0].meta.regularMarketDayHigh }}"
+            },
+            {
+              "id": "dayLow",
+              "name": "dayLow",
+              "type": "number",
+              "value": "={{ $json.chart.result[0].meta.regularMarketDayLow }}"
+            },
+            {
+              "id": "volume",
+              "name": "volume",
+              "type": "number",
+              "value": "={{ $json.chart.result[0].meta.regularMarketVolume }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Format Price Data5",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [
+        864,
+        480
+      ],
+      "id": "492f3b54-f8e6-4f08-aca0-06ddc21300b0"
+    },
+    {
+      "parameters": {
+        "jsCode": "const keywords = {\n  positive: ['yükseliş', 'yükseldi', 'artış', 'arttı', 'kâr', 'kar', 'başarı', 'rekor', 'büyüme', 'büyüdü', 'güçlendi', 'olumlu', 'pozitif'],\n  negative: ['düşüş', 'düştü', 'azaldı', 'azalış', 'zarar', 'kriz', 'sorun', 'kayıp', 'kaybetti', 'olumsuz', 'negatif', 'risk'],\n  neutral: ['açıklama', 'duyuru', 'bilgi', 'toplantı', 'planlıyor', 'değerlendirme']\n};\n\nconst articles = $input.all();\nconst filteredNews = [];\n\nfor (let item of articles) {\n  if (!item.json.articles) continue;\n  \n  for (let article of item.json.articles) {\n    const title = (article.title || '').toLowerCase();\n    const description = (article.description || '').toLowerCase();\n    const content = title + ' ' + description;\n    \n    // THY ile ilgili mi kontrol et\n    const isRelevant = content.includes('thy') || \n                      content.includes('türk hava') || \n                      content.includes('turkish airlines') || \n                      content.includes('thyao');\n    \n    if (!isRelevant) continue;\n    \n    // Sentiment analizi\n    let sentiment = 0;\n    keywords.positive.forEach(word => {\n      const count = (content.match(new RegExp(word, 'g')) || []).length;\n      sentiment += count;\n    });\n    keywords.negative.forEach(word => {\n      const count = (content.match(new RegExp(word, 'g')) || []).length;\n      sentiment -= count;\n    });\n    \n    let sentimentLabel = '🟡 Nötr';\n    if (sentiment > 0) sentimentLabel = '🟢 Pozitif';\n    if (sentiment < 0) sentimentLabel = '🔴 Negatif';\n    \n    filteredNews.push({\n      json: {\n        title: article.title,\n        description: article.description,\n        url: article.url,\n        source: article.source?.name || 'Bilinmeyen',\n        publishedAt: article.publishedAt,\n        sentiment: sentimentLabel,\n        sentimentScore: sentiment\n      }\n    });\n  }\n}\n\n// En yeni ve en önemli 5 haberi al\nconst sortedNews = filteredNews\n  .sort((a, b) => {\n    const dateCompare = new Date(b.json.publishedAt) - new Date(a.json.publishedAt);\n    if (dateCompare !== 0) return dateCompare;\n    return Math.abs(b.json.sentimentScore) - Math.abs(a.json.sentimentScore);\n  })\n  .slice(0, 5);\n\nreturn sortedNews.length > 0 ? sortedNews : [{ json: { noNews: true } }];"
+      },
+      "name": "Filter and Score News5",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        864,
+        688
+      ],
+      "id": "97091c8d-84b9-4610-8711-338d7cfbe9f8"
+    },
+    {
+      "parameters": {
+        "url": "https://newsapi.org/v2/everything",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "=( {{ $json.name }} OR {{ $json.symbol }} OR {{ $json.yahooSymbol }})  "
+            },
+            {
+              "name": "language",
+              "value": "tr"
+            },
+            {
+              "name": "sortBy",
+              "value": "publishedAt"
+            },
+            {
+              "name": "pageSize",
+              "value": "20"
+            },
+            {
+              "name": "from",
+              "value": "=={{ $now.minus({days: 1}).toFormat('yyyy-MM-dd') }}"
+            },
+            {
+              "name": "apiKey",
+              "value": "d3b244ef9c8e4ce59a41e3bb75944ac4"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Get News6",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        608,
+        688
+      ],
+      "id": "45ba6659-e2f6-4306-bb4e-7ecafde23ef3"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1uWG9AQfkMdw-AVDur4N_AFFqn95hH57IIyhmq29xEZc",
+          "mode": "list",
+          "cachedResultName": "THY",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1uWG9AQfkMdw-AVDur4N_AFFqn95hH57IIyhmq29xEZc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": 1412985263,
+          "cachedResultName": "Deneme",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1uWG9AQfkMdw-AVDur4N_AFFqn95hH57IIyhmq29xEZc/edit#gid=1412985263"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "report",
+              "displayName": "report",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "priceData",
+              "displayName": "priceData",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "newsCount",
+              "displayName": "newsCount",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "hasSignificantChange",
+              "displayName": "hasSignificantChange",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "hasNegativeNews",
+              "displayName": "hasNegativeNews",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "hasPositiveNews",
+              "displayName": "hasPositiveNews",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "shouldAlert",
+              "displayName": "shouldAlert",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "output",
+              "displayName": "output",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "name": "Log to Google Sheets5",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        1872,
+        80
+      ],
+      "id": "7a83a817-6ce6-42d8-ab19-c59afdc3eda8",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "5IPaDNEuQxdxQUAS",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "serttas2001@gmail.com, kdr.srtts@gmail.com",
+        "subject": "={{ $json.subject }}",
+        "message": "={{ $json.html }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1648,
+        80
+      ],
+      "id": "454dba16-8c32-453f-8cdd-798ba62e0442",
+      "name": "Send a message3",
+      "webhookId": "349348ba-50dc-4c51-acae-ac1ca911aff1",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "vO9a8kj5yWdCc9zo",
+          "name": "Serttas"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://query1.finance.yahoo.com/v8/finance/chart/{{ $('Loop Over Items').item.json.yahooSymbol }}?interval=1d&range=50d ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1360,
+        592
+      ],
+      "id": "dbf94c59-ecc6-4e1e-85d7-e0140b2037ba",
+      "name": "Historical Data",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Teknik Analiz Göstergeleri Hesaplama\nconst historicalData = $json.chart.result[0];\nconst timestamps = historicalData.timestamp;\nconst quotes = historicalData.indicators.quote[0];\nconst closePrices = quotes.close.filter(p => p !== null);\n\n// Yardımcı Fonksiyonlar\nfunction calculateEMA(prices, period) {\n  const k = 2 / (period + 1);\n  let ema = prices[0];\n  \n  for (let i = 1; i < prices.length; i++) {\n    ema = (prices[i] * k) + (ema * (1 - k));\n  }\n  \n  return ema;\n}\n\nfunction calculateSMA(prices, period) {\n  const slice = prices.slice(-period);\n  return slice.reduce((a, b) => a + b, 0) / period;\n}\n\nfunction calculateStdDev(prices, period) {\n  const slice = prices.slice(-period);\n  const mean = calculateSMA(prices, period);\n  const squareDiffs = slice.map(price => Math.pow(price - mean, 2));\n  const avgSquareDiff = squareDiffs.reduce((a, b) => a + b, 0) / period;\n  return Math.sqrt(avgSquareDiff);\n}\n\n// RSI Hesaplama (14 günlük)\nfunction calculateRSI(prices, period = 14) {\n  if (prices.length < period + 1) return null;\n  \n  let gains = 0;\n  let losses = 0;\n  \n  for (let i = prices.length - period; i < prices.length; i++) {\n    const change = prices[i] - prices[i - 1];\n    if (change > 0) gains += change;\n    else losses -= change;\n  }\n  \n  const avgGain = gains / period;\n  const avgLoss = losses / period;\n  \n  if (avgLoss === 0) return 100;\n  \n  const rs = avgGain / avgLoss;\n  const rsi = 100 - (100 / (1 + rs));\n  \n  return parseFloat(rsi.toFixed(2));\n}\n\n// MACD Hesaplama\nfunction calculateMACD(prices) {\n  if (prices.length < 26) return null;\n  \n  const ema12 = calculateEMA(prices, 12);\n  const ema26 = calculateEMA(prices, 26);\n  const macd = ema12 - ema26;\n  \n  // Signal line (9-day EMA of MACD)\n  const macdValues = [];\n  for (let i = 26; i < prices.length; i++) {\n    const slice = prices.slice(0, i + 1);\n    const e12 = calculateEMA(slice, 12);\n    const e26 = calculateEMA(slice, 26);\n    macdValues.push(e12 - e26);\n  }\n  \n  const signal = calculateEMA(macdValues, 9);\n  const histogram = macd - signal;\n  \n  return {\n    macd: parseFloat(macd.toFixed(2)),\n    signal: parseFloat(signal.toFixed(2)),\n    histogram: parseFloat(histogram.toFixed(2))\n  };\n}\n\n// Bollinger Bands Hesaplama\nfunction calculateBollingerBands(prices, period = 20, stdDevMultiplier = 2) {\n  if (prices.length < period) return null;\n  \n  const sma = calculateSMA(prices, period);\n  const stdDev = calculateStdDev(prices, period);\n  \n  return {\n    upper: parseFloat((sma + (stdDev * stdDevMultiplier)).toFixed(2)),\n    middle: parseFloat(sma.toFixed(2)),\n    lower: parseFloat((sma - (stdDev * stdDevMultiplier)).toFixed(2))\n  };\n}\n\n// Göstergeleri Hesapla\nconst rsi = calculateRSI(closePrices);\nconst macd = calculateMACD(closePrices);\nconst bollinger = calculateBollingerBands(closePrices);\n\n// RSI Sinyali\nlet rsiSignal = 'Nötr';\nlet rsiClass = 'neutral';\nif (rsi !== null) {\n  if (rsi > 70) {\n    rsiSignal = 'Aşırı Alım';\n    rsiClass = 'overbought';\n  } else if (rsi < 30) {\n    rsiSignal = 'Aşırı Satım';\n    rsiClass = 'oversold';\n  }\n}\n\n// MACD Sinyali\nlet macdSignal = 'Nötr';\nif (macd !== null) {\n  if (macd.histogram > 0) {\n    macdSignal = 'Alım Sinyali';\n  } else if (macd.histogram < 0) {\n    macdSignal = 'Satım Sinyali';\n  }\n}\n\n// Bollinger Sinyali\nlet bollingerSignal = 'Nötr';\nconst currentPrice = closePrices[closePrices.length - 1];\nif (bollinger !== null) {\n  if (currentPrice > bollinger.upper) {\n    bollingerSignal = 'Üst Banda Yakın (Aşırı Alım)';\n  } else if (currentPrice < bollinger.lower) {\n    bollingerSignal = 'Alt Banda Yakın (Aşırı Satım)';\n  }\n}\n\nreturn [{\n  json: {\n    symbol: $json.chart.result[0].meta.symbol.replace('.IS', ''),\n    technicalIndicators: {\n      rsi: {\n        value: rsi,\n        signal: rsiSignal,\n        class: rsiClass\n      },\n      macd: {\n        value: macd?.macd || null,\n        signal: macd?.signal || null,\n        histogram: macd?.histogram || null,\n        signalText: macdSignal\n      },\n      bollinger: {\n        upper: bollinger?.upper || null,\n        middle: bollinger?.middle || null,\n        lower: bollinger?.lower || null,\n        signal: bollingerSignal\n      }\n    },\n    historicalPrices: closePrices.slice(-30), // Son 30 gün\n    timestamps: timestamps.slice(-30).map(t => new Date(t * 1000).toLocaleDateString('tr-TR'))\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1568,
+        592
+      ],
+      "id": "19591254-1fec-477d-8531-a9cd2043b9f4",
+      "name": "technical indicators"
+    },
+    {
+      "parameters": {
+        "jsCode": "// QuickChart ile Fiyat Grafiği Oluşturma\nconst technicalData = $json.technicalIndicators;\nconst prices = $json.historicalPrices;\nconst labels = $json.timestamps;\nconst bollinger = technicalData.bollinger;\n\nconst chartConfig = {\n    type: 'line',\n    data: {\n        labels: labels,\n        datasets: [\n            {\n                label: 'Fiyat',\n                data: prices,\n                borderColor: '#667eea',\n                backgroundColor: 'rgba(102, 126, 234, 0.1)',\n                borderWidth: 3,\n                fill: true,\n                tension: 0.4\n            },\n            {\n                label: 'Bollinger Üst',\n                data: Array(prices.length).fill(bollinger.upper),\n                borderColor: '#ef4444',\n                borderWidth: 2,\n                borderDash: [5, 5],\n                fill: false,\n                pointRadius: 0\n            },\n            {\n                label: 'Bollinger Orta',\n                data: Array(prices.length).fill(bollinger.middle),\n                borderColor: '#6b7280',\n                borderWidth: 1,\n                borderDash: [2, 2],\n                fill: false,\n                pointRadius: 0\n            },\n            {\n                label: 'Bollinger Alt',\n                data: Array(prices.length).fill(bollinger.lower),\n                borderColor: '#10b981',\n                borderWidth: 2,\n                borderDash: [5, 5],\n                fill: false,\n                pointRadius: 0\n            }\n        ]\n    },\n    options: {\n        responsive: true,\n        plugins: {\n            title: {\n                display: true,\n                text: `${$json.symbol} - Son 30 Gün Fiyat Grafiği`,\n                font: { size: 16, weight: 'bold' }\n            },\n            legend: {\n                display: true,\n                position: 'bottom'\n            }\n        },\n        scales: {\n            y: {\n                beginAtZero: false,\n                ticks: {\n                    callback: function (value) {\n                        return value.toFixed(2) + ' TL';\n                    }\n                }\n            }\n        }\n    }\n};\n\nconst chartUrl = `https://quickchart.io/chart?c=${encodeURIComponent(JSON.stringify(chartConfig))}&width=600&height=300&backgroundColor=white`;\n\nreturn [{\n    json: {\n        ...$json,\n        chartUrl: chartUrl\n    }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1776,
+        592
+      ],
+      "id": "eae8ad35-3f52-4dc8-810f-ee7eed9782d2",
+      "name": "GENARETE CHART"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combinationMode": "multiplex",
+        "options": {}
+      },
+      "name": "Merge Price and News5",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2.1,
+      "position": [
+        1152,
+        592
+      ],
+      "id": "fbeeeb2e-6c0e-416e-a9d4-466d266f0c12"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        240,
+        560
+      ],
+      "id": "a97ee1b2-6434-4f2c-a91f-951825e2b0ac",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Tüm hisse verilerini topla\nconst allStocks = $input.all();\n\nreturn [{\n  json: {\n    stocks: allStocks.map(item => item.json)\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        432,
+        80
+      ],
+      "id": "ebf86c91-73bc-45c5-8a0f-88632fea707d",
+      "name": "Merge All Stocks"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Portföy Analizi ve Özet Raporu\n// Gelen veri: [{ stocks: [...] }] formatında\nconst inputData = $input.first().json;\nconst allStocks = inputData.stocks || [];\n\n// Portföy istatistikleri\nlet totalChangePercent = 0;\nlet bestPerformer = null;\nlet worstPerformer = null;\nlet totalRSI = 0;\nlet rsiCount = 0;\n\nconst stockDetails = [];\n\nallStocks.forEach(stock => {\n    // stock artık doğrudan obje\n\n    // Detayları kaydet\n    stockDetails.push({\n        symbol: stock.symbol,\n        name: stock.name,\n        price: stock.priceData.currentPrice,\n        change: stock.priceData.change,\n        changePercent: parseFloat(stock.priceData.changePercent),\n        rsi: stock.technicalData?.technicalIndicators?.rsi?.value || null,\n        macd: stock.technicalData?.technicalIndicators?.macd?.signalText || 'N/A',\n        newsCount: stock.newsCount || 0\n    });\n\n    // İstatistik hesaplamaları\n    const changePercent = parseFloat(stock.priceData.changePercent);\n    totalChangePercent += changePercent;\n\n    // En iyi/kötü performans\n    if (!bestPerformer || changePercent > bestPerformer.changePercent) {\n        bestPerformer = {\n            symbol: stock.symbol,\n            name: stock.name,\n            changePercent: changePercent\n        };\n    }\n\n    if (!worstPerformer || changePercent < worstPerformer.changePercent) {\n        worstPerformer = {\n            symbol: stock.symbol,\n            name: stock.name,\n            changePercent: changePercent\n        };\n    }\n\n    // RSI ortalaması\n    if (stock.technicalData?.technicalIndicators?.rsi?.value) {\n        totalRSI += stock.technicalData.technicalIndicators.rsi.value;\n        rsiCount++;\n    }\n});\n\n// Ortalamalar\nconst avgChangePercent = totalChangePercent / allStocks.length;\nconst avgRSI = rsiCount > 0 ? totalRSI / rsiCount : null;\n\n// Piyasa trendi\nlet marketTrend = 'Yatay';\nif (avgChangePercent > 1) marketTrend = 'Yükseliş';\nelse if (avgChangePercent < -1) marketTrend = 'Düşüş';\n\n// Portföy özeti\nconst portfolioSummary = {\n    totalStocks: allStocks.length,\n    avgChangePercent: parseFloat(avgChangePercent.toFixed(2)),\n    bestPerformer: bestPerformer,\n    worstPerformer: worstPerformer,\n    avgRSI: avgRSI ? parseFloat(avgRSI.toFixed(2)) : null,\n    marketTrend: marketTrend,\n    stockDetails: stockDetails\n};\n\nreturn [{\n    json: {\n        portfolio: portfolioSummary,\n        allStocks: allStocks  // Artık doğrudan array\n    }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        688,
+        80
+      ],
+      "id": "f7e48490-1807-42ab-8923-f8f9c024202e",
+      "name": "Portfolio Analysis"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Portföy HTML Email Template\n// Portfolio Analysis node'undan veriyi al\nconst portfolioData = $('Portfolio Analysis').first().json;\nconst portfolio = portfolioData.portfolio;\nconst allStocks = portfolioData.allStocks;\n\n// AI analizini al (Portfolio AI Agent'tan gelecek)\nlet aiAnalysis = $('Portfolio AI Agent').first()?.json?.output || '';\n\n// Undefined ve null değerleri temizle\nif (aiAnalysis) {\n  aiAnalysis = aiAnalysis\n    .replace(/undefined/g, '')\n    .replace(/null/g, '')\n    .replace(/\\s+/g, ' ')  // Çoklu boşlukları tek boşluğa indir\n    .trim();\n}\n\n// Undefined ve null değerleri temizle\nif (aiAnalysis) {\n  aiAnalysis = aiAnalysis\n    .replace(/undefined/g, '')\n    .replace(/null/g, '')\n    .replace(/\\s+/g, ' ')  // Çoklu boşlukları tek boşluğa indir\n    .trim();\n}\n\nconst changeColor = portfolio.avgChangePercent > 0 ? '#10b981' : portfolio.avgChangePercent < 0 ? '#ef4444' : '#6b7280';\nconst changeIcon = portfolio.avgChangePercent > 0 ? '📈' : portfolio.avgChangePercent < 0 ? '📉' : '➡️';\n\n// Trend emoji\nconst trendEmoji = portfolio.marketTrend === 'Yükseliş' ? '🚀' :\n  portfolio.marketTrend === 'Düşüş' ? '📉' : '➡️';\n\nconst html = `\n<!DOCTYPE html>\n<html>\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <style>\n    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f3f4f6; margin: 0; padding: 20px; }\n    .container { max-width: 800px; margin: 0 auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }\n    .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; }\n    .header h1 { margin: 0; font-size: 28px; }\n    .header p { margin: 10px 0 0 0; opacity: 0.9; }\n    .content { padding: 30px; }\n    \n    .portfolio-summary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 25px; border-radius: 10px; margin-bottom: 25px; }\n    .summary-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-top: 15px; }\n    .summary-item { text-align: center; }\n    .summary-label { font-size: 12px; opacity: 0.9; margin-bottom: 5px; }\n    .summary-value { font-size: 24px; font-weight: bold; }\n    \n    .stock-table { width: 100%; border-collapse: collapse; margin: 20px 0; }\n    .stock-table th { background: #f9fafb; padding: 12px; text-align: left; font-size: 12px; color: #6b7280; text-transform: uppercase; border-bottom: 2px solid #e5e7eb; }\n    .stock-table td { padding: 12px; border-bottom: 1px solid #e5e7eb; }\n    .stock-name { font-weight: bold; color: #1f2937; }\n    .stock-symbol { font-size: 12px; color: #6b7280; }\n    .positive { color: #10b981; }\n    .negative { color: #ef4444; }\n    .neutral { color: #6b7280; }\n    \n    .ai-section { background: #fef3c7; border-left: 4px solid #f59e0b; padding: 20px; border-radius: 8px; margin: 25px 0; }\n    .ai-section h3 { margin: 0 0 15px 0; color: #92400e; }\n    .ai-content { color: #78350f; line-height: 1.6; white-space: pre-wrap; }\n    \n    .accordion { margin: 10px 0; }\n    .accordion-header { background: #f9fafb; padding: 12px; cursor: pointer; border-radius: 6px; transition: background 0.2s; display: flex; justify-content: space-between; align-items: center; }\n    .accordion-header:hover { background: #f3f4f6; }\n    .accordion-icon { transition: transform 0.3s; font-size: 12px; color: #6b7280; }\n    .accordion-icon.active { transform: rotate(180deg); }\n    .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }\n    .accordion-content.active { max-height: 500px; padding: 15px 0; }\n    .chart-image { width: 100%; border-radius: 8px; margin-top: 10px; }\n    \n    .footer { background: #f9fafb; padding: 20px; text-align: center; color: #6b7280; font-size: 12px; }\n  </style>\n</head>\n<body>\n  <div class=\"container\">\n    <div class=\"header\">\n      <h1>💼 Portföy Raporu</h1>\n      <p>${new Date().toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>\n    </div>\n    \n    <div class=\"content\">\n      <div class=\"portfolio-summary\">\n        <h2 style=\"margin: 0 0 15px 0;\">📊 Portföy Özeti</h2>\n        <div class=\"summary-grid\">\n          <div class=\"summary-item\">\n            <div class=\"summary-label\">Ortalama Değişim</div>\n            <div class=\"summary-value\">${changeIcon} ${portfolio.avgChangePercent}%</div>\n          </div>\n          <div class=\"summary-item\">\n            <div class=\"summary-label\">Piyasa Trendi</div>\n            <div class=\"summary-value\">${trendEmoji} ${portfolio.marketTrend}</div>\n          </div>\n          <div class=\"summary-item\">\n            <div class=\"summary-label\">Ortalama RSI</div>\n            <div class=\"summary-value\">${portfolio.avgRSI || 'N/A'}</div>\n          </div>\n        </div>\n        <div style=\"margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.2);\">\n          <div style=\"display: grid; grid-template-columns: 1fr 1fr; gap: 15px;\">\n            <div>\n              <div class=\"summary-label\">🏆 En İyi Performans</div>\n              <div style=\"font-size: 16px; font-weight: bold; margin-top: 5px;\">\n                ${portfolio.bestPerformer.symbol} (+${portfolio.bestPerformer.changePercent}%)\n              </div>\n            </div>\n            <div>\n              <div class=\"summary-label\">📉 En Kötü Performans</div>\n              <div style=\"font-size: 16px; font-weight: bold; margin-top: 5px;\">\n                ${portfolio.worstPerformer.symbol} (${portfolio.worstPerformer.changePercent}%)\n              </div>\n            </div>\n          </div>\n        </div>\n      </div>\n      \n      \n      ${aiAnalysis ? `\n      <div style=\"margin: 25px 0;\">\n        <h3 style=\"color: #1f2937; margin-bottom: 15px;\">🤖 AI Portföy Analizi</h3>\n        ${aiAnalysis}\n      </div>\n      ` : ''}\n      \n      <h3 style=\"color: #1f2937; margin-bottom: 15px;\">📈 Hisse Detayları</h3>\n      ${portfolio.stockDetails.map((stock, index) => {\n  const changeClass = stock.changePercent > 0 ? 'positive' : stock.changePercent < 0 ? 'negative' : 'neutral';\n  const changeIcon = stock.changePercent > 0 ? '▲' : stock.changePercent < 0 ? '▼' : '●';\n\n  // İlgili hissenin grafiğini allStocks'tan bul\n  const stockData = allStocks.find(s => s.symbol === stock.symbol);\n  const chartUrl = stockData?.technicalData?.chartUrl || '';\n\n  return `\n      <div style=\"background: white; border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px; margin-bottom: 20px;\">\n        <div style=\"display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;\">\n          <div style=\"flex: 1; min-width: 150px;\">\n            <div class=\"stock-name\">${stock.symbol}</div>\n            <div class=\"stock-symbol\">${stock.name}</div>\n          </div>\n          <div style=\"min-width: 100px; text-align: right;\">\n            <div style=\"font-size: 18px; font-weight: bold;\">${stock.price.toFixed(2)} TL</div>\n            <div class=\"${changeClass}\" style=\"font-size: 14px;\">${changeIcon} ${stock.changePercent}%</div>\n          </div>\n        </div>\n        \n        <div style=\"display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin-bottom: 15px; padding: 15px; background: #f9fafb; border-radius: 6px;\">\n          <div>\n            <div style=\"font-size: 11px; color: #6b7280; margin-bottom: 3px;\">RSI</div>\n            <div style=\"font-weight: bold;\">${stock.rsi || 'N/A'}</div>\n          </div>\n          <div>\n            <div style=\"font-size: 11px; color: #6b7280; margin-bottom: 3px;\">MACD</div>\n            <div style=\"font-weight: bold;\">${stock.macd}</div>\n          </div>\n          <div>\n            <div style=\"font-size: 11px; color: #6b7280; margin-bottom: 3px;\">Haberler</div>\n            <div style=\"font-weight: bold;\">${stock.newsCount} haber</div>\n          </div>\n        </div>\n        \n        ${chartUrl ? `\n        <div style=\"margin-top: 15px;\">\n          <div style=\"font-size: 12px; color: #6b7280; margin-bottom: 10px;\">📊 Son 30 Gün Fiyat Grafiği</div>\n          <img src=\"${chartUrl}\" alt=\"${stock.symbol} Grafiği\" style=\"width: 100%; border-radius: 8px;\">\n        </div>\n        ` : ''}\n      </div>\n            `;\n}).join('')}\n    </div>\n    \n    <div class=\"footer\">\n      <p>🤖 N8N Otomatik Portföy Rapor Sistemi</p>\n      <p>Bu rapor ${portfolio.totalStocks} hisse senedi için otomatik olarak oluşturulmuştur.</p>\n    </div>\n  </div>\n</body>\n</html>\n`;\n\nreturn [{\n  json: {\n    html: html,\n    subject: `💼 Portföy Raporu - ${changeIcon} ${portfolio.avgChangePercent}% (${portfolio.marketTrend})`,\n    portfolio: portfolio\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1344,
+        80
+      ],
+      "id": "c9b9c47f-1c2e-4766-982f-773963ed9d32",
+      "name": "Generate Portfolio Email"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Teknik analiz verilerini al\nconst technicalData = $('GENARETE CHART').first()?.json;\nconst hasTA = technicalData && technicalData.technicalIndicators;\nconst priceItem = $('Format Price Data5').first();\nconst priceData = priceItem ? priceItem.json : null;\n\n// Loop'tan hisse bilgilerini al\nconst loopItem = $('Loop Over Items').item.json;\nconst stockSymbol = loopItem.symbol;\nconst stockName = loopItem.name;\n\nif (!priceData) {\n    return [{ json: { error: 'Fiyat verisi alınamadı' } }];\n}\n\nconst newsItems = $input.all().filter(item => !item.json.noNews);\n\nconst changeEmoji = priceData.changePercent > 0 ? '📈' :\n    priceData.changePercent < 0 ? '📉' : '➡️';\n\nlet report = `🏢 *${stockName} (${stockSymbol}) RAPORU*\\\\n`;\nreport += `📅 ${priceData.timestamp}\\\\n\\\\n`;\n\nreport += `💰 *FİYAT BİLGİLERİ*\\\\n`;\n// Teknik Analiz Bölümü\nif (hasTA) {\n    const ta = technicalData.technicalIndicators;\n\n    report += `\\\\n📊 *TEKNİK ANALİZ*\\\\n`;\n    report += `━━━━━━━━━━━━━━━━━━\\\\n`;\n\n    // RSI\n    if (ta.rsi.value !== null) {\n        const rsiEmoji = ta.rsi.class === 'overbought' ? '🔴' :\n            ta.rsi.class === 'oversold' ? '🟢' : '🟡';\n        report += `${rsiEmoji} RSI (14): *${ta.rsi.value}* - ${ta.rsi.signal}\\\\n`;\n    }\n\n    // MACD\n    if (ta.macd.value !== null) {\n        const macdEmoji = ta.macd.histogram > 0 ? '📈' : '📉';\n        report += `${macdEmoji} MACD: ${ta.macd.value} (Sinyal: ${ta.macd.signal})\\\\n`;\n        report += `   Histogram: ${ta.macd.histogram} - ${ta.macd.signalText}\\\\n`;\n    }\n\n    // Bollinger Bands\n    if (ta.bollinger.upper !== null) {\n        report += `📊 Bollinger Bands:\\\\n`;\n        report += `   Üst: ${ta.bollinger.upper} TL\\\\n`;\n        report += `   Orta: ${ta.bollinger.middle} TL\\\\n`;\n        report += `   Alt: ${ta.bollinger.lower} TL\\\\n`;\n        report += `   Durum: ${ta.bollinger.signal}\\\\n`;\n    }\n\n    report += `\\\\n`;\n}\n\nreport += `━━━━━━━━━━━━━━━━━━\\\\n`;\nreport += `Güncel Fiyat: *${priceData.currentPrice.toFixed(2)} TL*\\\\n`;\nreport += `Önceki Kapanış: ${priceData.previousClose.toFixed(2)} TL\\\\n`;\nreport += `Değişim: ${priceData.change.toFixed(2)} TL (${changeEmoji} *%${priceData.changePercent}*)\\\\n`;\nreport += `Gün En Yüksek: ${priceData.dayHigh.toFixed(2)} TL\\\\n`;\nreport += `Gün En Düşük: ${priceData.dayLow.toFixed(2)} TL\\\\n`;\nreport += `Hacim: ${(priceData.volume / 1000000).toFixed(2)}M\\\\n\\\\n`;\n\nreport += `📰 *SON HABERLER*\\\\n`;\nreport += `━━━━━━━━━━━━━━━━━━\\\\n`;\n\nif (newsItems.length > 0) {\n    newsItems.forEach((item, index) => {\n        const news = item.json;\n        const date = new Date(news.publishedAt);\n        const formattedDate = date.toLocaleString('tr-TR', {\n            day: '2-digit',\n            month: '2-digit',\n            hour: '2-digit',\n            minute: '2-digit'\n        });\n\n        report += `\\\\n${index + 1}. ${news.sentiment} *${news.title}*\\\\n`;\n        if (news.description) {\n            const shortDesc = news.description.substring(0, 120);\n            report += `   ${shortDesc}${news.description.length > 120 ? '...' : ''}\\\\n`;\n        }\n        report += `   📍 ${news.source} | ⏰ ${formattedDate}\\\\n`;\n        report += `   🔗 ${news.url}\\\\n`;\n    });\n} else {\n    report += `\\\\n⚠️ Son 24 saatte ${stockName} ile ilgili önemli haber bulunmamaktadır.\\\\n`;\n}\n\nreport += `\\\\n━━━━━━━━━━━━━━━━━━\\\\n`;\nreport += `🤖 N8N Otomatik Rapor Sistemi`;\n\nconst hasSignificantChange = Math.abs(parseFloat(priceData.changePercent)) > 2;\nconst hasNegativeNews = newsItems.some(item => item.json.sentimentScore < -1);\nconst hasPositiveNews = newsItems.some(item => item.json.sentimentScore > 1);\n\nreturn [{\n    json: {\n        symbol: stockSymbol,  // YENİ: Hisse sembolü\n        name: stockName,      // YENİ: Hisse adı\n        report: report,\n        priceData: priceData,\n        newsCount: newsItems.length,\n        hasSignificantChange: hasSignificantChange,\n        hasNegativeNews: hasNegativeNews,\n        hasPositiveNews: hasPositiveNews,\n        shouldAlert: hasSignificantChange || hasNegativeNews || hasPositiveNews,\n        technicalData: technicalData\n    }\n}];\n"
+      },
+      "name": "Generate Report5",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1776,
+        800
+      ],
+      "id": "f8f3d0ec-edd6-4ff7-b0a0-b5f56855087f"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Sana bir hisse senedi portföy raporu gelecek. Bu raporu analiz edip HTML formatında renkli kutucuklarla şu bilgileri ver:\n\n**ÖNEMLİ: Çıktını HTML formatında ver. Her bölüm için aşağıdaki renk kodlarını kullan:**\n\n1. **Genel Değerlendirme** (Mavi kutucuk - #dbeafe):\nPortföyün genel performansı, ortalama değişim ve piyasa trendi hakkında kısa yorum.\n\n2. **Piyasa Trendi Analizi** (Mor kutucuk - #e9d5ff):\nPiyasanın genel yönü ve etkili faktörler.\n\n3. **Hisse Bazlı Analizler** (Her hisse için ayrı renkli kutucuk):\nHer hisse için ayrı kutucukta:\n- 🟢 Yeşil (#d1fae5) - Pozitif performans gösteren hisseler için\n- 🔴 Kırmızı (#fee2e2) - Negatif performans gösteren hisseler için\n- 🟡 Sarı (#fef3c7) - Nötr/kararsız hisseler için\n\nHer hisse için şunları belirt:\n- Hisse adı ve sembolü\n- Teknik durum (RSI, MACD yorumu)\n- Kısa vadeli öneri (AL/SAT/BEKLE)\n- Risk notu\n\n4. **Genel Yatırım Önerisi** (Turuncu kutucuk - #fed7aa):\nPortföy için genel öneri ve odaklanılması gereken hisseler.\n\n5. **Risk Değerlendirmesi** (Kırmızı kutucuk - #fecaca):\nPortföyün risk seviyesi ve dikkat edilmesi gereken noktalar.\n\n**ÇIKTI FORMATI ÖRNEĞİ:**\n<div style=\"background: #dbeafe; padding: 15px; border-radius: 8px; margin: 10px 0; border-left: 4px solid #3b82f6;\">\n<strong>📊 Genel Değerlendirme</strong><br>\nPortföy genel olarak dengeli bir performans sergiliyor...\n</div>\n\n<div style=\"background: #d1fae5; padding: 15px; border-radius: 8px; margin: 10px 0; border-left: 4px solid #10b981;\">\n<strong>📈 THYAO - Türk Hava Yolları</strong><br>\nRSI: 74.43 (Aşırı alım bölgesinde)<br>\nMACD: Alım sinyali<br>\nÖneri: BEKLE - Kısa vadede kar realizasyonu düşünülebilir<br>\nRisk: Orta\n</div>\n\nPortföy Raporu:\n- Toplam Hisse: ={{ $json.portfolio.totalStocks || 0 }}\n- Ortalama Değişim: ={{ $json.portfolio.avgChangePercent || 0 }}%\n- Piyasa Trendi: ={{ $json.portfolio.marketTrend || 'Bilinmiyor' }}\n- Ortalama RSI: ={{ $json.portfolio.avgRSI || 'N/A' }}\n- En İyi Performans: ={{ $json.portfolio.bestPerformer?.symbol || 'N/A' }} (={{ $json.portfolio.bestPerformer?.changePercent || 0 }}%)\n- En Kötü Performans: ={{ $json.portfolio.worstPerformer?.symbol || 'N/A' }} (={{ $json.portfolio.worstPerformer?.changePercent || 0 }}%)\n\nHisse Detayları:\n={{ $json.portfolio.stockDetails?.map(s => `${s.symbol || 'N/A'}: ${s.price?.toFixed(2) || '0.00'} TL (${s.changePercent || 0}%), RSI: ${s.rsi || 'N/A'}, MACD: ${s.macd || 'N/A'}`).join('\\n') || 'Veri yok' }}\n\n\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        944,
+        80
+      ],
+      "id": "cf79f22b-4fe8-4849-8e2b-076b958e4338",
+      "name": "Portfolio AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        944,
+        272
+      ],
+      "id": "2e05e9d2-e1e3-4368-b953-337a7ca93d28",
+      "name": "Google Gemini Chat Model2",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "7ltGq0vUF6iG1jR5",
+          "name": "serttas1"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Portföy AI Analizi için Output Parser\n// Portföy raporunu formatla\n\nconst portfolioData = $input.first().json.portfolio;\nconst allStocks = $input.first().json.allStocks;\n\n// AI'dan gelen analiz\nconst analysis = $input.all()[0].json.output || '';\n\n// Beklenen format\nconst formattedOutput = `\n📊 PORTFÖY GENEL DEĞERLENDİRMESİ\n${extractSection(analysis, 'genel', 'Portföy performansı ve genel durum')}\n\n📈 PİYASA TRENDİ ANALİZİ\n${extractSection(analysis, 'trend', 'Piyasa trendi değerlendirmesi')}\n\n🎯 ÖNE ÇIKAN HİSSELER\n${extractSection(analysis, 'öne çıkan', 'En iyi ve en kötü performans gösteren hisseler')}\n\n💡 YATIRIM ÖNERİSİ\n${extractSection(analysis, 'öneri', 'Portföy için genel öneri')}\n\n⚠️ RİSK DEĞERLENDİRMESİ\n${extractSection(analysis, 'risk', 'Portföy risk seviyesi')}\n`;\n\nfunction extractSection(text, keyword, defaultText) {\n    // Basit metin ayrıştırma\n    const lines = text.split('\\\\n');\n    let section = [];\n    let capturing = false;\n\n    for (let line of lines) {\n        const lowerLine = line.toLowerCase();\n        if (lowerLine.includes(keyword) || lowerLine.includes(defaultText.toLowerCase())) {\n            capturing = true;\n            continue;\n        }\n        if (capturing) {\n            if (line.trim() === '' || line.match(/^\\\\d+\\\\./)) {\n                break;\n            }\n            section.push(line);\n        }\n    }\n\n    return section.length > 0 ? section.join('\\\\n').trim() : defaultText;\n}\n\nreturn [{\n    json: {\n        analysis: formattedOutput,\n        portfolio: portfolioData,\n        allStocks: allStocks\n    }\n}];\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolCode",
+      "typeVersion": 1.3,
+      "position": [
+        1088,
+        272
+      ],
+      "id": "ff110ae9-d095-40d7-a0b7-8fdcf16b46b4",
+      "name": "Code Tool"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Hisse Listesi ve Portföy Analizi\nconst stocks = [\n{ symbol: 'KTLEV', name: 'Katılım Emeklilik ve Hayat' },\n{ symbol: 'MIATK', name: 'MIA Teknoloji' },\n{ symbol: 'PAPIL', name: 'Papilion Savunma' },\n{ symbol: 'PRKAB', name: 'Parkabel' },\n{ symbol: 'SKBNK', name: 'Şekerbank' }\n];\n\n// Her hisse için ayrı item oluştur\nconst stockItems = stocks.map(stock => ({\n    json: {\n        symbol: stock.symbol,\n        name: stock.name,\n        yahooSymbol: `${stock.symbol}.IS`\n    }\n}));\n\nreturn stockItems;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -16,
+        560
+      ],
+      "id": "123aabcb-1265-4365-bcd4-d0a0fda9d348",
+      "name": "Stock List2"
+    }
+  ],
+  "connections": {
+    "Schedule Trigger5": {
+      "main": [
+        [
+          {
+            "node": "Stock List2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Stock Price5": {
+      "main": [
+        [
+          {
+            "node": "Format Price Data5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Price Data5": {
+      "main": [
+        [
+          {
+            "node": "Merge Price and News5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter and Score News5": {
+      "main": [
+        [
+          {
+            "node": "Merge Price and News5",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Get News6": {
+      "main": [
+        [
+          {
+            "node": "Filter and Score News5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message3": {
+      "main": [
+        [
+          {
+            "node": "Log to Google Sheets5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Historical Data": {
+      "main": [
+        [
+          {
+            "node": "technical indicators",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "technical indicators": {
+      "main": [
+        [
+          {
+            "node": "GENARETE CHART",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GENARETE CHART": {
+      "main": [
+        [
+          {
+            "node": "Generate Report5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Price and News5": {
+      "main": [
+        [
+          {
+            "node": "Historical Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Merge All Stocks",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Stock Price5",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get News6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge All Stocks": {
+      "main": [
+        [
+          {
+            "node": "Portfolio Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Portfolio Analysis": {
+      "main": [
+        [
+          {
+            "node": "Portfolio AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Portfolio Email": {
+      "main": [
+        [
+          {
+            "node": "Send a message3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Report5": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Portfolio AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Generate Portfolio Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Portfolio AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "Portfolio AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Stock List2": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "017e5400-5b2e-4309-a701-f2c2c033e014",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-03-27T05:53:42.912Z",
+      "createdAt": "2026-03-27T05:53:42.912Z",
+      "role": "workflow:owner",
+      "workflowId": "FFx9RQOdwURLABhL",
+      "projectId": "NthPGJZmZB4b9f9E"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
